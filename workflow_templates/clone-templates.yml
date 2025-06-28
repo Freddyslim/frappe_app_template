@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   sync:
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -54,4 +55,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh workflow run clone-vendors.yml --ref "${GITHUB_REF}"
-          gh run watch
+          RUN_ID=$(gh run list --workflow clone-vendors.yml --branch "${GITHUB_REF_NAME}" -L 1 --json databaseId -q '.[0].databaseId')
+          gh run watch "$RUN_ID"
+          gh run view "$RUN_ID" --exit-status

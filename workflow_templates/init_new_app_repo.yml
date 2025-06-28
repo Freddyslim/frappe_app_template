@@ -25,14 +25,6 @@ jobs:
           RUN_ID=$(gh run list --workflow clone-templates.yml --branch "${GITHUB_REF_NAME}" -L 1 --json databaseId -q '.[0].databaseId')
           gh run watch "$RUN_ID"
           gh run view "$RUN_ID" --exit-status
-      - name: Trigger and await clone-vendors
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh workflow run clone-vendors.yml --ref "${GITHUB_REF}"
-          RUN_ID=$(gh run list --workflow clone-vendors.yml --branch "${GITHUB_REF_NAME}" -L 1 --json databaseId -q '.[0].databaseId')
-          gh run watch "$RUN_ID"
-          gh run view "$RUN_ID" --exit-status
       - name: Trigger and await create-app-folder
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
