@@ -28,4 +28,4 @@ sites/*/public/
 # Keep configuration files under version control
 !apps.json
 !vendors.txt
-!vendor_profiles/integration_profiles.json
+!vendor_profiles/**

@@ -17,7 +17,7 @@ Copy the configuration files from the template so you can adjust them:
 ```bash
 cp template/apps.json .
 cp template/vendors.txt .
-cp template/vendor_profiles/integration_profiles.json .
+cp -r template/vendor_profiles .
 ```
 
 Edit these files to add your desired vendor slugs and integration profiles.

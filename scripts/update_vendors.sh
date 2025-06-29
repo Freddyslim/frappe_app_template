@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 VENDOR_DIR="$ROOT_DIR/vendor"
 VENDORS_FILE="${VENDORS_FILE:-$ROOT_DIR/vendors.txt}"
-PROFILES_FILE="${PROFILES_FILE:-$ROOT_DIR/vendor_profiles/integration_profiles.json}"
+PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/vendor_profiles}"
 CODEX_JSON="$ROOT_DIR/codex.json"
 
 mkdir -p "$VENDOR_DIR"
@@ -25,8 +25,14 @@ readarray -t VENDORS < <(grep -v '^#' "$VENDORS_FILE" 2>/dev/null | xargs -r)
 declare -A REPOS
 declare -A BRANCHES
 for slug in "${VENDORS[@]}"; do
-  repo=$(jq -r --arg s "$slug" '.[$s].url // empty' "$PROFILES_FILE" 2>/dev/null)
-  branch=$(jq -r --arg s "$slug" '.[$s].branch // .[$s].tag // ""' "$PROFILES_FILE" 2>/dev/null)
+  profile_file=$(find "$PROFILES_DIR" -name "$slug.json" -print -quit 2>/dev/null || true)
+  if [[ -n "$profile_file" ]]; then
+    repo=$(jq -r '.url // empty' "$profile_file" 2>/dev/null)
+    branch=$(jq -r '.branch // .tag // ""' "$profile_file" 2>/dev/null)
+  else
+    repo=""
+    branch=""
+  fi
   if [[ -n "$repo" ]]; then
     REPOS[$slug]="$repo"
     BRANCHES[$slug]="$branch"

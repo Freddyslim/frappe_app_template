@@ -4,8 +4,8 @@ This directory contains additional notes for Frappe and ERPNext. For the
 automation guidelines used by Codex see `../DEV_INSTRUCTIONS.md`.
 
 1. Default versions for Frappe and Bench reside in `../apps.json`.
-2. List active vendor slugs in `../vendors.txt`. Their profiles are defined in
-   `../vendor_profiles/integration_profiles.json`.
+2. List active vendor slugs in `../vendors.txt`. Passende Profil-Dateien liegen
+   unter `../vendor_profiles/<kategorie>/<slug>.json`.
 3. The *update-vendors* workflow clones all listed repositories and refreshes
    `apps.json`. Run
    `../setup.sh` locally if you want to perform the same steps manually.

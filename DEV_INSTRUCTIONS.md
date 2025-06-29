@@ -5,9 +5,9 @@ This repository uses Codex for automated code generation. These guidelines tell 
 ## Setup
 
 1. Versions for Frappe and Bench are defined in `apps.json`.
-2. Maintain active vendor integrations in `vendors.txt`. Each slug must exist
-   in `vendor_profiles/integration_profiles.json` and defines repository URL
-   plus branch or tag.
+2. Maintain active vendor integrations in `vendors.txt`. Each slug must have a
+   corresponding JSON file under `vendor_profiles/<category>/<slug>.json` which
+   defines repository URL and branch or tag.
 3. The *update-vendors* workflow clones all repositories listed in
    `vendors.txt` and regenerates `apps.json`. Run `./setup.sh` locally for the same
     effect (requires `jq`).
@@ -25,7 +25,7 @@ This repository uses Codex for automated code generation. These guidelines tell 
 - `instructions/` – framework notes for Frappe and ERPNext.
 - `sample_data/` – reference payloads and docs.
 - `vendors.txt` – active vendor slugs.
-- `vendor_profiles/integration_profiles.json` – mapping of slugs to Git URLs.
+- `vendor_profiles/` – library of vendor profile JSON files.
 - `apps.json` – default vendor apps and their versions.
 
 ## Additional Guidelines
