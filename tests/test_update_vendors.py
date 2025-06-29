@@ -35,7 +35,6 @@ def test_update_vendors_prunes_obsolete_submodule(tmp_path):
     (tmp_path / "apps.json").write_text("{}")
     (tmp_path / "vendors.txt").write_text("")
     (tmp_path / "vendor_profiles").mkdir()
-    (tmp_path / "vendor_profiles" / "integration_profiles.json").write_text("{}")
 
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True)
 
@@ -75,21 +74,18 @@ def test_update_vendors_rebuilds_configs(tmp_path):
     (tmp_path / "apps.json").write_text("{\n  \"oldapp\": {\"repo\": \"file://old\", \"branch\": \"main\"}\n}")
 
     (tmp_path / "vendors.txt").write_text("app1\napp2\n")
-    profiles = {
-        "app1": {"url": str(app1_repo), "branch": "v1"},
-        "app2": {"url": str(app2_repo), "branch": "v2"}
-    }
-    prof_dir = tmp_path / "vendor_profiles"
-    prof_dir.mkdir()
-    (prof_dir / "integration_profiles.json").write_text(json.dumps(profiles))
+    prof_dir = tmp_path / "vendor_profiles" / "test"
+    prof_dir.mkdir(parents=True)
+    (prof_dir / "app1.json").write_text(json.dumps({"url": str(app1_repo), "branch": "v1"}))
+    (prof_dir / "app2.json").write_text(json.dumps({"url": str(app2_repo), "branch": "v2"}))
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
 
     data = (tmp_path / "apps.json").read_text()
     assert "oldapp" not in data
-    profiles = json.loads((tmp_path / "vendor_profiles" / "integration_profiles.json").read_text())
-    assert "app1" in profiles and "app2" in profiles
+    assert (tmp_path / "vendor_profiles" / "test" / "app1.json").exists()
+    assert (tmp_path / "vendor_profiles" / "test" / "app2.json").exists()
 
 
 def test_update_vendors_normalizes_codex_json(tmp_path):
@@ -110,10 +106,9 @@ def test_update_vendors_normalizes_codex_json(tmp_path):
 
     (tmp_path / "apps.json").write_text("{}")
     (tmp_path / "vendors.txt").write_text("dummy")
-    prof = {"dummy": {"url": str(dummy_repo), "branch": "v1"}}
     prof_dir = tmp_path / "vendor_profiles"
     prof_dir.mkdir()
-    (prof_dir / "integration_profiles.json").write_text(json.dumps(prof))
+    (prof_dir / "dummy.json").write_text(json.dumps({"url": str(dummy_repo), "branch": "v1"}))
 
     codex = tmp_path / "codex.json"
     codex.write_text('{"templates": {"foo": 1}, "sources": []}')

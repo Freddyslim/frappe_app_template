@@ -1,1 +1,70 @@
+# Liste aktiver Vendor-Slugs
+# Zum Aktivieren eines Vendors einfach den Slug ohne "#" in eine neue Zeile schreiben.
+# Beispiele:
+#
+# 🌩️ Cloud
+# nextcloud
+# seafile
+# owncloud
+# syncthing
+#
+# 💬 Kommunikation
+# matrix
+# zulip
+# mattermost
+# rocket.chat
+# delta-chat
+# jitsi-meet
+# bigbluebutton
+#
+# 📚 Dokumentation
+# xwiki
+# bookstack
+# dokuwiki
+# hedgedoc
+# cryptpad
+# logseq
+#
+# 🌐 Website / CMS
+# raven
+# frappe-cms
+# ghost
+# plone
+# grav
+# jekyll
+# hugo
+#
+# 🧾 ERP / Business
+# erpnext
+# dolibarr
+# odoo
+# invoice-ninja
+#
+# ⚙️ Entwicklung / DevOps
+# gitlab-ce
+# onedev
+# gitea
+# forgejo
+# n8n
+# appsmith
+# budibase
+# redash
+# metabase
+#
+# 🔐 Security / Privacy
+# vaultwarden
+# passbolt
+# keycloak
+# authelia
+# outline-vpn
+# algo-vpn
+#
+# 📈 Monitoring / Infrastruktur
+# netdata
+# prometheus
+# grafana
+# uptime-kuma
+# zabbix
+# librenms
+
 example_app

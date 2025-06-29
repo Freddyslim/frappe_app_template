@@ -94,14 +94,12 @@ if [ ! -f "$CONFIG_TARGET/vendors.txt" ]; then
     echo "example_app" > "$CONFIG_TARGET/vendors.txt"
 fi
 
-if [ ! -f "$CONFIG_TARGET/vendor_profiles/integration_profiles.json" ]; then
-    mkdir -p "$CONFIG_TARGET/vendor_profiles"
-    cat > "$CONFIG_TARGET/vendor_profiles/integration_profiles.json" <<'JSON'
+if [ ! -f "$CONFIG_TARGET/vendor_profiles/examples/example_app.json" ]; then
+    mkdir -p "$CONFIG_TARGET/vendor_profiles/examples"
+    cat > "$CONFIG_TARGET/vendor_profiles/examples/example_app.json" <<'JSON'
 {
-  "example_app": {
-    "url": "https://github.com/example/example_app",
-    "branch": "v1.0.0"
-  }
+  "url": "https://github.com/example/example_app",
+  "branch": "v1.0.0"
 }
 JSON
 fi

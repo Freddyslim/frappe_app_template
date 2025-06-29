@@ -30,8 +30,9 @@ frappe_app_template/
 │   ├── update_templates.sh
 │   └── ...
 │
-├── vendor_profiles/                    # zentrale Vendordefinitionen (z. B. erpnext, raven)
-│   └── integration_profiles.json       # Zuordnung von Slug → Git-URL + Tag/Branch
+├── vendor_profiles/                    # zentrale Vendordefinitionen nach Kategorien
+│   ├── cloud/nextcloud.json
+│   └── ...                             # JSON-Dateien pro Vendor
 │
 ├── sample_data/
 │   └── example_payload.json
@@ -87,22 +88,17 @@ Alle Workflows orientieren sich an dieser Datei. Templates werden niemals gepubl
 
 ## 🔄 Submodule & Versionierung
 
-Die Datei `integration_profiles.json` definiert zentralseitig:
+Unter `vendor_profiles/` liegen JSON-Dateien pro Vendor, z. B.:
 
 ```json
+vendor_profiles/erp_business/erpnext.json
 {
-  "erpnext": {
-    "url": "https://github.com/frappe/erpnext.git",
-    "branch": "version-15"
-  },
-  "raven": {
-    "url": "https://github.com/myorg/raven.git",
-    "branch": "main"
-  }
+  "url": "https://github.com/frappe/erpnext",
+  "branch": "version-15"
 }
 ```
 
-Diese Daten werden verwendet, um bei neuen App-Repos Submodule korrekt einzurichten.
+Diese Profile werden beim Einrichten neuer Repositories genutzt, um die passenden Submodule zu klonen.
 
 ## 🔁 Wissen aus App-Repos zurückführen
 
