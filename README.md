@@ -63,19 +63,8 @@ frappe_app_template/
 ├── codex.json                          # Codex-Datei-Index (autogeneriert)
 ├── .codex_gitlog.json                  # Commit-Historie mit #codex:-Tags
 ├── vendors.txt                         # aktive Vendor-Slugs (z. B. erpnext, website)
-├── project_meta.yml                    # Steuerung des Repo-Typs etc.
 └── README.md
 ```
-
-## 📜 `project_meta.yml`
-
-```yaml
-repo_type: template_base
-publish_enabled: false
-codex_tracked: true
-```
-
-Alle Workflows orientieren sich an dieser Datei. Templates werden niemals gepublished.
 
 ## 💡 Codex-Prinzipien
 
