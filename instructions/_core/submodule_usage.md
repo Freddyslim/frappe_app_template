@@ -2,6 +2,10 @@
 
 This guide explains how to start a new repository that keeps the `frappe_app_template` as a Git submodule. The approach allows you to pull in updates from the template at any time.
 
+The helper scripts in `scripts/` now work both when the template is added as a
+submodule and when it is used standalone. They no longer abort if executed from
+within the template repository itself.
+
 ## 1. Repository Setup
 
 ```bash

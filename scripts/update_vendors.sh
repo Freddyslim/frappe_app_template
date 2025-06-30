@@ -2,11 +2,11 @@
 set -euo pipefail
 export GIT_TERMINAL_PROMPT=0
 
-# Prevent execution inside the template submodule
+# Detect whether we are running from the template repository itself
 repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
-if [[ "$repo_root" == *"/frappe_app_template" ]]; then
-  echo "⛔ ERROR: Run this script from your app repository, not inside the template." >&2
-  exit 1
+in_template_repo=false
+if [[ "$(basename "$repo_root")" == "frappe_app_template" ]]; then
+  in_template_repo=true
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -51,7 +51,9 @@ check_template() {
   fi
 }
 
-check_template
+if [ "$in_template_repo" = false ]; then
+  check_template
+fi
 
 # read vendors list
 readarray -t RAW_LINES < <(grep -v '^#' "$VENDORS_FILE" 2>/dev/null | sed '/^\s*$/d')

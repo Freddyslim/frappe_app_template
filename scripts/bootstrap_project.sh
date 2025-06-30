@@ -5,9 +5,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 TEMPLATE_DIR="$ROOT_DIR/frappe_app_template"
 
+# Allow running inside the template repository by falling back to ROOT_DIR
 if [ ! -f "$TEMPLATE_DIR/setup.sh" ]; then
-  echo "❌ frappe_app_template submodule not found at $TEMPLATE_DIR" >&2
-  exit 1
+  TEMPLATE_DIR="$ROOT_DIR"
 fi
 
 cp "$TEMPLATE_DIR/setup.sh" "$ROOT_DIR/setup.sh"

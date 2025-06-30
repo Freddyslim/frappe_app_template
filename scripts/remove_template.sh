@@ -1,13 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# Prevent execution inside the frappe_app_template submodule
-toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
-if [[ "$toplevel" == *"/frappe_app_template" ]]; then
-  echo "⛔ ERROR: You are inside the frappe_app_template submodule."
-  echo "💡 Please run this script from the root of your app repository, not from inside the template."
-  exit 1
-fi
+# This script can run both from a standalone template repository and from
+# projects that include the template as a submodule.
 
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <template-name>" >&2

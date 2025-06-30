@@ -1,13 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# Prevent execution inside the frappe_app_template submodule
-toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
-if [[ "$toplevel" == *"/frappe_app_template" ]]; then
-  echo "⛔ ERROR: You are inside the frappe_app_template submodule."
-  echo "💡 Please run this script from the root of your app repository, not from inside the template."
-  exit 1
-fi
+# Previously this script refused to run inside the template repository.
+# It now works in both standalone and submodule contexts.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
