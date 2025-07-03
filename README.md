@@ -28,7 +28,6 @@ The script will:
 - create new remote repo <path from .config>/my_app
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
 - pushes new generated app repo to remote develop branch
-- triggers publish wf if is not selftriggered
 
 ### GitHub Configuration
 
