@@ -1,214 +1,75 @@
-# 🚀 Frappe App Template (Codex-Optimiert)
+# 📁 Frappe App Dev Setup – Codex-fähiges Metakonzept
 
-Dieses Repository ist das **zentrale Master-Template** zur Entwicklung Codex-unterstützter Frappe-Apps. Es beinhaltet alle Werkzeuge, Strukturen, Konventionen und Workflows, um neue Projekte effizient aufzusetzen, kontextoptimiert mit OpenAI Codex zu entwickeln und gezielt externe Inhalte (z. B. ERPNext) einzubinden.
+Dieses Repository ist das zentrale Master-Template zur Entwicklung Codex-unterstützter Frappe-Apps. Es automatisiert die Erstellung, Strukturierung und Verwaltung neuer Frappe-Apps inkl. Git- und Vendor-Einbindung. Ziel ist es, alle Informationen und Workflows so zu strukturieren, dass sie direkt mit der OpenAI Codex UI unter [openai.com/codex](https://openai.com/codex) nutzbar sind.
 
-## 🚀 Getting Started
+---
 
-1. Klone dieses Repository oder binde es als Submodul in dein App-Projekt ein.
-2. Führe `./setup.sh` aus, um das Grundgerüst und die benötigten Ordner anzulegen.
-   Dabei wird sofort ein App-Ordner inklusive `app/.gitignore` erstellt.
-3. Trage aktive Vendoren in `vendors.txt` ein und starte `./scripts/update_vendors.sh`.
-4. Installiere Entwickler-Abhängigkeiten mit `pip install -r requirements-dev.txt` und prüfe alles über `pytest`.
-5. Installiere Bench (`pip install frappe-bench`) und stelle sicher, dass Node 18 aktiv ist (z. B. via `n 18`), bevor du `bench build` ausführst.
-6. Lies den Abschnitt [Developer Guide](./PROJECT.md#developer-guide) in [PROJECT.md](./PROJECT.md) und die Hinweise im Ordner [instructions/_core](instructions/_core/README.md).
-7. Das Projektprofil findest du in [PROJECT.md](./PROJECT.md). Dieses Dokument wird von `generate_index.py` beim Aufbau des Codex-Kontextes eingelesen.
-
-Weitere Beispiele für Daten und Schnittstellen findest du im [sample_data/README.md](sample_data/README.md).
-
-## 📂 Strukturtyp
-
-Dies ist ein **`template_base`**-Repository.
-
-* Es wird **nicht selbst gepublished** (`publish_enabled: false`)
-* Dient als Submodul in App-Repos
-* Enthält: Setup-Tools, Referenz-App, globale Instructions, Indexing-Mechanismen, Workflow-Templates
-* Zudem liegt unter `doku/` eine Sammlung projektbegleitender Dokumente.
-
-## 📁 Projektstruktur
-
-```plaintext
-frappe_app_template/
-├── app/
-│   └── frappe_template_core/           # Referenz-App: UI, Doctypes, Layouts etc.
-│
-├── instructions/
-│   └── _core/                          # zentrale Codex-Anleitungen (niemals löschen)
-│       ├── frappe.md
-│       ├── erpnext.md
-│       ├── prompts.md
-│       └── ...
-│
-├── doku/
-│   ├── overview.md
-│   ├── user_story_template.md
-│   └── guide_doctype_listing.md
-│
-├── scripts/                            # Setup- & Sync-Werkzeuge
-│   ├── bootstrap_project.sh            # initialisiert neues App-Repo
-│   ├── update_vendors.sh               # synchronisiert vendors.txt → apps.json → Submodule
-│   └── ...
-│
-├── vendor_profiles/                    # zentrale Vendordefinitionen nach Kategorien
-│   ├── cloud/nextcloud.json
-│   └── ...                             # JSON-Dateien pro Vendor
-│
-├── sample_data/
-│   └── example_payload.json
-│
-├── tests/
-│   └── test_update_vendors.py
-│
-├── workflow_templates/
-│   ├── init_new_app_repo.yml
-│   ├── publish.yml
-│   └── ...
-│
-├── .github/
-│   ├── workflows/
-│   │   ├── generate_codex_index.yml
-│   │   ├── validate_commits.yml
-│   │   └── ci.yml
-│   └── workflows_readme/
-│       └── template_maintenance/
-│
-├── .incoming/                          # Snapshots von Codex-Wissen aus App-Repos
-│   └── codex_snapshots/
-│       └── my_app.json
-│
-├── setup.sh
-├── requirements.txt
-├── requirements-dev.txt
-├── apps.json                           # generiert: enth. aktive Submodule/Vendoren
-├── instructions/_INDEX.md              # Übersicht aller Vendoren (autogeneriert)
-├── .codex_gitlog.json                  # Commit-Historie mit #codex:-Tags
-├── vendors.txt                         # aktive Vendor-Slugs (z. B. erpnext, website)
-├── project_meta.yml                    # Steuerung des Repo-Typs etc.
-├── pricing_settings.yml                # Parameter für Preiskalkulationen
-
-└── README.md
-```
-
-Alle Workflows orientieren sich an der jeweiligen `project_meta.yml` eines App-Repositories. Templates selbst werden nicht veröffentlicht.
-
-## 📈 `pricing_settings.yml`
-
-In dieser optionalen Datei hinterlegst du Schätzwerte für typische Aufgaben wie Doctypes oder Webseiten. Externe Tools können die Werte nutzen, um Angebote zu kalkulieren. Hinterlege hier nur unsensible Daten und niemals vertrauliche Stundensätze.
-
-## 💡 Codex-Prinzipien
-
-* Nur **ein Git-Repo** als aktiver Kontext
-* Externe Tools (ERPNext, Raven ...) werden als Submodule in `vendor/` eingebunden
-* Zu jedem Submodul gibt es begleitende Anleitungen in `instructions/_<slug>/`
-* Codex liest aus: `instructions/`, `vendor/`, `app/`, relevante `scripts/` & Workflows
-
-## 🔄 Submodule & Versionierung
-
-Unter `vendor_profiles/` liegen JSON-Dateien pro Vendor, z. B.:
-
-```json
-vendor_profiles/erp_business/erpnext.json
-{
-  "url": "https://github.com/frappe/erpnext",
-  "tag": "v15.0.0"
-}
-```
-
-Diese Profile werden beim Einrichten neuer Repositories genutzt, um die passenden Submodule zu klonen.
-Beim ersten Ausführen von `setup.sh` wird zudem automatisch eine leere `.gitmodules`-Datei erzeugt (bzw. `git submodule init` ausgeführt), falls diese noch nicht existiert.
-
-Frappe und Bench sind bereits in `apps.json` hinterlegt und werden bei jeder Ausführung von `update_vendors.sh` automatisch aktualisiert. Weitere Apps fügst du über `vendors.txt` hinzu. Dort kannst du entweder nur einen Slug eintragen – dann greift die passende Datei unter `vendor_profiles/` (oder im Template‑Unterordner `frappe_app_template/vendor_profiles/`, falls kein lokaler Ordner vorhanden) – oder ein eigenes Repository inklusive Branch oder Tag. Zusätzlich kannst du beliebige Repositories direkt in `apps.json` oder `custom_vendors.json` angeben; diese werden beim nächsten `update_vendors.sh` berücksichtigt:
-
-```text
-# slug aus vendor_profiles
-erpnext
-# manuelles Repository (optional mit Tag)
-myaddon|https://github.com/me/myaddon|develop|v1.0
-```
-
-Passe bei Bedarf die JSON-Dateien unter `vendor_profiles/` an und starte danach `./scripts/update_vendors.sh` oder den Workflow **update-vendors**. Existiert kein solcher Ordner, nutzt das Skript automatisch die Profile aus dem Template‑Verzeichnis.
-
-### Absoluter GitHub-Link
-
-Wenn du in externer Doku oder CI auf Dateien eines Submodules verlinken möchtest,
-verwende einen vollständigen GitHub-Link inklusive Branch oder Commit. Die
-benötigten Informationen liest `generate_index.py` aus `apps.json`.
-
-Beispiel:
-
-- [frappe](https://github.com/your-org/frappe-version-15/tree/main/frappe)
-- [frappe @ a1b2c3d](https://github.com/your-org/frappe-version-15/tree/a1b2c3d/frappe)
-## 🔁 Wissen aus App-Repos zurückführen
-
-App-Repos können neue Erkenntnisse lokal ablegen:
-
-```json
-codex_feedback.json
-{
-  "vendor": "erpnext",
-  "context_improvement": [
-    {
-      "file": "instructions/_erpnext/project_logic.md",
-      "comment": "Beispiel für ERP-Modulstruktur ergänzt"
-    }
-  ]
-}
-```
-
-Ein Cronjob oder CI-Sync-Skript überträgt regelmäßig Inhalte aus `my_app/instructions/` und `instructions/_INDEX.md` zurück nach `.incoming/` in dieses Repo.
-
-## 🧰 Commit-Konventionen
+## 🔧 Verzeichnisstruktur
 
 ```bash
-feat(ui): Add layout hooks
-refactor(sync): simplify vendor loader
+/home/frappe/frappe-bench/
+└── apps/
+    └── my_app/
+        ├── my_app/                        # Frappe App-Code
+        ├── instructions/                  # App-spezifische Anweisungen
+        │   └── AGENTS.md                  # projektspezifische Erweiterung für Codex
+        ├── frappe_app_template/ → symlink auf /opt/git/frappe_app_template
+        ├── vendor/                        # Vendor-Submodule
+        │   ├── erpnext/                   
+        │   └── nextcloud/
+        ├── doc/                           # ausführliche technische Dokumentation (Details, Hintergründe)
+        │   ├── logic.md                   # Detailbeschreibung Logik, Zustände, Use-Cases
+        │   ├── modules.md                 # Struktur und Modulverhalten
+        │   ├── MERMAID.mmd                # wird automatisch gepflegt aus doc/*
+        │   └── ...
+        ├── AGENTS.md                      # Hauptagent-Datei für Codex – kontextführend & lernend
+        ├── README.md                      # Projektdokumentation (Zweck, Nutzung, Weiterentwicklung)
+        ├── apps.json                      # Übersicht aller Submodule
+        ├── custom_vendors.json            # projektspezifische Vendoren (Repo + Tag/Branch)
+        ├── vendors.txt                    # Namen gängiger Vendoren (aus Template)
+        ├── .github/
+        │   └── workflows/
+        │       └── sync.yml               # CI/CD oder Sync-Logik für Codex/Updates
+        └── .config/github_api.json        # Lokale Konfig mit sicherem API-Token (nicht tracken!)
 ```
 
-Workflows wie `validate_commits.yml` prüfen auf Einhaltung.
+### 🔀 Aufgabentrennung `AGENTS.md` vs `README.md`
 
-## 📜 Beispiel: Neues App-Repo
+| Datei       | Zweck                                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` | Einstiegspunkt für Codex CLI und Codex UI. Enthält **Agentenbefehle**, **Verweise auf alle relevanten Anleitungen**, Regeln zur Struktur, Indexierungen, bekannte Kontexte und interaktive Codex-Kommandos. Diese Datei **lernt und wächst mit**. Sie enthält keine Projektbeschreibung, sondern dient der strukturierten Kontextsteuerung. |
+| `README.md` | **Projektbeschreibung für Menschen**. Erläutert:                                                                                                                                                                                                                                                                                            |
 
-```bash
-# Projekt initialisieren
-git init -b develop my_app && cd my_app
+1. Was macht das Projekt?
+2. Wie installiere und nutze ich es?
+3. Was muss ich bei der Weiterentwicklung beachten?
+   Auch geeignet für Nicht-Techies oder externe Stakeholder.                                                                                                              |
+   \| `doc/`      | Detaillierte technische Dokumentation. Alle Inhalte hier dienen als tiefergehende Projektbasis. Daraus wird regelmäßig ein aktuelles **Mermaid-Diagramm (****`MERMAID.mmd`****)** generiert. Dieser Ordner dient auch als langfristiges Wissensarchiv.                                                                                                    |
 
-git submodule add https://github.com/your-org/frappe_app_template
-./frappe_app_template/setup.sh
-# erstellt auch sofort das App-Verzeichnis inklusive app/.gitignore
-# (via `scripts/new_frappe_app_folder.py`)
-# legt bei Bedarf auch eine leere .gitmodules an
+---
 
-nano vendors.txt
-# z. B. erpnext, website
-./scripts/update_vendors.sh
+## 🧪 Setup-Ablauf (Automatisiert via `setup.sh`)
 
-# Pushen
-git add . && git commit -m "chore: setup"
-git remote add origin ... && git push -u origin develop
-```
+**Kurzübersicht der Schritte:**
 
-Jedes App-Repository sollte folgenden Hinweis enthalten:
+1. Neue App mit `bench new-app` erzeugen
+2. GitHub-Repo via API anlegen (Token in `.config/github_api.json`)
+3. Git initialisieren, `main` und `develop` Branch anlegen
+4. Remote auf GitHub setzen, SSH-Zugriff sicherstellen
+5. Template-Symlink auf `/opt/git/frappe_app_template` erstellen
+6. Struktur einrichten:
 
-> Diese App basiert auf dem zentralen `frappe_app_template`.
-> Eingebundene Vendoren stehen in vendors.txt.
-> Anleitungen wurden automatisch übernommen.
-> Die Datei `instructions/_INDEX.md` wird bei Änderungen automatisch aktualisiert.
-> Erkenntnisse aus dieser App werden regelmäßig zurück in das zentrale Template synchronisiert.
+   * `README.md`, `AGENTS.md` kopieren
+   * `instructions/AGENTS.md` anlegen
+   * `.gitignore`, `vendors.txt`, `custom_vendors.json` vorbereiten
+7. Optional: Vendoren mit `update_vendors.sh` einbinden
+8. App installieren, anpassen und in Codex UI nutzbar machen
 
-## 📈 Mermaid-Diagramme
+---
 
-Legge `.mmd`-Dateien im Ordner `doku/` an und generiere die SVGs mit
+## 🔗 ToDo (optional)
 
-```bash
-./scripts/generate_diagrams.sh
-```
-
-Die Vorlage `workflow_templates/generate-mermaid.yml` automatisiert die Aktualisierung in GitHub Actions.
-
-
-## ✨ Fazit
-
-Dieses Repository ist das zentrale Fundament zur Entwicklung modularer, wartbarer und kontextoptimierter Frappe-Projekte. Alle Submodule, Anleitungssysteme und Automatisierungen zielen auf einen sauberen Codex-Kontext ab. Neue Erkenntnisse können strukturiert in `.incoming/` zur Verfügung gestellt werden – ganz ohne Submodule pushen zu müssen.
-
-**Dieses Template ist das Gehirn – jede App ist ein Ausdruck davon.**
-
-**Happy prompting!**
+* Validierung der Struktur via `structure.json`
+* GitHub CLI optional nutzbar machen
+* Mermaid-Generierung aus `doc/*.md` regelmäßig automatisieren (z. B. via `generate_mermaid_from_docs.py` + CI)
+* Codex-Dialoge direkt aus `AGENTS.md` trainieren
