@@ -25,6 +25,7 @@ Die `How to Code`-Sektion in der `README.md` wird automatisch angepasst und list
 
 ### Aktive Standardanweisungen
 
+- README.md immer updaten, wenn AGENTS.md neue Anweisungen enthält, die wichtig für die spätere nutzung sind
 - Fehlende essentielle Dateien erstellen
 - Einmalige Initialdateien oder Hilfsdateien nach Verwendung entfernen
 - Workflows, Skripte und Konfigs logisch und konsistent aufbauen – insbesondere bei Strukturänderungen (z. B. Pfade, Imports, CI-Trigger)
@@ -75,6 +76,10 @@ Ziel ist es, alles **lokal vorbereitbar und testbar** zu machen – ohne Seitene
 Die folgenden Flags können über den Prompt gesetzt werden.  
 **Wenn nicht gesetzt, werden sie ignoriert.**
 
+### `--go`
+
+- use prompts from PROJECT.md
+
 ### `--start`
 
 - Initialisiert die Umsetzung des Templates auf Basis der aktuellen `README.md` und `AGENTS.md`
@@ -122,6 +127,22 @@ Sie definiert zentrale Verhaltensregeln für automatisierte Projektstrukturierun
 **Anweisungen** können durch Auskommentieren deaktiviert werden.  
 Die Flags sind dynamisch und müssen aktiv gesetzt werden.  
 Die `How to Code`-Sektion der `README.md` dokumentiert stets den aktuellen Zustand.
+
+## PROJECT.md and Log
+
+`PROJECT.md` kombiniert manuelle Prompt-Vorbereitung mit automatischem Logging:
+
+- **Neue Prompts** werden oben eingetragen und per `codex --go` ausgeführt.
+- Codex liest **nur den Bereich oberhalb einer Trennlinie** (`---`), um alte Logs zu ignorieren.
+- **Nach Ausführung** verschiebt Codex die verarbeiteten Prompts inkl. Timestamp **unter die Trennlinie**.
+- Bei Prompts direkt aus der UI (ohne `--go`) wird ebenfalls **automatisch unterhalb** geloggt.
+- Ergebnis: saubere Trennung zwischen **aktuellen Aufgaben** (oben) und **Prompt-Historie** (unten).
+
+So bleibt `PROJECT.md` zentraler Ort für:
+- vorbereitbare Tasks,
+- automatische Ausführung,
+- lückenlose Nachverfolgung.
+
 
 ## Mermaid
 
