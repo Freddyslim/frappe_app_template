@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SRC_DIR="${1:-doku}"
+SRC_DIR="${1:-doc}"
 FORMAT="${FORMAT:-svg}"
 
 command -v mmdc >/dev/null 2>&1 || {
