@@ -156,11 +156,11 @@ codex_feedback.json
 
 Ein Cronjob oder CI-Sync-Skript überträgt regelmäßig Inhalte aus `my_app/instructions/` und `instructions/_INDEX.md` zurück nach `.incoming/` in dieses Repo.
 
-## 🧰 Commit-Konventionen (Codex-optimiert)
+## 🧰 Commit-Konventionen
 
 ```bash
-feat(ui): Add layout hooks #codex:index
-refactor(sync): simplify vendor loader #codex:infra
+feat(ui): Add layout hooks
+refactor(sync): simplify vendor loader
 ```
 
 Workflows wie `validate_commits.yml` prüfen auf Einhaltung.
