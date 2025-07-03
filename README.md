@@ -22,7 +22,7 @@ The script will:
 - use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively)
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
-- copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, etc.)
+- copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
 
 ### GitHub Configuration
@@ -54,6 +54,7 @@ apps/my_app/.config/github_settings.json
         ├── apps.json                      # list of submodules
         ├── custom_vendors.json            # custom vendor definitions
         ├── vendors.txt                    # common vendors
+        ├── scripts.txt                    # from frappe_app_template
         ├── .pre-commit-config.yaml        # git hook definitions
         ├── .github/
         │   └── workflows/
