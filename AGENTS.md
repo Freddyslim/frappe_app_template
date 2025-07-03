@@ -154,6 +154,23 @@ This ensures large or multi-scope prompts remain traceable, manageable, and safe
   If a workflow is invoked or referenced in another file (e.g. `setup.sh`, `Makefile`, `README.md`, etc.), and the invocation is no longer valid or logical according to `README.md`,  
   then Codex may **modify that reference** – but only that specific line or section – to restore consistency
 
+### `--update-comments`
+
+- understand code in each relevant file  
+- only include files where comments add real value  
+- IMPORTANT: only add comments – no other code changes allowed  
+- begin with filename  
+- use `#`, `//`, or `"""` depending on the language  
+- explain **why**, not just what  
+- focus on context clarity and Codex speed  
+- keep comments short  
+- be precise and helpful  
+- avoid noise or redundancy  
+- maintain high comment quality over quantity  
+- if the task is too large, split into multiple subtasks --> --create-tasks
+- Codex should instantly understand logic and purpose  
+- files must be ready for prompt-based development  
+
 ### `--update-docs`
 
 - Only the documentation in `docs/` should be worked on
