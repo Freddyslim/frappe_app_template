@@ -39,12 +39,9 @@ apps/my_app/.config/github_settings.json
 > This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.
 
 ### Project Structure
+frappe_app_tamplate
 
 ```bash
-/home/frappe/frappe-bench/
-└── apps/
-    └── my_app/
-        ├── my_app/                        # Frappe app code
         ├── instructions/                  # app instructions
         │   └── AGENTS.md              # project-specific guidance
         ├── frappe_app_template -> /opt/git/frappe_app_template  # submodule link
@@ -74,6 +71,112 @@ apps/my_app/.config/github_settings.json
         └── .config/github_api.json        # local configuration (not tracked)
 ```
 
+
+```bash
+branch:develop
+/home/frappe/frappe-bench/
+└── apps/
+    └── test_application/
+        ├── license.txt
+        ├── pyproject.toml
+        ├── README.md                        # Projektdokumentation
+        ├── AGENTS.md                        # Codex-Agent Prompts (zentral)
+        ├── apps.json                        # Übersicht über alle eingebundenen Submodule (mit Commit/Branch)
+        ├── custom_vendors.json              # benutzerdefinierte Vendor-Definitionen
+        ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z. B. ERPNext, Nextcloud)
+        ├── frappe_app_template -> /opt/git/frappe_app_template  # statischer Symlink auf zentrales Template
+        ├── vendor/                          # eingebundene Vendor-Repositories (als Submodule)
+        │   ├── erpnext/
+        │   └── nextcloud/
+        ├── instructions/                    # projektspezifische Guidance für Codex
+        │   └── AGENTS.md                    # Ergänzende Anweisungen, z. B. Feature-Konventionen
+        ├── doc/                             # technische Dokumentation (Markdown, Mermaid)
+        ├── sample_data/                     # JSON/CSV-Dateien für Testdaten oder Codex-Kontext
+        ├── scripts/                         # Hilfsskripte
+        │   ├── clone_submodules.sh          # lädt vendor-Submodule aus vendors.txt/custom_vendors.json
+        │   ├── remove_submodule.sh          # entfernt sauber ein Vendor-Submodul und aktualisiert apps.json
+        │   ├── generate_diagrams.sh         # rendert Mermaid-Diagramme aus /doc/
+        │   ├── update_vendors.sh            # synchronisiert Vendor-Submodule (zentraler Einstieg)
+        │   └── publish_app.sh               # erstellt Release, Tag, PR (manuell oder CI-unterstützt)
+        ├── .pre-commit-config.yaml          # Hook-Setup für git (Black, isort, etc.)
+        ├── .github/
+        │   └── workflows/                   # GitHub Actions CI/CD
+        │       ├── ci.yml                   # CI-Tests (z. B. Bench Build)
+        │       ├── update-vendors.yml      # prüft und aktualisiert Vendor-Submodule automatisch
+        │       └── validate_commits.yml    # prüft Conventional Commit Messages
+        ├── .config/
+        │   └── github_api.json              # Lokale API Keys / Tokens (nicht versioniert)
+        └── test_application/               # eigentlicher App-Code
+            ├── config/
+            │   └── __init__.py
+            ├── hooks.py
+            ├── __init__.py
+            ├── modules.txt
+            ├── patches.txt
+            ├── public/
+            │   ├── css/
+            │   └── js/
+            ├── __pycache__/
+            │   └── __init__.cpython-311.pyc
+            ├── templates/
+            │   ├── includes/
+            │   ├── __init__.py
+            │   └── pages/
+            ├── test_application/          # App-eigene Module/Doctypes etc.
+            │   └── __init__.py
+            └── www/                        # Web-Routen
+```
+```
+EXAMPLE after coding and publish
+branch:main
+/home/frappe/frappe-bench/
+└── apps/
+    └── test_application/
+        ├── license.txt
+        ├── pyproject.toml
+        ├── README.md
+        └── test_application/
+            ├── __init__.py
+            ├── config/
+            │   └── __init__.py
+            ├── hooks.py
+            ├── modules.txt
+            ├── patches.txt
+            ├── public/
+            │   ├── css/
+            │   │   └── custom_style.css               # eigene Styles
+            │   └── js/
+            │       └── custom_script.js               # global eingebundenes JS
+            ├── __pycache__/
+            ├── templates/
+            │   ├── includes/
+            │   │   └── my_include.html               # z. B. Sidebar/Buttons etc.
+            │   ├── __init__.py
+            │   └── pages/
+            │       └── landing_page.html             # frei zugängliche Web-Seite
+            ├── test_application/
+            │   ├── __init__.py
+            │   ├── doctype/
+            │   │   ├── __init__.py
+            │   │   └── projekt_auftrag/              # Beispiel-Doctype
+            │   │       ├── __init__.py
+            │   │       ├── projekt_auftrag.py        # Python-Controller
+            │   │       ├── projekt_auftrag.json      # Meta-Definition (Feldstruktur)
+            │   │       └── projekt_auftrag.js        # Client Script (optional)
+            │   ├── client_script/
+            │   │   └── kunde_form.js                 # dynamisches JS für Kunde-Formular
+            │   ├── report/
+            │   │   └── projekt_auswertung/           # Custom Report
+            │   │       ├── __init__.py
+            │   │       ├── projekt_auswertung.py     # Python Backend (Query Report)
+            │   │       └── projekt_auswertung.json   # Report Config
+            │   └── custom/
+            │       └── field_fetcher.py              # Hilfsfunktionen o.ä.
+            └── www/
+                └── mein-tool/
+                    └── index.html                    # Web-Ressource unter /mein-tool
+
+```
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
 The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
 
