@@ -12,7 +12,7 @@ The CLI provides the `mmdc` command used by the helper script below.
 
 ## 2. Generate diagrams
 
-Create `.mmd` files inside `doku/` and run:
+Create `.mmd` files inside `doc/` and run:
 
 ```bash
 ./scripts/generate_diagrams.sh

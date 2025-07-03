@@ -31,3 +31,4 @@ sites/*/public/
 !vendors.txt
 !vendor_profiles/**
 .codex_gitlog.json
+.config/

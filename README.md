@@ -1,75 +1,58 @@
-# 📁 Frappe App Dev Setup – Codex-fähiges Metakonzept
+### Frappe App Dev Setup Template
 
-Dieses Repository ist das zentrale Master-Template zur Entwicklung Codex-unterstützter Frappe-Apps. Es automatisiert die Erstellung, Strukturierung und Verwaltung neuer Frappe-Apps inkl. Git- und Vendor-Einbindung. Ziel ist es, alle Informationen und Workflows so zu strukturieren, dass sie direkt mit der OpenAI Codex UI unter [openai.com/codex](https://openai.com/codex) nutzbar sind.
+This repository is a master template for Codex-enabled Frappe apps. It automates project structure, git setup and vendor management so new apps can be created quickly.
 
----
+### Installation
 
-## 🔧 Verzeichnisstruktur
+Clone this repository and run the setup script to generate an app skeleton:
+
+```bash
+./setup.sh my_app
+```
+
+Store your GitHub API token in `.config/github_api.json` (ignored by git).
+
+### Project Structure
 
 ```bash
 /home/frappe/frappe-bench/
 └── apps/
     └── my_app/
-        ├── my_app/                        # Frappe App-Code
-        ├── instructions/                  # App-spezifische Anweisungen
-        │   └── AGENTS.md                  # projektspezifische Erweiterung für Codex
-        ├── frappe_app_template/ → symlink auf /opt/git/frappe_app_template
-        ├── vendor/                        # Vendor-Submodule
-        │   ├── erpnext/                   
+        ├── my_app/                        # Frappe app code
+        ├── instructions/                  # app instructions
+        │   └── AGENTS.md                  # project-specific guidance
+        ├── frappe_app_template -> /opt/git/frappe_app_template
+        ├── vendor/                        # vendor submodules
+        │   ├── erpnext/
         │   └── nextcloud/
-        ├── doc/                           # ausführliche technische Dokumentation (Details, Hintergründe)
-        │   ├── logic.md                   # Detailbeschreibung Logik, Zustände, Use-Cases
-        │   ├── modules.md                 # Struktur und Modulverhalten
-        │   ├── MERMAID.mmd                # wird automatisch gepflegt aus doc/*
-        │   └── ...
-        ├── AGENTS.md                      # Hauptagent-Datei für Codex – kontextführend & lernend
-        ├── README.md                      # Projektdokumentation (Zweck, Nutzung, Weiterentwicklung)
-        ├── apps.json                      # Übersicht aller Submodule
-        ├── custom_vendors.json            # projektspezifische Vendoren (Repo + Tag/Branch)
-        ├── vendors.txt                    # Namen gängiger Vendoren (aus Template)
+        ├── doc/                           # technical documentation
+        ├── AGENTS.md                      # main Codex agent file
+        ├── README.md                      # project documentation
+        ├── apps.json                      # list of submodules
+        ├── custom_vendors.json            # custom vendor definitions
+        ├── vendors.txt                    # common vendors
         ├── .github/
         │   └── workflows/
-        │       └── sync.yml               # CI/CD oder Sync-Logik für Codex/Updates
-        └── .config/github_api.json        # Lokale Konfig mit sicherem API-Token (nicht tracken!)
+        │       ├── ci.yml
+        │       ├── update-vendors.yml
+        │       └── validate_commits.yml
+        └── .config/github_api.json        # local configuration (not tracked)
 ```
 
-### 🔀 Aufgabentrennung `AGENTS.md` vs `README.md`
+### Contributing
 
-| Datei       | Zweck                                                                                                                                                                                                                                                                                                                                       |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md` | Einstiegspunkt für Codex CLI und Codex UI. Enthält **Agentenbefehle**, **Verweise auf alle relevanten Anleitungen**, Regeln zur Struktur, Indexierungen, bekannte Kontexte und interaktive Codex-Kommandos. Diese Datei **lernt und wächst mit**. Sie enthält keine Projektbeschreibung, sondern dient der strukturierten Kontextsteuerung. |
-| `README.md` | **Projektbeschreibung für Menschen**. Erläutert:                                                                                                                                                                                                                                                                                            |
+Install [pre-commit](https://pre-commit.com/) and enable it:
 
-1. Was macht das Projekt?
-2. Wie installiere und nutze ich es?
-3. Was muss ich bei der Weiterentwicklung beachten?
-   Auch geeignet für Nicht-Techies oder externe Stakeholder.                                                                                                              |
-   \| `doc/`      | Detaillierte technische Dokumentation. Alle Inhalte hier dienen als tiefergehende Projektbasis. Daraus wird regelmäßig ein aktuelles **Mermaid-Diagramm (****`MERMAID.mmd`****)** generiert. Dieser Ordner dient auch als langfristiges Wissensarchiv.                                                                                                    |
+```bash
+pre-commit install
+```
 
----
+Our hooks format code with ruff, eslint, prettier and pyupgrade.
 
-## 🧪 Setup-Ablauf (Automatisiert via `setup.sh`)
+### CI
 
-**Kurzübersicht der Schritte:**
+GitHub Actions workflows run tests and manage vendor updates automatically.
 
-1. Neue App mit `bench new-app` erzeugen
-2. GitHub-Repo via API anlegen (Token in `.config/github_api.json`)
-3. Git initialisieren, `main` und `develop` Branch anlegen
-4. Remote auf GitHub setzen, SSH-Zugriff sicherstellen
-5. Template-Symlink auf `/opt/git/frappe_app_template` erstellen
-6. Struktur einrichten:
+### License
 
-   * `README.md`, `AGENTS.md` kopieren
-   * `instructions/AGENTS.md` anlegen
-   * `.gitignore`, `vendors.txt`, `custom_vendors.json` vorbereiten
-7. Optional: Vendoren mit `update_vendors.sh` einbinden
-8. App installieren, anpassen und in Codex UI nutzbar machen
-
----
-
-## 🔗 ToDo (optional)
-
-* Validierung der Struktur via `structure.json`
-* GitHub CLI optional nutzbar machen
-* Mermaid-Generierung aus `doc/*.md` regelmäßig automatisieren (z. B. via `generate_mermaid_from_docs.py` + CI)
-* Codex-Dialoge direkt aus `AGENTS.md` trainieren
+MIT
