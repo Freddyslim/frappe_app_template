@@ -1,16 +1,4 @@
 {
-  "frappe": {
-    "repo": "https://github.com/frappe/frappe",
-    "branch": "version-15",
-    "tag": "",
-    "commit": "c2d40c3c333b62ad52a09c0c975173253d4a0909"
-  },
-  "bench": {
-    "repo": "https://github.com/frappe/bench",
-    "branch": "",
-    "tag": "v5.25.7",
-    "commit": "6f9a09624f2298b11cc824b85b7e81bc5bdf3ee3"
-  },
   "nmb_tools": {
     "repo": "https://github.com/Freddyslim/nmb_tools",
     "branch": "develop",
