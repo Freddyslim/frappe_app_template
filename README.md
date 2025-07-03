@@ -25,7 +25,7 @@ The script will:
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
-- create new remote repo <path from .config>/my_app
+- create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - pushes new generated app repo to remote develop branch
 
@@ -40,9 +40,9 @@ frappe-bench/.env
 > This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.
 
 ### Project Structure
-frappe_app_tamplate
 
 ```bash
+frappe_app_tamplate/
         ├── instructions/                  # app instructions
         │   └── AGENTS.md              # project-specific guidance
         ├── frappe_app_template -> /opt/git/frappe_app_template  # submodule link
@@ -52,10 +52,10 @@ frappe_app_tamplate
         ├── doc/                           # technical documentation
         ├── AGENTS.md                      # main Codex agent file
         ├── README.md                      # project documentation
-        ├── apps.json                      # list of submodules
-        ├── custom_vendors.json            # custom vendor definitions
+        ├── apps.json                      # empty placeholder for vendor metadata
+        ├── custom_vendors.json            # empty JSON for custom vendor definitions
         ├── vendors.txt                    # common vendors
-        ├── sample_data/                   # folder for fast adding data to context
+        ├── sample_data/                   # empty folder reserved for sample datasets
         ├── scripts/
         │   ├── clone_submodules.sh        # pull vendor profiles
         │   ├── remove_submodule.sh        # remove unwanted vendor
@@ -82,9 +82,9 @@ branch:develop
         ├── pyproject.toml
         ├── README.md                        # Projektdokumentation
         ├── AGENTS.md                        # Codex-Agent Prompts (zentral)
-        ├── apps.json                        # Übersicht über alle eingebundenen Submodule (mit Commit/Branch)
-        ├── custom_vendors.json              # benutzerdefinierte Vendor-Definitionen
-        ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z. B. ERPNext, Nextcloud)
+        ├── apps.json                        # leere Datei für Vendor-Metadaten
+        ├── custom_vendors.json              # leere Datei für eigene Vendoren
+        ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z.​​B. ERPNext, Nextcloud)
         ├── frappe_app_template -> /opt/git/frappe_app_template  # statischer Symlink auf zentrales Template
         ├── vendor/                          # eingebundene Vendor-Repositories (als Submodule)
         │   ├── erpnext/
@@ -92,7 +92,7 @@ branch:develop
         ├── instructions/                    # projektspezifische Guidance für Codex
         │   └── AGENTS.md                    # Ergänzende Anweisungen, z. B. Feature-Konventionen
         ├── doc/                             # technische Dokumentation (Markdown, Mermaid)
-        ├── sample_data/                     # JSON/CSV-Dateien für Testdaten oder Codex-Kontext
+        ├── sample_data/                     # leerer Ordner für optionale Testdaten
         ├── scripts/                         # Hilfsskripte
         │   ├── clone_submodules.sh          # lädt vendor-Submodule aus vendors.txt/custom_vendors.json
         │   ├── remove_submodule.sh          # entfernt sauber ein Vendor-Submodul und aktualisiert apps.json
