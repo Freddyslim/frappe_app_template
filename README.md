@@ -25,6 +25,7 @@ The script will:
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
+- create or update `.env` in your bench directory to store a GitHub `API_KEY`
 - create new remote repo <path from .config>/my_app
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
 - pushes new generated app repo to remote develop branch
