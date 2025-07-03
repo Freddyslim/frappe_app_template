@@ -26,7 +26,7 @@ The script will:
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
 - create new remote repo <path from .config>/my_app
-- prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
+- prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - pushes new generated app repo to remote develop branch
 
 ### GitHub Configuration
@@ -34,7 +34,7 @@ The script will:
 Important credentials, patterns and GitHub tokens should be stored in:
 
 ```bash
-apps/my_app/.config/github_settings.json
+frappe-bench/.env
 ```
 
 > This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.
@@ -62,14 +62,14 @@ frappe_app_tamplate
         │   ├── generate_diagrams.sh       # render Mermaid diagrams from doc/
         │   ├── update_vendors.sh          # sync vendor submodules
         │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx.x+1.0>, major <vx+1.0.0>
-        │                                   # run with -h to see options
-        ├── .pre-commit-config.yaml        # git hook definitions
+        │                                  # run with -h to see options
+
         ├── .github/
         │   └── workflows/
         │       ├── ci.yml
         │       ├── update-vendors.yml
         │       └── validate_commits.yml
-        └── .config/github_api.json        # local configuration (not tracked)
+        └── .pre-commit-config.yaml        # git hook definitions
 ```
 
 
