@@ -32,15 +32,11 @@ If Codex suggests wrong files or incomplete steps:
 - Rerun `scripts/generate_index.py` after updating scenarios or instructions.
 
 
-## 5. Inspecting the active Codex context
+## 5. Inspecting the active context
 
-Run `scripts/print_codex_context.py` to see which files are prioritised for a scenario and which prompt template it suggests:
-
-```bash
-python scripts/print_codex_context.py --scenario my-scenario
-```
-
-The script reads the chosen markdown file under `instructions/_scenarios/` and prints the referenced paths along with the suggested prompt template.
+Use your Agents tooling to inspect which files are loaded for a particular scenario. The
+`agent.md` document in the repository root explains the available commands and
+expected folder layout.
 ## 6. Automatic context and file management
 
 Before executing any prompt, Codex should read the available documentation and the vendor overview in `_INDEX.md`. Adjust the referenced folders when repositories grow to avoid excessive context size.

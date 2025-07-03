@@ -78,40 +78,11 @@ mkdir -p "$CONFIG_TARGET/instructions/_core"
 CORE_README="$CONFIG_TARGET/instructions/_core/README.md"
 if [ ! -f "$CORE_README" ]; then
     cat > "$CORE_README" <<'EOF'
-# 📚 Codex Instructions System
+# Instructions Overview
 
-Dies ist die zentrale, nie löschbare Anleitungsbasis für Codex-gestützte Entwicklung.
-
-## Funktionsweise
-
-- Jedes App-Template enthält ein eigenes `instructions/`-Verzeichnis
-- Beim Clonen eines Templates (siehe `vendors.txt`) werden diese nach `instructions/_<slug>/` kopiert
-- Beim Entfernen eines Templates wird auch `instructions/_<template-name>/` gelöscht
-
-## Ziel
-
-Anhand dieser Anleitungen kann Codex automatisch passende Prompt-Ketten generieren, z. B.:
-
-> „Erstelle eine App mit Website zur Eingabe von Projektdaten, die in ERPNext gespeichert werden“
-
-→ Erkennt Schlüsselwörter (`website`, `erpnext`)
-→ nutzt passende Inhalte aus:
-`_core/`, `_erpnext-website-template/`, `_erpnext-template/`
-
-## Beispielstruktur
-
-```
-instructions/
-├── _core/                     # Zentrale Hinweise (nie löschen)
-├── _erpnext-template/        # Von Template eingebracht
-├── _erpnext-website-template/
-│   ├── 00_overview.md
-│   └── prompts/
-│       ├── generate_webform.md
-│       └── sync_with_erpnext.md
-```
-
-Diese Dateien werden später von Codex ausgelesen, um automatisch die passenden Entwicklungs-Prompts zu generieren.
+This folder stores the default documentation that ships with every app.
+For details on how Agents load and use these files, see “agent.md” in the
+repository root.
 EOF
 fi
 
