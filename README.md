@@ -25,24 +25,6 @@ The script will:
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, etc.)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
 
-### Scripts
-
-The `scripts/` directory contains helper tools:
-
-* **`generate_index.py`** – builds the documentation index under `instructions/`.
-  ```bash
-  python scripts/generate_index.py
-  ```
-* **`create_index.py`** – creates a JSON mapping of files grouped by extension.
-  ```bash
-  python scripts/create_index.py --root . --output index.json
-  ```
-* **`new_frappe_app_folder.py`** – generates a minimal Frappe app skeleton.
-  ```bash
-  python scripts/new_frappe_app_folder.py my_app --root app
-  ```
-
-
 ### GitHub Configuration
 
 Important credentials, patterns and GitHub tokens should be stored in:
