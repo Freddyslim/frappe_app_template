@@ -11,82 +11,96 @@ Die `README.md` beschreibt:
 - wie GitHub-Konfigurationen aussehen  
 - welche Automatisierungen per GitHub Actions aktiv sind  
 
-Codex soll die Struktur, Dateien und Logik dieses Repos so entwickeln, dass alles exakt diesen Vorgaben entspricht – **ohne Shell-Befehle auszuführen.**
+Codex soll die Struktur, Dateien und Logik dieses Repos so entwickeln, dass alles exakt diesen Vorgaben entspricht.
 
 ---
 
 ## Anweisungen
 
-Diese Anweisungen gelten dauerhaft und müssen durch Codex bei jedem Lauf beachtet werden, **sofern sie nicht deaktiviert wurden**.
+Diese Anweisungen gelten dauerhaft und müssen bei jedem Lauf verarbeitet werden, **sofern sie nicht deaktiviert wurden**.
 
 Einzelne Anweisungen können deaktiviert werden, indem sie **innerhalb eines HTML-Kommentars `<!-- ... -->`** auskommentiert werden.  
 Codex ignoriert solche Anweisungen vollständig.  
-Die `How to Code`-Sektion in der `README.md` wird automatisch angepasst und listet deaktivierte Anweisungen korrekt als "nicht aktiv".
+Die `How to Code`-Sektion in der `README.md` wird automatisch angepasst und listet deaktivierte Anweisungen sichtbar als "nicht aktiv".
 
 ### Aktive Standardanweisungen
 
-- Einmalige Initialdateien oder Helfer nach Verwendung entfernen
-
+- Fehlende essentielle Dateien erstellen
+- Einmalige Initialdateien oder Hilfsdateien nach Verwendung entfernen
 - Workflows, Skripte und Konfigs logisch und konsistent aufbauen – insbesondere bei Strukturänderungen (z. B. Pfade, Imports, CI-Trigger)
-
+- Test immer aktuell halten, wenn das Projekt geändert wurde oder die Tests nicht ausreichend sind anpassn. Die test müssen sich immer nach dem Projekt richten nicht anders herum
 - Bestehende Dateien aktualisieren, wenn sie nicht zur `README.md` oder `AGENTS.md` passen
-
 - `README.md` ↔ `AGENTS.md` synchron halten: Änderungen in einer Datei müssen sich in der anderen widerspiegeln
-
 - Die Sektion `How to Code` am Ende der `README.md` immer prüfen und anpassen, sodass sie verständlich wiedergibt:
   - Welche Flags verfügbar sind
   - Wie Codex beeinflusst wird
   - Welche Anweisungen aktiv oder deaktiviert sind
 
-- **Vendorspezifische AGENTS.md beachten:**  
-  Wenn im Verzeichnis `/vendors` Submodule eingebunden sind, prüfe, ob unter  
-  `instructions/vendor_profiles/<vendorname>/AGENTS.md`  
-  eine vendorspezifische Agent-Anweisung vorhanden ist.  
-  **Im Fall von Widersprüchen zu dieser Haupt-AGENTS.md ist die vendorspezifische Datei vorrangig zu behandeln.**
+### Vendor-spezifische Agentenprofile
+
+Wenn im Repository unter `/vendors` Submodule oder Vendor-Ordner existieren, dann gilt:
+
+- Suche in `instructions/vendor_profiles/<vendorname>/AGENTS.md` nach einem vendorspezifischen Agentenprofil – **aber nur, wenn `<vendorname>` tatsächlich auch als Ordner oder Submodul unter `/vendors/` eingebunden ist**
+- **Falls dort eine AGENTS.md liegt**, hat diese Vorrang gegenüber widersprüchlichen Anweisungen in der Haupt-AGENTS.md
+
+---
+
+## Einschränkungen für Befehle & Ausführungen
+
+Codex darf **keine realen Shell-Kommandos oder Prozesse ausführen**. Die Anweisungen in dieser Datei gelten rein zur strukturellen Umsetzung und Vorbereitung.
+
+Erlaubt ist:
+
+- Analyse und Modifikation aller Dateien im Repository
+- Erzeugung neuer Dateien und Inhalte
+- Erstellung von Skripten, Konfigs, CI-Workflows und unterstützenden Dateien
+
+Nicht erlaubt ist:
+
+- Ausführen von `bench`, `git`, `curl`, `wget`, `npm`, `ssh`, etc.
+- Zugriffe auf Netzwerke oder entfernte Repositories
+- Initialisierung externer Systeme oder Services
+
+**Ausnahme:**  
+Codex darf lokale Kommandos in CI-Dateien oder `setup.sh` **als Code erzeugen**, **aber nicht ausführen**.  
+Diese müssen vollständig im Repository-Kontext bleiben (z. B. `chmod`, `yarn install`, `git status`, `rm`, `mkdir`, usw.).
+
+Ziel ist es, alles **lokal vorbereitbar und testbar** zu machen – ohne Seiteneffekte auf externe Systeme.
 
 ---
 
 ## Flags
 
 Die folgenden Flags können über den Prompt gesetzt werden.  
-**Wenn nicht gesetzt, werden sie ignoriert.**  
-Sie müssen nicht deaktiviert oder auskommentiert werden.
-
-### `--no-agent`
-
-Wenn gesetzt:
-
-- Der Prompt gilt als primäre Anweisung
-- `README.md` und `AGENTS.md` werden basierend auf dem Prompt aktualisiert
-- Danach wird der restliche Code dem neuen Zustand angepasst
-- Die Sektion `How to Code` muss entsprechend überarbeitet werden
-
-### `--create-tasks`
-
-Wenn gesetzt:
-
-- Es erfolgt keine direkte Codeänderung
-- Stattdessen werden konkrete, konfliktfreie Aufgaben erzeugt
-- Diese sind logisch getrennt und ermöglichen paralleles Arbeiten
-- Auch hier gilt: Die `How to Code`-Sektion wird entsprechend angepasst
+**Wenn nicht gesetzt, werden sie ignoriert.**
 
 ### `--start`
 
-Wenn gesetzt:
+- Initialisiert die Umsetzung des Templates auf Basis der aktuellen `README.md` und `AGENTS.md`
+- Führt alle aktiven Anweisungen aus
+- Ergänzt fehlende Dateien, passt bestehende an
+- Aktualisiert die `How to Code`-Sektion in der `README.md`
 
-- Initialisiert die Analyse und Umsetzung des Projekts basierend auf der aktuellen `README.md` und `AGENTS.md`
-- Es werden alle aktiven Anweisungen aus dieser Datei verarbeitet
-- Fehlende Dateien werden ergänzt, vorhandene angepasst
-- Struktur, CI-Workflows und Konfigurationen werden vollständig aufgebaut, ohne dass Code oder Shell ausgeführt wird
-- Dieses Flag eignet sich besonders für neue Repositories oder nach einem Reset
-- Die Sektion `How to Code` wird ebenfalls aktualisiert, um die aktiven Anweisungen und unterstützten Flags klar aufzulisten
+### `--no-agent`
+
+- Prompt wird als primäre Quelle interpretiert
+- `README.md` und `AGENTS.md` werden entsprechend dem Prompt angepasst
+- Danach wird das gesamte Projekt aktualisiert
+- `How to Code` muss ebenfalls angepasst werden
+
+### `--create-tasks`
+
+- Es erfolgt keine direkte Codeänderung
+- Stattdessen werden klar strukturierte, konfliktarme Aufgaben erzeugt
+- Diese Aufgaben sind logisch getrennt, verständlich und parallel ausführbar
+- Es ist wichtig, wenn es wahrscheinlich ist, dass das gleiche file bearbeitete wird, sollten diese aufgaben in einem Task erledigt werden um merge conflicts zu minimieren!
 
 ---
 
 ## Hinweis
 
 Diese Datei ist für Codex – nicht für Nutzer.  
-Sie enthält zentrale Anweisungen für automatisierte Entwicklung.  
-**Anweisungen** können bei Bedarf durch Auskommentieren deaktiviert werden.  
-Die `How to Code`-Sektion in der `README.md` zeigt immer den aktuellen Zustand an.  
-Vendorspezifische Agent-Profile aus `instructions/vendor_profiles/...` können bei Bedarf einzelne Regeln hier überschreiben.
+Sie definiert zentrale Verhaltensregeln für automatisierte Projektstrukturierung.  
+**Anweisungen** können durch Auskommentieren deaktiviert werden.  
+Die Flags sind dynamisch und müssen aktiv gesetzt werden.  
+Die `How to Code`-Sektion der `README.md` dokumentiert stets den aktuellen Zustand.
