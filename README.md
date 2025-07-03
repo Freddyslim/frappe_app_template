@@ -63,6 +63,7 @@ apps/my_app/.config/github_settings.json
         │   ├── remove_submodule.sh        # remove unwanted vendor
         │   └── update_vendors.sh          # sync vendor submodules
         │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx.x+1.0>, major <vx+1.0.0>
+        │                                   # run with -h to see options
         ├── .pre-commit-config.yaml        # git hook definitions
         ├── .github/
         │   └── workflows/
