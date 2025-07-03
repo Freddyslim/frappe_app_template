@@ -15,9 +15,13 @@ PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/instructions/vendor_profiles}"
 
 # load API key from .env if present
 ENV_FILE="$ROOT_DIR/.env"
+CONFIG_FILE="$ROOT_DIR/.config/github_api.json"
 API_KEY="${API_KEY:-}"
 if [ -z "$API_KEY" ] && [ -f "$ENV_FILE" ]; then
   API_KEY=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2-)
+fi
+if [ -z "$API_KEY" ] && [ -f "$CONFIG_FILE" ]; then
+  API_KEY=$(jq -r '.API_KEY // .GITHUB_TOKEN // empty' "$CONFIG_FILE" 2>/dev/null)
 fi
 GITHUB_TOKEN="${GITHUB_TOKEN:-$API_KEY}"
 
