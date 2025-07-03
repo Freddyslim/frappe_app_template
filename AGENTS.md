@@ -153,6 +153,7 @@ This ensures large or multi-scope prompts remain traceable, manageable, and safe
   **except in the following special case**:  
   If a workflow is invoked or referenced in another file (e.g. `setup.sh`, `Makefile`, `README.md`, etc.), and the invocation is no longer valid or logical according to `README.md`,  
   then Codex may **modify that reference** – but only that specific line or section – to restore consistency
+- No other parts of the repository are affected
 
 ### `--update-comments`
 
