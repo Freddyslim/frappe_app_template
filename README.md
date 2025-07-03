@@ -62,6 +62,10 @@ apps/my_app/.config/github_settings.json
         └── .config/github_api.json        # local configuration (not tracked)
 ```
 
+Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
+The folder contains an `apps.json` with repository information and an `AGENTS.md` for vendor-specific notes.
+Run `./scripts/update_vendors.sh` after editing these profiles.
+
 ### Contributing
 
 Install [pre-commit](https://pre-commit.com/) and enable it in your app directory:

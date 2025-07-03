@@ -1,0 +1,1 @@
+# Vendor delta-chat
