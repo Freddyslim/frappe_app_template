@@ -24,7 +24,7 @@ Codex will completely ignore such instructions.
 The `How to Code` section in `README.md` will be automatically updated and list deactivated instructions visibly as “not active”.
 
 ### Active Default Instructions
-
+- Flags have highest priority!
 - Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage
 - Create missing essential files
 - Remove one-time initialization or helper files after use
@@ -77,6 +77,16 @@ The goal is to keep everything **locally preparable and testable** – without s
 The following flags can be set via prompt.  
 **If not set, they are ignored.**
 
+### Flag Combinations and Task Splitting
+
+Multiple flags can be used in combination within a single prompt.  
+In such cases, Codex will process all requested operations in sequence and ensure consistency across affected areas.
+
+If the combined logic, number of files, or expected output **exceeds the context window or processing capacity**,  
+Codex must **automatically switch to `--create-tasks` mode**.
+
+---
+
 ### `--go`
 
 - use prompts from `PROJECT.md`
@@ -101,6 +111,10 @@ The following flags can be set via prompt.
 - Instead, clear, low-conflict tasks are generated
 - These tasks are logically separated, understandable, and can be executed in parallel
 - If multiple tasks modify the same file, they should be handled in a single task to minimize merge conflicts
+- Each task is clearly scoped and individually executable
+- The division is optimized to avoid parallel merge conflicts (e.g., if multiple flags affect the same file)
+
+This ensures large or multi-scope prompts remain traceable, manageable, and safe to execute.
 
 ### `--update-readme`
 
@@ -110,6 +124,31 @@ The following flags can be set via prompt.
   If the context becomes too large, use `--create-tasks`
 - Only new files explicitly required by the prompt will be created
 - check AGENTS.md if there are necessary new infos for README.md and developers to know
+
+### `--update-scripts`
+
+- Only checks and processes scripts located in `scripts/`
+- All files in this directory are **individually reviewed line by line**
+- Each script is adapted to match the logic and structure defined in `README.md` and `AGENTS.md`
+- Any outdated, unused, or redundant content must be **cleaned up or deleted**
+- Scripts should be made consistent, minimal, and purposeful
+- If a script cannot be adjusted without violating or contradicting the logic in `README.md` or `AGENTS.md`,  
+  **no changes are made** – Codex must first prompt the user for clarification
+- No other parts of the repository are affected
+
+### `--update-workflows`
+
+- Only checks and processes workflows located in `.github/workflows/`
+- Every workflow file is **fully parsed and reviewed line by line**
+- Each is updated to reflect the automation strategy and CI/CD logic defined in `README.md` and `AGENTS.md`
+- Unused triggers, deprecated steps, or ineffective logic must be **removed**
+- Redundant or conflicting workflows should be **merged, refactored, or removed**
+- If a workflow cannot be updated without contradicting the intended logic in `README.md` or `AGENTS.md`,  
+  **no changes are made** – Codex must first prompt the user for clarification
+- No modifications are made outside the `.github/workflows/` directory  
+  **except in the following special case**:  
+  If a workflow is invoked or referenced in another file (e.g. `setup.sh`, `Makefile`, `README.md`, etc.), and the invocation is no longer valid or logical according to `README.md`,  
+  then Codex may **modify that reference** – but only that specific line or section – to restore consistency
 
 ### `--update-docs`
 
