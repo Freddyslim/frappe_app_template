@@ -98,6 +98,10 @@ Codex must **automatically switch to `--create-tasks` mode**.
 - Adds missing files, adjusts existing ones
 - Updates the `How to Code` section in `README.md`
 
+### `--focus-on-<file/folder>`
+
+- high focus on specific file or folder recursive 
+
 ### `--update-agent`
 
 - Prompt is interpreted as the primary source
