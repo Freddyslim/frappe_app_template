@@ -35,6 +35,7 @@ Die `How to Code`-Sektion in der `README.md` wird automatisch angepasst und list
   - Welche Flags verfügbar sind
   - Wie Codex beeinflusst wird
   - Welche Anweisungen aktiv oder deaktiviert sind
+- überprüfe immer alle /scripts ob diese der readme entsprechen
 
 ### Vendor-spezifische Agentenprofile
 
