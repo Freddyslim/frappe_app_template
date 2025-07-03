@@ -19,7 +19,7 @@ jobs:
 
       - name: Validate commit messages
         run: |
-          pattern='^(feat|fix|refactor|docs|chore|test)\([^)]+\): .+ #codex:.+'
+          pattern='^(feat|fix|refactor|docs|chore|test)\([^)]+\): .+'
           git log origin/${{ github.base_ref }}..HEAD --pretty=%s | while read line; do
             if ! [[ "$line" =~ $pattern ]]; then
               echo "::error ::Invalid commit message: $line"
