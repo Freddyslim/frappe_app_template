@@ -30,3 +30,4 @@ sites/*/public/
 !custom_vendors.json
 !vendors.txt
 !vendor_profiles/**
+.codex_gitlog.json

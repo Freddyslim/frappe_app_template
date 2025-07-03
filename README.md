@@ -164,8 +164,8 @@ Ein Cronjob oder CI-Sync-Skript überträgt regelmäßig Inhalte aus `my_app/ins
 
 
 ```bash
-feat(ui): Add layout hooks #agent:index
-refactor(sync): simplify vendor loader #agent:infra
+feat(ui): Add layout hooks #codex:index
+refactor(sync): simplify vendor loader #codex:infra
 ```
 
 Workflows wie `validate_commits.yml` prüfen auf Einhaltung.
