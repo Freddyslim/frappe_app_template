@@ -5,7 +5,7 @@ on:
     paths:
       - vendors.txt
       - custom_vendors.json
-      - vendor_profiles/**
+      # vendor profiles don't trigger workflow on change
   workflow_dispatch:
 
 concurrency:
@@ -52,8 +52,11 @@ jobs:
             git add vendor
           fi
           git add .gitmodules apps.json vendors.txt
-          if [ -d vendor_profiles ]; then
-            git add vendor_profiles
+          if [ -d instructions/vendor_profiles ]; then
+            git add instructions/vendor_profiles
+          fi
+          if [ -d instructions ]; then
+            git add instructions
           fi
           if git diff --cached --quiet; then
             echo "No changes to commit"
