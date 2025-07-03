@@ -24,6 +24,7 @@ Codex soll Code und Struktur so vorbereiten, dass alles exakt dieser Beschreibun
 - Achte auf vollständige, Shell-kompatible `setup.sh`
 - Strukturiere alles so, dass `bench new-app` in `setup.sh` funktioniert
 - Verlinke das Template korrekt als Submodul
+- Organisiere vendor-spezifische Daten unter `instructions/vendor_profiles/<kategorie>/<slug>/` mit `apps.json` und `AGENTS.md`
 - CI/Workflow-Dateien sollten valide YAML enthalten
 - **Prüfe alle Skripte, Shell-Kommandos und Workflows logisch auf Funktionsfähigkeit und Seiteneffekte** – insbesondere bei Umstrukturierungen (z. B. Dateiverschiebungen), ob alle Referenzen konsistent angepasst wurden. Fehler wie veraltete Pfade, nicht aktualisierte Imports oder fehlerhafte CI-Triggers müssen erkannt und vermieden werden.
 

@@ -77,17 +77,18 @@ def test_update_vendors_rebuilds_configs(tmp_path):
 
     (tmp_path / "vendors.txt").write_text("app1\napp2\n")
     prof_dir = tmp_path / "vendor_profiles" / "test"
-    prof_dir.mkdir(parents=True)
-    (prof_dir / "app1.json").write_text(json.dumps({"url": str(app1_repo), "branch": "v1"}))
-    (prof_dir / "app2.json").write_text(json.dumps({"url": str(app2_repo), "branch": "v2"}))
+    (prof_dir / "app1").mkdir(parents=True)
+    (prof_dir / "app2").mkdir(parents=True)
+    (prof_dir / "app1" / "apps.json").write_text(json.dumps({"url": str(app1_repo), "branch": "v1"}))
+    (prof_dir / "app2" / "apps.json").write_text(json.dumps({"url": str(app2_repo), "branch": "v2"}))
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
 
     data = json.loads((tmp_path / "apps.json").read_text())
     assert "oldapp" not in data
-    assert (tmp_path / "vendor_profiles" / "test" / "app1.json").exists()
-    assert (tmp_path / "vendor_profiles" / "test" / "app2.json").exists()
+    assert (tmp_path / "vendor_profiles" / "test" / "app1" / "apps.json").exists()
+    assert (tmp_path / "vendor_profiles" / "test" / "app2" / "apps.json").exists()
 
 
 def test_update_vendors_generates_index(tmp_path):
@@ -110,8 +111,8 @@ def test_update_vendors_generates_index(tmp_path):
     (tmp_path / "apps.json").write_text("{}")
     (tmp_path / "vendors.txt").write_text("dummy")
     prof_dir = tmp_path / "vendor_profiles"
-    prof_dir.mkdir()
-    (prof_dir / "dummy.json").write_text(json.dumps({"url": str(dummy_repo), "branch": "v1"}))
+    (prof_dir / "dummy").mkdir(parents=True)
+    (prof_dir / "dummy" / "apps.json").write_text(json.dumps({"url": str(dummy_repo), "branch": "v1"}))
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
@@ -233,8 +234,8 @@ def test_update_vendors_supports_tag(tmp_path):
     (tmp_path / "apps.json").write_text("{}")
     (tmp_path / "vendors.txt").write_text("tagtest")
     prof_dir = tmp_path / "vendor_profiles"
-    prof_dir.mkdir()
-    (prof_dir / "tagtest.json").write_text(json.dumps({"url": str(tag_repo), "tag": "v1.0"}))
+    (prof_dir / "tagtest").mkdir(parents=True)
+    (prof_dir / "tagtest" / "apps.json").write_text(json.dumps({"url": str(tag_repo), "tag": "v1.0"}))
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
@@ -272,8 +273,8 @@ def test_update_vendors_preserves_existing_apps_json(tmp_path):
     (tmp_path / "apps.json").write_text(json.dumps({"demo": {"repo": str(original_repo), "branch": "main"}}))
     (tmp_path / "vendors.txt").write_text("demo\n")
     prof_dir = tmp_path / "vendor_profiles"
-    prof_dir.mkdir()
-    (prof_dir / "demo.json").write_text(json.dumps({"url": str(alt_repo), "branch": "v1"}))
+    (prof_dir / "demo").mkdir(parents=True)
+    (prof_dir / "demo" / "apps.json").write_text(json.dumps({"url": str(alt_repo), "branch": "v1"}))
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
@@ -303,8 +304,8 @@ def test_update_vendors_writes_vendor_summary(tmp_path):
     (tmp_path / "apps.json").write_text("{}")
     (tmp_path / "vendors.txt").write_text("dummy3")
     prof_dir = tmp_path / "vendor_profiles"
-    prof_dir.mkdir()
-    (prof_dir / "dummy3.json").write_text(json.dumps({"url": str(dummy_repo), "branch": "main"}))
+    (prof_dir / "dummy3").mkdir(parents=True)
+    (prof_dir / "dummy3" / "apps.json").write_text(json.dumps({"url": str(dummy_repo), "branch": "main"}))
 
     scenarios = tmp_path / "instructions" / "_scenarios"
     scenarios.mkdir(parents=True)
