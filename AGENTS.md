@@ -1,155 +1,153 @@
 # Codex Agent Instructions
 
-## Ziel
+## Goal
 
-Dieses Repository ist ein Master-Template für Frappe-Apps mit Codex-Integration.
+This repository is a master template for Frappe apps with Codex integration.
 
-Die `README.md` beschreibt:
+The `README.md` describes:
 
-- wie eine App erstellt wird  
-- welche Dateien wo liegen sollen  
-- wie GitHub-Konfigurationen aussehen  
-- welche Automatisierungen per GitHub Actions aktiv sind  
+- how to create an app  
+- where each file should be located  
+- how GitHub configurations should look  
+- which automations are enabled via GitHub Actions  
 
-Codex soll die Struktur, Dateien und Logik dieses Repos so entwickeln, dass alles exakt diesen Vorgaben entspricht.
-
----
-
-## Anweisungen
-
-Diese Anweisungen gelten dauerhaft und müssen bei jedem Lauf verarbeitet werden, **sofern sie nicht deaktiviert wurden**.
-
-Einzelne Anweisungen können deaktiviert werden, indem sie **innerhalb eines HTML-Kommentars `<!-- ... -->`** auskommentiert werden.  
-Codex ignoriert solche Anweisungen vollständig.  
-Die `How to Code`-Sektion in der `README.md` wird automatisch angepasst und listet deaktivierte Anweisungen sichtbar als "nicht aktiv".
-
-### Aktive Standardanweisungen
-
-- README.md immer updaten, wenn AGENTS.md neue Anweisungen enthält, die wichtig für die spätere nutzung sind
-- Fehlende essentielle Dateien erstellen
-- Einmalige Initialdateien oder Hilfsdateien nach Verwendung entfernen
-- Workflows, Skripte und Konfigs logisch und konsistent aufbauen – insbesondere bei Strukturänderungen (z. B. Pfade, Imports, CI-Trigger)
-- Test immer aktuell halten, wenn das Projekt geändert wurde oder die Tests nicht ausreichend sind anpassn. Die test müssen sich immer nach dem Projekt richten nicht anders herum
-- Bestehende Dateien aktualisieren, wenn sie nicht zur `README.md` oder `AGENTS.md` passen
-- `README.md` ↔ `AGENTS.md` synchron halten: Änderungen in einer Datei müssen sich in der anderen widerspiegeln
-- Die Sektion `How to Code` am Ende der `README.md` immer prüfen und anpassen, sodass sie verständlich wiedergibt:
-  - Welche Flags verfügbar sind
-  - Wie Codex beeinflusst wird
-  - Welche Anweisungen aktiv oder deaktiviert sind
-- überprüfe immer alle /scripts ob diese der readme entsprechen
-- Eingaben bzw Prompts die zu lang sidn, bzw Gefahr laufen die möglichen Kontextgröße zu übersteigen, dann auch mit --create-task bearbeiten
-
-### Vendor-spezifische Agentenprofile
-
-Wenn im Repository unter `/vendors` Submodule oder Vendor-Ordner existieren, dann gilt:
-
-- Suche in `instructions/vendor_profiles/<vendorname>/AGENTS.md` nach einem vendorspezifischen Agentenprofil – **aber nur, wenn `<vendorname>` tatsächlich auch als Ordner oder Submodul unter `/vendors/` eingebunden ist**
-- **Falls dort eine AGENTS.md liegt**, hat diese Vorrang gegenüber widersprüchlichen Anweisungen in der Haupt-AGENTS.md
+Codex should develop the structure, files, and logic of this repo to match these specifications **exactly**.
 
 ---
 
-## Einschränkungen für Befehle & Ausführungen
+## Instructions
 
-Codex darf **keine realen Shell-Kommandos oder Prozesse ausführen**. Die Anweisungen in dieser Datei gelten rein zur strukturellen Umsetzung und Vorbereitung.
+These instructions are permanent and must be processed on every run, **unless they have been deactivated**.
 
-Erlaubt ist:
+Individual instructions can be deactivated by placing them **within an HTML comment `<!-- ... -->`**.  
+Codex will completely ignore such instructions.  
+The `How to Code` section in `README.md` will be automatically updated and list deactivated instructions visibly as “not active”.
 
-- Analyse und Modifikation aller Dateien im Repository
-- Erzeugung neuer Dateien und Inhalte
-- Erstellung von Skripten, Konfigs, CI-Workflows und unterstützenden Dateien
+### Active Default Instructions
 
-Nicht erlaubt ist:
+- Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage
+- Create missing essential files
+- Remove one-time initialization or helper files after use
+- Build workflows, scripts, and configs logically and consistently – especially when structure changes (e.g., paths, imports, CI triggers)
+- Always keep tests up to date when the project changes or when tests are insufficient. Tests must always follow the project, not the other way around
+- Update existing files when they don't align with `README.md` or `AGENTS.md`
+- Keep `README.md` ↔ `AGENTS.md` in sync: changes in one must be reflected in the other
+- Always review and adjust the `How to Code` section at the end of `README.md` to clearly explain:
+  - Which flags are available
+  - How Codex is influenced
+  - Which instructions are active or deactivated
+- Always check all `/scripts` to ensure they match the `README.md`
+- If a prompt input is too long or might exceed the available context size, also process it with `--create-tasks`
 
-- Ausführen von `bench`, `git`, `curl`, `wget`, `npm`, `ssh`, etc.
-- Zugriffe auf Netzwerke oder entfernte Repositories
-- Initialisierung externer Systeme oder Services
+### Vendor-Specific Agent Profiles
 
-**Ausnahme:**  
-Codex darf lokale Kommandos in CI-Dateien oder `setup.sh` **als Code erzeugen**, **aber nicht ausführen**.  
-Diese müssen vollständig im Repository-Kontext bleiben (z. B. `chmod`, `yarn install`, `git status`, `rm`, `mkdir`, usw.).
+If submodules or vendor folders exist under `/vendors` in the repository, then:
 
-Ziel ist es, alles **lokal vorbereitbar und testbar** zu machen – ohne Seiteneffekte auf externe Systeme.
+- Look for a vendor-specific agent profile in `instructions/vendor_profiles/<vendorname>/AGENTS.md` – **but only if `<vendorname>` is actually included as a folder or submodule under `/vendors/`**
+- **If such an `AGENTS.md` exists**, it takes precedence over conflicting instructions in the main `AGENTS.md`
+
+---
+
+## Command & Execution Restrictions
+
+Codex must **not execute any real shell commands or processes**. These instructions apply solely to structural implementation and preparation.
+
+Allowed:
+
+- Analyzing and modifying all files in the repository
+- Creating new files and content
+- Generating scripts, configs, CI workflows, and supporting files
+
+Not allowed:
+
+- Running `bench`, `git`, `curl`, `wget`, `npm`, `ssh`, etc.
+- Accessing networks or remote repositories
+- Initializing external systems or services
+
+**Exception:**  
+Codex may generate local commands in CI files or `setup.sh` **as code**, **but must not execute them**.  
+These must remain fully within the repository context (e.g., `chmod`, `yarn install`, `git status`, `rm`, `mkdir`, etc.).
+
+The goal is to keep everything **locally preparable and testable** – without side effects on external systems.
 
 ---
 
 ## Flags
 
-Die folgenden Flags können über den Prompt gesetzt werden.  
-**Wenn nicht gesetzt, werden sie ignoriert.**
+The following flags can be set via prompt.  
+**If not set, they are ignored.**
 
 ### `--go`
 
-- use prompts from PROJECT.md
+- use prompts from `PROJECT.md`
 
 ### `--start`
 
-- Initialisiert die Umsetzung des Templates auf Basis der aktuellen `README.md` und `AGENTS.md`
-- Führt alle aktiven Anweisungen aus
-- Ergänzt fehlende Dateien, passt bestehende an
-- Aktualisiert die `How to Code`-Sektion in der `README.md`
+- Initializes implementation of the template based on the current `README.md` and `AGENTS.md`
+- Executes all active instructions
+- Adds missing files, adjusts existing ones
+- Updates the `How to Code` section in `README.md`
 
 ### `--update-agent`
 
-- Prompt wird als primäre Quelle interpretiert
-- `AGENTS.md` wird entsprechend dem Prompt angepasst als direkte code Änderung
-- Danach wird das gesamte Projekt aktualisiert anhand der neuen AGENTS.md
-- `How to Code` muss ebenfalls angepasst werden, wenn sich agents, dabei wenn Kontext zu groß wird --create-tasks genutzt
+- Prompt is interpreted as the primary source
+- `AGENTS.md` is modified based on the prompt as a direct code change
+- Then the entire project is updated according to the new `AGENTS.md`
+- `How to Code` must also be updated; if context size is exceeded, use `--create-tasks`
 
 ### `--create-tasks`
 
-- Es erfolgt keine direkte Codeänderung
-- Stattdessen werden klar strukturierte, konfliktarme Aufgaben erzeugt
-- Diese Aufgaben sind logisch getrennt, verständlich und parallel ausführbar
-- Es ist wichtig, wenn es wahrscheinlich ist, dass das gleiche file bearbeitete wird, sollten diese aufgaben in einem Task erledigt werden um merge conflicts zu minimieren!
+- No direct code changes are made
+- Instead, clear, low-conflict tasks are generated
+- These tasks are logically separated, understandable, and can be executed in parallel
+- If multiple tasks modify the same file, they should be handled in a single task to minimize merge conflicts
 
 ### `--update-readme`
 
-- Prompt wird als primäre Quelle interpretiert
-- `README.md` wird entsprechend dem Prompt angepasst
-- gesamtes Projekt wird aufgrund neuer readme überprüft und bearbeitet, dabei wenn Kontext zu groß wird --create-tasks genutzt
-- Es werden alle scripte und workflows, die benötigt werden (Ergänzungen aus dem Prompt) oder bereits vorhanden und sinnvoll sind kurz aufgeführt und beschrieben
-- es werden nur neue Datein erstellt, wenn der prompt dieses ausdrücklich fordert
+- Prompt is interpreted as the primary source
+- `README.md` is adjusted accordingly
+- The entire project is reviewed and updated based on the new README  
+  If the context becomes too large, use `--create-tasks`
+- Only new files explicitly required by the prompt will be created
 
 ### `--update-docs`
 
-- Es soll ausschließlich an der dokumentation in docs/ gearbeitet werden
-- Es soll angenommen werden, dass der stand der files im Repo sauber und aktuell ist
-- Die docs sollen ausführlich überprüft und ggf. an das Projekt angepasst werden
-- Dabei alle Scripte, Workflows etc. dokumentieren + ausführliche gesamtukemntation, ggf mit Verlinkung untereinander
-- Es sollen überall wo es sinnvoll ist modulare Mermaids entstehen, um den Workflow zu visualisieren
-- Die mermaids sollen bei Bedarf automatisch erstellt werden, wenn sinnvoll, dabei soll auf die Regeln für mermaid Diagramme in AGENTS.md geachtet werden.
+- Only the documentation in `docs/` should be worked on
+- Assume that all other files in the repo are clean and up to date
+- Docs should be thoroughly reviewed and adjusted to fit the project
+- All scripts, workflows, etc. should be documented + comprehensive global documentation, possibly with interlinking
+- Where reasonable, modular Mermaid diagrams should be used to visualize the workflow
+- Mermaids should be generated automatically when useful and follow the `AGENTS.md` rules for Mermaid diagrams
 
 ---
 
-## Hinweis
+## Note
 
-Diese Datei ist für Codex – nicht für Nutzer.  
-Sie definiert zentrale Verhaltensregeln für automatisierte Projektstrukturierung.  
-**Anweisungen** können durch Auskommentieren deaktiviert werden.  
-Die Flags sind dynamisch und müssen aktiv gesetzt werden.  
-Die `How to Code`-Sektion der `README.md` dokumentiert stets den aktuellen Zustand.
+This file is for Codex – not for users.  
+It defines central behavioral rules for automated project structuring.  
+**Instructions** can be deactivated via comments.  
+Flags are dynamic and must be actively set.  
+The `How to Code` section in `README.md` always documents the current state.
 
 ## PROJECT.md and Log
 
-`PROJECT.md` kombiniert manuelle Prompt-Vorbereitung mit automatischem Logging:
+`PROJECT.md` combines manual prompt preparation with automatic logging:
 
-- **Neue Prompts** werden oben eingetragen und per `codex --go` ausgeführt.
-- Codex liest **nur den Bereich oberhalb einer Trennlinie** (`---`), um alte Logs zu ignorieren.
-- **Nach Ausführung** verschiebt Codex die verarbeiteten Prompts inkl. Timestamp **unter die Trennlinie**.
-- Bei Prompts direkt aus der UI (ohne `--go`) wird ebenfalls **automatisch unterhalb** geloggt.
-- Ergebnis: saubere Trennung zwischen **aktuellen Aufgaben** (oben) und **Prompt-Historie** (unten).
+- **New prompts** are added at the top and executed via `codex --go`.
+- Codex reads **only the section above a separator** (`---`) to ignore old logs.
+- **After execution**, Codex moves the processed prompts including timestamps **below the separator**.
+- Prompts submitted directly via UI (without `--go`) are also **automatically logged below**.
 
-So bleibt `PROJECT.md` zentraler Ort für:
-- vorbereitbare Tasks,
-- automatische Ausführung,
-- lückenlose Nachverfolgung.
-
+This makes `PROJECT.md` a central place for:
+- pre-prepared tasks,
+- automated execution,
+- gapless logging.
 
 ## Mermaid
 
-Mermaid Diagramme sollen einheitlich erstellt werden, um dies zu erreichen können hier Vorgaben gemacht werden.
-Wenn Codex ein Mermaid als sinnvoll erachtet und erstellt werden neue Vereinheitlichungen hier ergänzt
+Mermaid diagrams should be created consistently. The following guidelines support standardization.  
+If Codex deems a diagram useful and generates one, this section will be updated with new rules.
 
-- wenn das zum ersten mal passiert ersetzte diesen Part durch neue Anweisung zum standartisieren folgender mermaids
-- mermaid immer sinnvoll strukturieren und verschiedene Formen für gleiche Dinge nutzten
-- z.B. Funktionen immer rund und Anweisungen eckig. je nachdem wofür das mermaid entwickelt wurde und welche sinnvollen Gruppiereungen sich hier ergeben
+- if this happens for the first time, replace this section with new instructions to standardize the following mermaids
+- structure mermaids logically and use different shapes for distinct purposes
+- e.g., functions as rounded shapes, instructions as rectangles – depending on what the diagram illustrates and what groupings make sense
