@@ -42,17 +42,17 @@ frappe-bench/.env
 ### Project Structure
 
 ```bash
-frappe_app_tamplate/
+/home/frappe/frappe-bench/
+└── frappe_app_tamplate/
         ├── instructions/                  # app instructions
-        │   └── AGENTS.md              # project-specific guidance
-        ├── frappe_app_template -> /opt/git/frappe_app_template  # submodule link
+        │   └── AGENTS.md                  # project-specific guidance
         ├── vendor/                        # vendor submodules
         │   ├── erpnext/
         │   └── nextcloud/
         ├── doc/                           # technical documentation
         ├── AGENTS.md                      # main Codex agent file
         ├── README.md                      # project documentation
-        ├── apps.json                      # empty placeholder for vendor metadata
+        ├── apps.json                      # contains frappe_app template vendors (frappe,bench) automatically from vendors.txt
         ├── custom_vendors.json            # empty JSON for custom vendor definitions
         ├── vendors.txt                    # common vendors
         ├── sample_data/                   # empty folder reserved for sample datasets
