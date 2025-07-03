@@ -61,6 +61,28 @@ if [ ! -f "$CONFIG_TARGET/.gitmodules" ]; then
     git submodule init 2>/dev/null || touch "$CONFIG_TARGET/.gitmodules"
 fi
 
+# Setup .env file and GitHub API key
+ENV_FILE="$CONFIG_TARGET/.env"
+if [ ! -f "$ENV_FILE" ]; then
+    touch "$ENV_FILE"
+fi
+
+existing_key=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2-)
+if [[ -z "$existing_key" || ! "$existing_key" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
+    user_key="${API_KEY:-}"
+    if [ -z "$user_key" ] && [ -t 0 ]; then
+        read -p "Enter GitHub API key (leave blank to skip): " user_key
+    fi
+    if [ -n "$user_key" ]; then
+        grep -v '^API_KEY=' "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
+        echo "API_KEY=$user_key" >> "$ENV_FILE.tmp"
+        mv "$ENV_FILE.tmp" "$ENV_FILE"
+        echo "🔐 API key stored in $ENV_FILE"
+    else
+        echo "ℹ️  No API key provided. Add it manually to $ENV_FILE if needed."
+    fi
+fi
+
 # Determine app name
 APP_NAME="${APP_NAME:-$1}"
 if [ -z "$APP_NAME" ]; then

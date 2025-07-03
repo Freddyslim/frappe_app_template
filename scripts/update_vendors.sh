@@ -13,6 +13,28 @@ VENDOR_DIR="$ROOT_DIR/vendor"
 VENDORS_FILE="${VENDORS_FILE:-$ROOT_DIR/vendors.txt}"
 PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/vendor_profiles}"
 
+# load API key from .env if present
+ENV_FILE="$ROOT_DIR/.env"
+API_KEY="${API_KEY:-}"
+if [ -z "$API_KEY" ] && [ -f "$ENV_FILE" ]; then
+  API_KEY=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2-)
+fi
+GITHUB_TOKEN="${GITHUB_TOKEN:-$API_KEY}"
+
+with_auth_repo() {
+  local url="$1"
+  if [ -n "$GITHUB_TOKEN" ]; then
+    if [[ "$url" =~ ^https://github.com/ ]]; then
+      echo "https://${GITHUB_TOKEN}@github.com/${url#https://github.com/}"
+      return
+    elif [[ "$url" =~ ^git@github.com: ]]; then
+      echo "https://${GITHUB_TOKEN}@github.com/${url#git@github.com:}"
+      return
+    fi
+  fi
+  echo "$url"
+}
+
 # fallback to template-provided profiles when none exist in the project
 if [ ! -d "$PROFILES_DIR" ]; then
   if [ -d "$ROOT_DIR/frappe_app_template/vendor_profiles" ]; then
@@ -135,29 +157,74 @@ recognized=("${!KEEP[@]}")
 
 changes=false
 
-for slug in "${recognized[@]}"; do
-  repo="${REPOS[$slug]}"
-  branch="${BRANCHES[$slug]}"
-  tag="${TAGS[$slug]}"
-  path="${PATHS[$slug]}"
-  target="$ROOT_DIR/$path"
-  ref="${branch:-$tag}"
-  echo "➡️  Processing $slug ($ref)"
+  for slug in "${recognized[@]}"; do
+    repo="${REPOS[$slug]}"
+    branch="${BRANCHES[$slug]}"
+    tag="${TAGS[$slug]}"
+    path="${PATHS[$slug]}"
+    target="$ROOT_DIR/$path"
+    ref="${branch:-$tag}"
+    echo "➡️  Processing $slug ($ref)"
+  auth_repo=$(with_auth_repo "$repo")
   if grep -q "path = $path" "$ROOT_DIR/.gitmodules" 2>/dev/null; then
     if git ls-files "$path" --error-unmatch >/dev/null 2>&1; then
+      if [ -n "$GITHUB_TOKEN" ]; then
+        git -C "$path" remote set-url origin "$auth_repo" || true
+      fi
       if ! git submodule update --init "$path"; then
         echo "❌ Failed to update $slug" >&2
+        if [ -n "$GITHUB_TOKEN" ]; then
+          git -C "$path" remote set-url origin "$repo" || true
+        fi
+        continue
+      fi
+      pushd "$target" >/dev/null
+      if [[ -n "$branch" ]]; then
+        git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+        git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
+      elif [[ -n "$tag" ]]; then
+        git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+        git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
+      fi
+      commit=$(git rev-parse HEAD)
+      popd >/dev/null
+      if [ -n "$GITHUB_TOKEN" ]; then
+        git -C "$path" remote set-url origin "$repo" || true
+      fi
+      if [ ! -d "$target" ]; then
+        echo "⚠️  Missing directory for $slug" >&2
         continue
       fi
       updated+=("$slug")
     else
       echo "📁 Submodule $path not registered in index – re-adding $slug"
-      git submodule add -f "$repo" "$path"
+      git submodule add -f "$auth_repo" "$path"
+      git config -f .gitmodules "submodule.$path.url" "$repo"
+      git config "submodule.$path.url" "$repo"
       installed+=("$slug")
       changes=true
     fi
   else
-    if git submodule add -f "$repo" "$path"; then
+    if git submodule add -f "$auth_repo" "$path"; then
+      git config -f .gitmodules "submodule.$path.url" "$repo"
+      git config "submodule.$path.url" "$repo"
+      pushd "$target" >/dev/null
+      if [[ -n "$branch" ]]; then
+        git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+        git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
+      elif [[ -n "$tag" ]]; then
+        git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+        git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
+      fi
+      commit=$(git rev-parse HEAD)
+      popd >/dev/null
+      if [ -n "$GITHUB_TOKEN" ]; then
+        git -C "$path" remote set-url origin "$repo" || true
+      fi
+      if [ ! -d "$target" ]; then
+        echo "⚠️  Missing directory for $slug" >&2
+        continue
+      fi
       changes=true
       installed+=("$slug")
     else
@@ -167,20 +234,6 @@ for slug in "${recognized[@]}"; do
       continue
     fi
   fi
-  if [ ! -d "$target" ]; then
-    echo "⚠️  Missing directory for $slug" >&2
-    continue
-  fi
-  pushd "$target" >/dev/null
-  if [[ -n "$branch" ]]; then
-    git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-    git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
-  elif [[ -n "$tag" ]]; then
-    git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-    git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
-  fi
-  commit=$(git rev-parse HEAD)
-  popd >/dev/null
   APP_INFO[$slug]="$(jq -n --arg repo "$repo" --arg branch "$branch" --arg tag "$tag" --arg commit "$commit" '{repo:$repo,branch:$branch,tag:$tag,commit:$commit}')"
   if [ -d "$target/instructions" ]; then
     mkdir -p "$ROOT_DIR/instructions/_$slug"
