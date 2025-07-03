@@ -127,11 +127,15 @@ code with prompts and/or flags and/or --go (starts with reading PROJECT.md).
 
 Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
 
+- Create any missing essential files described in the documentation.
 - Remove one-off helper files after they are used.
 - Build workflows, scripts and configs logically and keep them consistent when paths or structures change.
+- Keep tests up to date as the project evolves.
 - Update existing files if they do not match the documentation in `README.md` or the instructions in `AGENTS.md`.
 - Keep `README.md` and `AGENTS.md` synchronized.
+- Ensure scripts under `scripts/` reflect what the README describes.
 - Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
+- Use `--create-tasks` when prompts risk exceeding context limits.
 - Check vendor-specific instructions under `instructions/vendor_profiles/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.
 
 Codex can be guided with these flags:
@@ -139,5 +143,9 @@ Codex can be guided with these flags:
 - `--no-agent` &ndash; Treat the prompt as the main instruction, rewrite `README.md` and `AGENTS.md`, then adjust the code to match.
 - `--create-tasks` &ndash; Instead of changing code directly, produce a list of discrete, non-conflicting tasks for manual implementation.
 - `--start` &ndash; Initialize the project using the current documentation without running code. Missing files are created and structures put in place.
+- `--go` &ndash; Execute tasks found in `PROJECT.md` before the separator line.
+- `--update-agent` &ndash; Rewrite `AGENTS.md` according to the prompt and update the project afterwards.
+- `--update-readme` &ndash; Rewrite `README.md` according to the prompt and adjust the repository.
+- `--update-docs` &ndash; Work exclusively on documentation under `doc/`.
 
 Inactive instructions, if any, appear here as "not active" when they are commented out in `AGENTS.md`.
