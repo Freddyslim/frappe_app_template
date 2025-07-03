@@ -77,4 +77,3 @@ fi
 if command -v gh >/dev/null 2>&1 && git remote get-url origin >/dev/null 2>&1; then
   gh pr create --title "Release $NEW_TAG" --body "Release $NEW_TAG" --base main || true
 fi
-
