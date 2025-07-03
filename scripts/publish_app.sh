@@ -1,4 +1,5 @@
 #!/bin/bash
+# publish_app.sh: tag the repository and optionally open a release PR
 set -euo pipefail
 
 usage() {

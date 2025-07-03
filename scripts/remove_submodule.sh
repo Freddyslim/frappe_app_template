@@ -1,4 +1,5 @@
 #!/bin/bash
+# remove_submodule.sh: delete a vendor submodule and its instructions
 set -euo pipefail
 
 # Prevent execution inside the frappe_app_template submodule

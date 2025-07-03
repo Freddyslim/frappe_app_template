@@ -1,3 +1,4 @@
+"""test_publish_app.py: verify publish_app.sh tags releases correctly"""
 import subprocess
 from pathlib import Path
 

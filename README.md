@@ -254,5 +254,8 @@ Codex can be guided with these flags:
 - `--update-agent` &ndash; Rewrite `AGENTS.md` according to the prompt and update the project afterwards.
 - `--update-readme` &ndash; Rewrite `README.md` according to the prompt and adjust the repository.
 - `--update-docs` &ndash; Work exclusively on documentation under `doc/`.
+- `--update-scripts` &ndash; Review and adapt files in `scripts/` and `setup.sh`.
+- `--update-workflows` &ndash; Update files in `.github/workflows/` to match the docs.
+- `--update-comments` &ndash; Add concise comments that clarify why code exists.
 
 Inactive instructions, if any, appear here as "not active" when they are commented out in `AGENTS.md`.

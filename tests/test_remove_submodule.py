@@ -1,3 +1,4 @@
+"""test_remove_submodule.py: ensure submodule cleanup works"""
 import subprocess
 from pathlib import Path
 

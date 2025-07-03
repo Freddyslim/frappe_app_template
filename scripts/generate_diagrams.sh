@@ -1,4 +1,5 @@
 #!/bin/bash
+# generate_diagrams.sh: render all .mmd files under doc/ to images
 set -euo pipefail
 
 SRC_DIR="${1:-doc}"
