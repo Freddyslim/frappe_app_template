@@ -13,7 +13,7 @@ This document lists major files and directories that were removed or replaced wh
 
 ## Replaced
 
-- **codex_prompt.md** → consolidated into `instructions/prompts.md`
+- **prompt_template.md** → consolidated into `instructions/prompts.md`
  - **.github/workflows/create-app-repo.yml** → replaced by `setup.sh` which now generates the app folder
 
-These changes keep the repository minimal and focus on configuration files that Codex can apply to new projects.
+These changes keep the repository minimal and focus on configuration files that can be applied to new projects.

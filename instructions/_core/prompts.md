@@ -1,6 +1,6 @@
 # Prompt Sequence
 
-Diese Beispiel-Promptabfolge kannst du nutzen, um dein Projekt mit Codex zu initialisieren und schrittweise auszubauen.
+Diese Beispiel-Promptabfolge hilft dir dabei, dein Projekt Schritt für Schritt aufzubauen.
 
 ---
 
@@ -14,7 +14,7 @@ Repos:
 - https://github.com/xyz/hrms
 ```
 
-Codex führt `setup.sh` aus, um die Verzeichnisse und `apps.json` zu erzeugen.
+Führe `setup.sh` aus, um die Verzeichnisse und `apps.json` zu erzeugen.
 In GitHub steht dafür das Workflow **update-vendors** bereit.
 
 ---
@@ -23,7 +23,7 @@ In GitHub steht dafür das Workflow **update-vendors** bereit.
 
 "Erzeuge in `app/my_custom_app` ein Grundgerüst für eine Frappe App mit DocType `Project` und einfachem List View."
 
-Codex legt entsprechende Dateien in der App an.
+Das Skript legt entsprechende Dateien in der App an.
 
 ---
 
@@ -31,7 +31,7 @@ Codex legt entsprechende Dateien in der App an.
 
 "Füge einen Server-Side Scripting Hook hinzu, der bei `on_submit` einer Sales Invoice ausgeführt wird." 
 
-Codex aktualisiert die `hooks.py` und erstellt eine neue Python-Funktion unter `app/my_custom_app/my_custom_app/sales_invoice.py`.
+Aktualisiere die `hooks.py` und erstelle eine neue Python-Funktion unter `app/my_custom_app/my_custom_app/sales_invoice.py`.
 
 ---
 
@@ -43,7 +43,7 @@ Diese Schritte lassen sich beliebig fortführen, um weitere Doctypes, REST-Endpo
 
 "Initialisiere das Template mit Frappe und Bench als Git-Submodule. Führe die entsprechenden `git submodule add` Befehle aus."
 
-Codex bindet beide Repositories als Submodule ein und aktualisiert `.gitmodules`.
+Füge beide Repositories als Submodule hinzu und aktualisiere `.gitmodules`.
 
 ---
 
@@ -57,7 +57,7 @@ Repos:
 - https://github.com/example/app-template-b
 ```
 
-Codex legt die Submodule unter `vendor/` an.
+Lege die Submodule unter `vendor/` an.
 
 ---
 
@@ -65,7 +65,7 @@ Codex legt die Submodule unter `vendor/` an.
 
 "Aktualisiere das Frappe-Submodule auf eine neuere Version."
 
-Codex führt `git submodule update --remote vendor/frappe` aus und commitet die Änderungen.
+Führe `git submodule update --remote vendor/frappe` aus und committe die Änderungen.
 
 ---
 
@@ -73,7 +73,7 @@ Codex führt `git submodule update --remote vendor/frappe` aus und commitet die 
 
 "Starte das Projekt ausschließlich mit Frappe. Entferne ERPNext aus `vendors.txt`, behalte Frappe und Bench und führe `./setup.sh` aus oder triggere das Workflow **update-vendors**."
 
-Codex aktualisiert `vendors.txt`, klont nur Frappe und Bench und erzeugt eine neue `apps.json`.
+Aktualisiere `vendors.txt`, klone nur Frappe und Bench und erzeuge eine neue `apps.json`.
 
 ---
 
@@ -81,7 +81,7 @@ Codex aktualisiert `vendors.txt`, klont nur Frappe und Bench und erzeugt eine ne
 
 "Füge ERPNext jetzt hinzu. Trage `erpnext` in `vendors.txt` ein und rufe erneut `./setup.sh` auf oder starte das Workflow **update-vendors**."
 
-Codex modifiziert `vendors.txt`, klont ERPNext unter `vendor/` und aktualisiert `apps.json`.
+Modifiziere `vendors.txt`, klone ERPNext unter `vendor/` und aktualisiere `apps.json`.
 
 ---
 
@@ -95,7 +95,7 @@ Repos:
 - https://github.com/example/app-template-d
 ```
 
-Codex ergänzt `vendors.txt`, führt `setup.sh` erneut aus und holt die neuen Repositories nach `vendor/`.
+Ergänze `vendors.txt`, führe `setup.sh` erneut aus und hole die neuen Repositories nach `vendor/`.
 
 ---
 
@@ -103,4 +103,4 @@ Codex ergänzt `vendors.txt`, führt `setup.sh` erneut aus und holt die neuen Re
 
 "Nach dem ersten Push an GitHub ist `publish` nicht gelaufen. Überprüfe, ob der Branch `develop` heißt und die Workflow-Rechte auf **Read and write** stehen. Das App-Verzeichnis wird jetzt bereits lokal durch `setup.sh` erzeugt."
 
-Codex stellt sicher, dass auf `develop` gepusht wurde und weist darauf hin, die Berechtigungen unter *Settings → Actions → General* zu aktivieren.
+Stelle sicher, dass auf `develop` gepusht wurde, und aktiviere die Berechtigungen unter *Settings → Actions → General*.
