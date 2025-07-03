@@ -292,10 +292,6 @@ for slug in "${recognized[@]}"; do
 done
 jq -n "$jq_filter" > "$ROOT_DIR/apps.json"
 
-
-# rebuild documentation index after vendor changes
-python3 "$SCRIPT_DIR/generate_index.py"
-
 summary_parts=()
 if [ ${#installed[@]} -gt 0 ]; then
   summary_parts+=("Installed: ${installed[*]}")
