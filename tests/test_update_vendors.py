@@ -1,3 +1,4 @@
+"""test_update_vendors.py: verify vendor update script behavior"""
 import os
 import subprocess
 import json

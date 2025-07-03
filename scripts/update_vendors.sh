@@ -1,4 +1,5 @@
 #!/bin/bash
+# update_vendors.sh: sync vendor directories using vendor_profiles and vendors.txt
 set -euo pipefail
 
 if ! command -v jq >/dev/null 2>&1; then

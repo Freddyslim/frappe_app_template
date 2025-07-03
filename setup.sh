@@ -1,4 +1,5 @@
 #!/bin/bash
+# setup.sh: bootstrap a new Frappe app using template resources
 set -euo pipefail
 
 VERBOSE=0

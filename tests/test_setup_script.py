@@ -1,3 +1,4 @@
+"""test_setup_script.py: check that setup.sh creates the minimal app layout"""
 import os
 import subprocess
 from pathlib import Path
