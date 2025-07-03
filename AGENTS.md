@@ -85,9 +85,10 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 ### `--less-agent`
 
 - Prompt wird als primäre Quelle interpretiert
-- `README.md` und `AGENTS.md` werden entsprechend dem Prompt angepasst
-- Danach wird das gesamte Projekt aktualisiert
-- `How to Code` muss ebenfalls angepasst werden
+- `AGENTS.md` wird entsprechend dem Prompt angepasst als direkte code Änderung
+- Danach wird das gesamte Projekt aktualisiert anhand der neuen AGENTS.md
+- `How to Code` muss ebenfalls angepasst werden, wenn sich agents
+- wenn Kontext zu groß wird --create-tasks genutzt
 
 ### `--create-tasks`
 
@@ -95,6 +96,13 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 - Stattdessen werden klar strukturierte, konfliktarme Aufgaben erzeugt
 - Diese Aufgaben sind logisch getrennt, verständlich und parallel ausführbar
 - Es ist wichtig, wenn es wahrscheinlich ist, dass das gleiche file bearbeitete wird, sollten diese aufgaben in einem Task erledigt werden um merge conflicts zu minimieren!
+
+### `--update-readme`
+
+- Prompt wird als primäre Quelle interpretiert
+- `README.md` wird entsprechend dem Prompt angepasst
+- gesamtes Projekt wird aufgrund neuer readme überprüft und bearbeitet
+- wenn Kontext zu groß wird --create-tasks genutzt
 
 ---
 
