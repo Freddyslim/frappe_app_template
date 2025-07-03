@@ -84,6 +84,16 @@ Our pre-configured hooks format code automatically using:
 
 All hook definitions live in `.pre-commit-config.yaml` at the repository root.
 
+### Running Tests
+
+Run the test suite locally with:
+
+```bash
+pytest -v
+```
+
+This executes the same tests triggered by the CI workflow in `.github/workflows/ci.yml`.
+
 ### CI & Automation
 
 This template comes with GitHub Actions workflows for:
