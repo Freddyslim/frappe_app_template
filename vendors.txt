@@ -1,5 +1,5 @@
 # Format:
-# slug                          -> nutzt vendor_profiles/<kategorie>/<slug>.json
+# slug                          -> nutzt vendor_profiles/<kategorie>/<slug>/apps.json
 # slug|https://repo.url|branch|tag  -> manuelles Repo (branch oder tag optional)
 # https://repo.url|branch|tag       -> slug wird aus dem Repo-Namen abgeleitet
 #
