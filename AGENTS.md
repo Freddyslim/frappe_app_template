@@ -82,13 +82,12 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 - Ergänzt fehlende Dateien, passt bestehende an
 - Aktualisiert die `How to Code`-Sektion in der `README.md`
 
-### `--less-agent`
+### `--update-agent`
 
 - Prompt wird als primäre Quelle interpretiert
 - `AGENTS.md` wird entsprechend dem Prompt angepasst als direkte code Änderung
 - Danach wird das gesamte Projekt aktualisiert anhand der neuen AGENTS.md
-- `How to Code` muss ebenfalls angepasst werden, wenn sich agents
-- wenn Kontext zu groß wird --create-tasks genutzt
+- `How to Code` muss ebenfalls angepasst werden, wenn sich agents, dabei wenn Kontext zu groß wird --create-tasks genutzt
 
 ### `--create-tasks`
 
@@ -101,14 +100,16 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 
 - Prompt wird als primäre Quelle interpretiert
 - `README.md` wird entsprechend dem Prompt angepasst
-- gesamtes Projekt wird aufgrund neuer readme überprüft und bearbeitet
-- wenn Kontext zu groß wird --create-tasks genutzt
+- gesamtes Projekt wird aufgrund neuer readme überprüft und bearbeitet, dabei wenn Kontext zu groß wird --create-tasks genutzt
+- Es werden alle scripte und workflows, die benötigt werden (Ergänzungen aus dem Prompt) oder bereits vorhanden und sinnvoll sind kurz aufgeführt und beschrieben
+- es werden nur neue Datein erstellt, wenn der prompt dieses ausdrücklich fordert
 
 ### `--update-docs`
 
 - Es soll ausschließlich an der dokumentation in docs/ gearbeitet werden
 - Es soll angenommen werden, dass der stand der files im Repo sauber und aktuell ist
 - Die docs sollen ausführlich überprüft und ggf. an das Projekt angepasst werden
+- Dabei alle Scripte, Workflows etc. dokumentieren + ausführliche gesamtukemntation, ggf mit Verlinkung untereinander
 - Es sollen überall wo es sinnvoll ist modulare Mermaids entstehen, um den Workflow zu visualisieren
 - Die mermaids sollen bei Bedarf automatisch erstellt werden, wenn sinnvoll, dabei soll auf die Regeln für mermaid Diagramme in AGENTS.md geachtet werden.
 
