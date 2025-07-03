@@ -19,7 +19,7 @@ Then run the setup script directly from within the `frappe-bench` directory:
 
 The script will:
 
-- use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively)
+- use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively) <-- instead orphaned create_repo_folder
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
@@ -61,6 +61,7 @@ apps/my_app/.config/github_settings.json
         │   ├── clone_submodules.sh        # pull vendor profiles
         │   ├── remove_submodule.sh        # remove unwanted vendor
         │   └── update_vendors.sh          # sync vendor submodules
+        │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx.x+1.0>, major <vx+1.0.0>
         ├── .pre-commit-config.yaml        # git hook definitions
         ├── .github/
         │   └── workflows/
@@ -117,6 +118,12 @@ MIT
 For full Codex compatibility and developer productivity, follow the structural conventions and use the agent files provided.
 
 ### How to Code
+
+Update PROJECT.md with new development prompts
+Connect repo as environment in codex ui environments
+code with prompts and/or flags and/or --go (starts with reading PROJECT.md).
+
+--- autocreated ---
 
 Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
 
