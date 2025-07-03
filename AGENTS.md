@@ -127,7 +127,7 @@ This ensures large or multi-scope prompts remain traceable, manageable, and safe
 - The entire project is reviewed and updated based on the new README  
   If the context becomes too large, use `--create-tasks`
 - Only new files explicitly required by the prompt will be created
-- check AGENTS.md if there are necessary new infos for README.md and developers to know
+- check AGENTS.md if there are necessary new infos for README.md and developers to know like new flags
 
 ### `--update-scripts`
 
