@@ -109,6 +109,7 @@ The following flags can be set via prompt.
 - The entire project is reviewed and updated based on the new README  
   If the context becomes too large, use `--create-tasks`
 - Only new files explicitly required by the prompt will be created
+- check AGENTS.md if there are necessary new infos for README.md and developers to know
 
 ### `--update-docs`
 
@@ -129,14 +130,12 @@ It defines central behavioral rules for automated project structuring.
 Flags are dynamic and must be actively set.  
 The `How to Code` section in `README.md` always documents the current state.
 
-## PROJECT.md and Log
+## PROJECT.md 
 
-`PROJECT.md` combines manual prompt preparation with automatic logging:
+`PROJECT.md` 
 
-- **New prompts** are added at the top and executed via `codex --go`.
+- **New prompts** are added and executed via `codex --go`.
 - Codex reads **only the section above a separator** (`---`) to ignore old logs.
-- **After execution**, Codex moves the processed prompts including timestamps **below the separator**.
-- Prompts submitted directly via UI (without `--go`) are also **automatically logged below**.
 
 This makes `PROJECT.md` a central place for:
 - pre-prepared tasks,
