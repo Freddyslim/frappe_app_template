@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 VENDOR_DIR="$ROOT_DIR/vendor"
 VENDORS_FILE="${VENDORS_FILE:-$ROOT_DIR/vendors.txt}"
-PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/vendor_profiles}"
+PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/instructions/vendor_profiles}"
 
 # load API key from .env if present
 ENV_FILE="$ROOT_DIR/.env"
@@ -37,10 +37,10 @@ with_auth_repo() {
 
 # fallback to template-provided profiles when none exist in the project
 if [ ! -d "$PROFILES_DIR" ]; then
-  if [ -d "$ROOT_DIR/frappe_app_template/vendor_profiles" ]; then
-    PROFILES_DIR="$ROOT_DIR/frappe_app_template/vendor_profiles"
-  elif [ -d "$ROOT_DIR/template/vendor_profiles" ]; then
-    PROFILES_DIR="$ROOT_DIR/template/vendor_profiles"
+  if [ -d "$ROOT_DIR/frappe_app_template/instructions/vendor_profiles" ]; then
+    PROFILES_DIR="$ROOT_DIR/frappe_app_template/instructions/vendor_profiles"
+  elif [ -d "$ROOT_DIR/template/instructions/vendor_profiles" ]; then
+    PROFILES_DIR="$ROOT_DIR/template/instructions/vendor_profiles"
   fi
 fi
 
