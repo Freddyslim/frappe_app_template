@@ -1,0 +1,64 @@
+# Triggers vendor submodule updates when vendors.txt or custom profiles change
+name: update-vendors
+
+on:
+  push:
+    paths:
+      - vendors.txt
+      - custom_vendors.json
+      - vendor_profiles/**
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Update vendors
+        run: |
+          echo "::group::update_vendors"
+          ./scripts/update_vendors.sh | tee /tmp/vendor_summary.txt
+          echo "::endgroup::"
+          tail -n 1 /tmp/vendor_summary.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -d vendor ]; then
+            git add vendor
+          fi
+          git add .gitmodules apps.json vendors.txt
+          if [ -d vendor_profiles ]; then
+            git add vendor_profiles
+          fi
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update vendor apps"
+            git push
+          fi
