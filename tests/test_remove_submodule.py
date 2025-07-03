@@ -2,11 +2,11 @@ import subprocess
 from pathlib import Path
 
 
-def test_remove_template_script(tmp_path):
+def test_remove_submodule_script(tmp_path):
     scripts_dir = Path(__file__).resolve().parents[1] / "scripts"
     tmp_scripts = tmp_path / "scripts"
     tmp_scripts.mkdir()
-    (tmp_scripts / "remove_template.sh").write_text((scripts_dir / "remove_template.sh").read_text())
+    (tmp_scripts / "remove_submodule.sh").write_text((scripts_dir / "remove_submodule.sh").read_text())
 
     vendor = tmp_path / "vendor" / "demo-template"
     instr = tmp_path / "instructions" / "_demo-template"
@@ -19,7 +19,7 @@ def test_remove_template_script(tmp_path):
 
 
 
-    subprocess.run(["bash", str(tmp_scripts / "remove_template.sh"), "demo-template"], cwd=tmp_path, check=True)
+    subprocess.run(["bash", str(tmp_scripts / "remove_submodule.sh"), "demo-template"], cwd=tmp_path, check=True)
 
     assert not vendor.exists()
     assert not instr.exists()

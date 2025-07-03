@@ -54,7 +54,10 @@ apps/my_app/.config/github_settings.json
         ├── apps.json                      # list of submodules
         ├── custom_vendors.json            # custom vendor definitions
         ├── vendors.txt                    # common vendors
-        ├── scripts.txt                    # from frappe_app_template
+        ├── scripts/
+        │   ├── clone_submodules.sh        # pull vendor profiles
+        │   ├── remove_submodule.sh        # remove unwanted vendor
+        │   └── update_vendors.sh          # sync vendor submodules
         ├── .pre-commit-config.yaml        # git hook definitions
         ├── .github/
         │   └── workflows/
@@ -66,7 +69,7 @@ apps/my_app/.config/github_settings.json
 
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
 The folder contains an `apps.json` with repository information and an `AGENTS.md` for vendor-specific notes.
-Run `./scripts/update_vendors.sh` after editing these profiles.
+Run `./scripts/update_vendors.sh` after editing these profiles. The `update-vendors.yml` workflow runs the same script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
 ### Contributing
 
@@ -90,7 +93,7 @@ All hook definitions live in `.pre-commit-config.yaml` at the repository root.
 This template comes with GitHub Actions workflows for:
 
 - CI testing
-- automated vendor submodule updates
+- automated vendor submodule updates via `update-vendors.yml`
 - commit linting and validation
 
 Workflow examples are stored in `workflow_templates/`. Copy them into
