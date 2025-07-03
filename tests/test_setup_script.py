@@ -20,7 +20,8 @@ def test_setup_script_creates_app(tmp_path):
     (tmp_path / "apps.json").write_text((repo_root / "apps.json").read_text())
 
     subprocess.run(["git", "init"], cwd=tmp_path, check=True)
-    subprocess.run([str(tmp_script), "demoapp"], cwd=tmp_path, check=True)
+    env = {"API_KEY": "dummyapikeydummyapikey"}
+    subprocess.run([str(tmp_script), "demoapp"], cwd=tmp_path, check=True, env=env)
 
     app_path = tmp_path / "app" / "demoapp"
 
@@ -34,3 +35,6 @@ def test_setup_script_creates_app(tmp_path):
     assert (root / "license.txt").exists()
     assert (root / ".gitignore").exists()
     assert (app_path / "patches.txt").exists()
+    env_file = tmp_path / ".env"
+    assert env_file.exists()
+    assert "API_KEY=dummyapikeydummyapikey" in env_file.read_text()
