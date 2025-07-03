@@ -104,6 +104,14 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 - gesamtes Projekt wird aufgrund neuer readme überprüft und bearbeitet
 - wenn Kontext zu groß wird --create-tasks genutzt
 
+### `--update-docs`
+
+- Es soll ausschließlich an der dokumentation in docs/ gearbeitet werden
+- Es soll angenommen werden, dass der stand der files im Repo sauber und aktuell ist
+- Die docs sollen ausführlich überprüft und ggf. an das Projekt angepasst werden
+- Es sollen überall wo es sinnvoll ist modulare Mermaids entstehen, um den Workflow zu visualisieren
+- Die mermaids sollen bei Bedarf automatisch erstellt werden, wenn sinnvoll, dabei soll auf die Regeln für mermaid Diagramme in AGENTS.md geachtet werden.
+
 ---
 
 ## Hinweis
@@ -113,3 +121,12 @@ Sie definiert zentrale Verhaltensregeln für automatisierte Projektstrukturierun
 **Anweisungen** können durch Auskommentieren deaktiviert werden.  
 Die Flags sind dynamisch und müssen aktiv gesetzt werden.  
 Die `How to Code`-Sektion der `README.md` dokumentiert stets den aktuellen Zustand.
+
+## Mermaid
+
+Mermaid Diagramme sollen einheitlich erstellt werden, um dies zu erreichen können hier Vorgaben gemacht werden.
+Wenn Codex ein Mermaid als sinnvoll erachtet und erstellt werden neue Vereinheitlichungen hier ergänzt
+
+- wenn das zum ersten mal passiert ersetzte diesen Part durch neue Anweisung zum standartisieren folgender mermaids
+- mermaid immer sinnvoll strukturieren und verschiedene Formen für gleiche Dinge nutzten
+- z.B. Funktionen immer rund und Anweisungen eckig. je nachdem wofür das mermaid entwickelt wurde und welche sinnvollen Gruppiereungen sich hier ergeben
