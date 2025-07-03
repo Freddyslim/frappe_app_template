@@ -61,7 +61,6 @@ apps/my_app/.config/github_settings.json
         ├── scripts/
         │   ├── clone_submodules.sh        # pull vendor profiles
         │   ├── remove_submodule.sh        # remove unwanted vendor
-        │   ├── new_frappe_app_folder.py   # generate an app skeleton
         │   ├── generate_diagrams.sh       # render Mermaid diagrams from doc/
         │   ├── update_vendors.sh          # sync vendor submodules
         │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx.x+1.0>, major <vx+1.0.0>
