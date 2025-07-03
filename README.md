@@ -1,16 +1,39 @@
 ### Frappe App Dev Setup Template
 
-This repository is a master template for Codex-enabled Frappe apps. It automates project structure, git setup and vendor management so new apps can be created quickly.
+This repository is a master template for Codex-enabled Frappe apps. It automates project structure, git setup and vendor management so new apps can be created quickly and consistently.
 
 ### Installation
 
-Clone this repository and run the setup script to generate an app skeleton:
+Clone `frappe_app_template` to `/home/frappe/frappe-bench`:
 
 ```bash
-./setup.sh my_app
+cd /home/frappe/frappe-bench
+git clone git@github.com:mygithubacc/frappe_app_template.git
 ```
 
-Store your GitHub API token in `.config/github_api.json` (ignored by git).
+Then run the setup script directly from within the `frappe-bench` directory:
+
+```bash
+./frappe_app_template/setup.sh my_app
+```
+
+The script will:
+
+* use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively)
+* initialize a Git repository in `apps/my_app/`
+* link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
+* copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, etc.)
+* prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my\_app)
+
+### GitHub Configuration
+
+Important credentials, patterns and GitHub tokens should be stored in:
+
+```bash
+apps/my_app/.config/github_settings.json
+```
+
+> This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.
 
 ### Project Structure
 
@@ -20,8 +43,8 @@ Store your GitHub API token in `.config/github_api.json` (ignored by git).
     └── my_app/
         ├── my_app/                        # Frappe app code
         ├── instructions/                  # app instructions
-        │   └── AGENTS.md                  # project-specific guidance
-        ├── frappe_app_template -> /opt/git/frappe_app_template
+        │   └── AGENTS.md              # project-specific guidance
+        ├── frappe_app_template -> /opt/git/frappe_app_template  # submodule link
         ├── vendor/                        # vendor submodules
         │   ├── erpnext/
         │   └── nextcloud/
@@ -41,18 +64,31 @@ Store your GitHub API token in `.config/github_api.json` (ignored by git).
 
 ### Contributing
 
-Install [pre-commit](https://pre-commit.com/) and enable it:
+Install [pre-commit](https://pre-commit.com/) and enable it in your app directory:
 
 ```bash
 pre-commit install
 ```
 
-Our hooks format code with ruff, eslint, prettier and pyupgrade.
+Our pre-configured hooks format code automatically using:
 
-### CI
+* ruff (Python)
+* eslint (JavaScript)
+* prettier (Markdown, HTML, etc.)
+* pyupgrade (Python modernizer)
 
-GitHub Actions workflows run tests and manage vendor updates automatically.
+### CI & Automation
+
+This template comes with GitHub Actions workflows for:
+
+* CI testing
+* automated vendor submodule updates
+* commit linting and validation
 
 ### License
 
 MIT
+
+---
+
+For full Codex compatibility and developer productivity, follow the structural conventions and use the agent files provided.
