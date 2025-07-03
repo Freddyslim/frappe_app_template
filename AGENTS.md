@@ -93,7 +93,7 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 - Es erfolgt keine direkte Codeänderung
 - Stattdessen werden klar strukturierte, konfliktarme Aufgaben erzeugt
 - Diese Aufgaben sind logisch getrennt, verständlich und parallel ausführbar
-- Auch hier muss `How to Code` aktualisiert werden
+- Es ist wichtig, wenn es wahrscheinlich ist, dass das gleiche file bearbeitete wird, sollten diese aufgaben in einem Task erledigt werden um merge conflicts zu minimieren!
 
 ---
 
