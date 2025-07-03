@@ -308,6 +308,3 @@ fi
 summary="$(IFS=' | '; echo "${summary_parts[*]}")"
 echo "$summary"
 
-if [ -f "$ROOT_DIR/scripts/generate_index.py" ]; then
-  python "$ROOT_DIR/scripts/generate_index.py"
-fi

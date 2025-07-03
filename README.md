@@ -68,8 +68,11 @@ apps/my_app/.config/github_settings.json
 ```
 
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
-The folder contains an `apps.json` with repository information and an `AGENTS.md` for vendor-specific notes.
-Run `./scripts/update_vendors.sh` after editing these profiles. The `update-vendors.yml` workflow runs the same script automatically whenever `vendors.txt` or `custom_vendors.json` change.
+The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
+
+Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` in `.env` or `.config/github_api.json` so the script can clone it. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata.
+
+The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
 ### Contributing
 
@@ -99,7 +102,8 @@ This template comes with GitHub Actions workflows for:
 Workflow examples are stored in `workflow_templates/`. Copy them into
 `.github/workflows/` in your app repository and adjust them as needed.
 The [workflow_templates.md](doc/workflow_templates.md) document explains what
-each template does.
+each template does. Details about vendor handling are described in
+[vendor_management.md](doc/vendor_management.md).
 
 ### License
 

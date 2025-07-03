@@ -13,7 +13,6 @@ def test_setup_script_creates_app(tmp_path):
     tmp_scripts.mkdir()
     src_script = repo_root / "scripts" / "new_frappe_app_folder.py"
     (tmp_scripts / "new_frappe_app_folder.py").write_text(src_script.read_text())
-    (tmp_scripts / "generate_index.py").write_text((repo_root / "scripts" / "generate_index.py").read_text())
 
     # minimal required config files
     (tmp_path / "vendors.txt").write_text((repo_root / "vendors.txt").read_text())
