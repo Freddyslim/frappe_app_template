@@ -57,6 +57,7 @@ apps/my_app/.config/github_settings.json
         ├── apps.json                      # list of submodules
         ├── custom_vendors.json            # custom vendor definitions
         ├── vendors.txt                    # common vendors
+        ├── sample_data/                   # folder for fast adding data to context
         ├── scripts/
         │   ├── clone_submodules.sh        # pull vendor profiles
         │   ├── remove_submodule.sh        # remove unwanted vendor
