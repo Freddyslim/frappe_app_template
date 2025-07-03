@@ -132,7 +132,5 @@ fi
 echo "ℹ️  Creating app skeleton (includes app/.gitignore)"
 python3 "$CONFIG_TARGET/scripts/new_frappe_app_folder.py" "$APP_NAME" --root "$CONFIG_TARGET/app"
 
-# Build initial documentation index
-python3 "$CONFIG_TARGET/scripts/generate_index.py"
 
 echo "✅ Setup complete."

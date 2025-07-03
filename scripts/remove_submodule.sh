@@ -10,7 +10,7 @@ if [[ "$toplevel" == *"/frappe_app_template" ]]; then
 fi
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 <template-name>" >&2
+    echo "Usage: $0 <submodule-name>" >&2
     exit 1
 fi
 
@@ -32,4 +32,4 @@ fi
 # remove instructions directory
 rm -rf "$INSTR_DIR"
 
-echo "Removed template $NAME"
+echo "Removed submodule $NAME"
