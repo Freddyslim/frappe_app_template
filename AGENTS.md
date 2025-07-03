@@ -131,7 +131,7 @@ This ensures large or multi-scope prompts remain traceable, manageable, and safe
 
 ### `--update-scripts`
 
-- Only checks and processes scripts located in `scripts/`
+- Only checks and processes scripts located in `scripts/` + `setup.sh`
 - All files in this directory are **individually reviewed line by line**
 - Each script is adapted to match the logic and structure defined in `README.md` and `AGENTS.md`
 - Any outdated, unused, or redundant content must be **cleaned up or deleted**
