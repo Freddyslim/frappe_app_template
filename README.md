@@ -92,6 +92,11 @@ This template comes with GitHub Actions workflows for:
 - automated vendor submodule updates
 - commit linting and validation
 
+Workflow examples are stored in `workflow_templates/`. Copy them into
+`.github/workflows/` in your app repository and adjust them as needed.
+The [workflow_templates.md](doc/workflow_templates.md) document explains what
+each template does.
+
 ### License
 
 MIT

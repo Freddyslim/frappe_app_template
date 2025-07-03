@@ -4,3 +4,5 @@ Der Ordner `doc/` bündelt projektbezogene Dokumentationen. Hier findest du Vorl
 
 * `user_story_template.md` – Vorlage zur Beschreibung von User Stories.
 * `guide_doctype_listing.md` – Leitfaden zum Auflisten von Doctypes, Berechtigungen und Skripten.
+* `mermaid_diagrams.md` – Tipps zum Erstellen und Aktualisieren von Mermaid-Diagrammen.
+* `workflow_templates.md` – kurze Erklärungen zu den mitgelieferten GitHub-Workflows.
