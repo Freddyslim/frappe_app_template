@@ -96,3 +96,22 @@ MIT
 ---
 
 For full Codex compatibility and developer productivity, follow the structural conventions and use the agent files provided.
+
+### How to Code
+
+Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
+
+- Remove one-off helper files after they are used.
+- Build workflows, scripts and configs logically and keep them consistent when paths or structures change.
+- Update existing files if they do not match the documentation in `README.md` or the instructions in `AGENTS.md`.
+- Keep `README.md` and `AGENTS.md` synchronized.
+- Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
+- Check vendor-specific instructions under `instructions/vendor_profiles/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.
+
+Codex can be guided with these flags:
+
+- `--no-agent` &ndash; Treat the prompt as the main instruction, rewrite `README.md` and `AGENTS.md`, then adjust the code to match.
+- `--create-tasks` &ndash; Instead of changing code directly, produce a list of discrete, non-conflicting tasks for manual implementation.
+- `--start` &ndash; Initialize the project using the current documentation without running code. Missing files are created and structures put in place.
+
+Inactive instructions, if any, appear here as "not active" when they are commented out in `AGENTS.md`.
