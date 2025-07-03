@@ -35,52 +35,13 @@ if [[ -n "$toplevel" && "$toplevel" == *"/frappe_app_template" ]]; then
   exit 1
 fi
 
-# Determine the script and parent directories
+# Determine directories
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+BENCH_DIR="$(pwd)"
 WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
 
-# When used as a submodule, copy workflow files (and requirements.txt) to the
-# parent repository
-if [ -d "$PARENT_DIR/.git" ] && [ "$PARENT_DIR" != "$SCRIPT_DIR" ]; then
-    for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
-        [ -f "$wf" ] || continue
-        target="$PARENT_DIR/.github/workflows/$(basename "$wf")"
-        mkdir -p "$(dirname "$target")"
-        if [ ! -f "$target" ]; then
-            [ "$VERBOSE" -eq 1 ] && echo "Copy workflow $(basename "$wf")"
-            cp "$wf" "$target"
-        fi
-    done
-    if [ ! -f "$PARENT_DIR/requirements.txt" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy requirements.txt"
-        cp "$SCRIPT_DIR/requirements.txt" "$PARENT_DIR/requirements.txt"
-    fi
-    if [ ! -f "$PARENT_DIR/requirements-dev.txt" ] && [ -f "$SCRIPT_DIR/requirements-dev.txt" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy requirements-dev.txt"
-        cp "$SCRIPT_DIR/requirements-dev.txt" "$PARENT_DIR/requirements-dev.txt"
-    fi
-    if [ -d "$SCRIPT_DIR/scripts" ]; then
-        mkdir -p "$PARENT_DIR/scripts"
-        for sf in "$SCRIPT_DIR"/scripts/*; do
-            [ -f "$sf" ] || continue
-            target="$PARENT_DIR/scripts/$(basename "$sf")"
-            if [ ! -f "$target" ]; then
-                [ "$VERBOSE" -eq 1 ] && echo "Copy script $(basename "$sf")"
-                cp "$sf" "$target"
-            fi
-        done
-        chmod +x "$PARENT_DIR"/scripts/*.sh 2>/dev/null || true
-    fi
-    if [ "$PARENT_DIR" != "$SCRIPT_DIR" ] && [ ! -f "$PARENT_DIR/.gitignore" ] && [ -f "$SCRIPT_DIR/.gitignore" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy .gitignore"
-        cp "$SCRIPT_DIR/.gitignore" "$PARENT_DIR/.gitignore"
-    fi
-
-    CONFIG_TARGET="$PARENT_DIR"
-else
-    CONFIG_TARGET="$SCRIPT_DIR"
-fi
+# Default to bench root for configuration
+CONFIG_TARGET="$BENCH_DIR"
 
 # Ensure .gitmodules exists so that workflows using submodules don't fail
 if [ ! -f "$CONFIG_TARGET/.gitmodules" ]; then
@@ -112,53 +73,8 @@ fi
 
 # Determine app name if not already set via arguments
 if [ -z "${APP_NAME:-}" ]; then
-    APP_NAME="$(basename "$CONFIG_TARGET")"
-fi
-
-# Ensure sample_data directory exists
-[ "$VERBOSE" -eq 1 ] && echo "Ensure sample_data directory"
-mkdir -p "$CONFIG_TARGET/sample_data"
-
-# Ensure vendor directory exists for workflows
-[ "$VERBOSE" -eq 1 ] && echo "Ensure vendor directory"
-mkdir -p "$CONFIG_TARGET/vendor"
-
-# Ensure core instructions directory and README
-[ "$VERBOSE" -eq 1 ] && echo "Ensure instructions/_core"
-mkdir -p "$CONFIG_TARGET/instructions/_core"
-CORE_README="$CONFIG_TARGET/instructions/_core/README.md"
-if [ ! -f "$CORE_README" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Create $CORE_README"
-    cat > "$CORE_README" <<'EOF'
-# Instructions Overview
-
-This folder stores the default documentation that ships with every app.
-For details on how Agents load and use these files, see “agent.md” in the
-repository root.
-EOF
-fi
-
-# Create example configuration files if missing
-if [ ! -f "$CONFIG_TARGET/vendors.txt" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Copy vendors.txt"
-    cp "$SCRIPT_DIR/vendors.txt" "$CONFIG_TARGET/vendors.txt"
-fi
-
-if [ ! -f "$CONFIG_TARGET/apps.json" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Copy apps.json"
-    cp "$SCRIPT_DIR/apps.json" "$CONFIG_TARGET/apps.json"
-fi
-
-if [ ! -f "$CONFIG_TARGET/custom_vendors.json" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Create custom_vendors.json"
-    cat > "$CONFIG_TARGET/custom_vendors.json" <<'JSON'
-{
-  "example_app": {
-    "repo": "https://github.com/example/example_app",
-    "branch": "v1.0.0"
-  }
-}
-JSON
+    echo "Usage: $0 <app_name>"
+    exit 1
 fi
 
 # Ensure app skeleton exists (matching bench new-app)
@@ -166,8 +82,45 @@ echo "ℹ️  Creating app via bench new-app"
 [ "$VERBOSE" -eq 1 ] && echo "Running: bench new-app $APP_NAME"
 
 bench new-app "$APP_NAME"
-APP_DIR="$CONFIG_TARGET/apps/$APP_NAME"
+APP_DIR="$BENCH_DIR/apps/$APP_NAME"
 [ "$VERBOSE" -eq 1 ] && echo "App directory: $APP_DIR"
 
+# After app creation use APP_DIR as config target
+CONFIG_TARGET="$APP_DIR"
+if [ ! -f "$CONFIG_TARGET/.gitmodules" ]; then
+    git submodule init 2>/dev/null || touch "$CONFIG_TARGET/.gitmodules"
+fi
+
+# Link the template repository as a submodule
+if [ ! -d "$APP_DIR/frappe_app_template" ] && git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev/null 2>&1 && git -C "$SCRIPT_DIR" rev-parse HEAD >/dev/null 2>&1; then
+    [ "$VERBOSE" -eq 1 ] && echo "Add frappe_app_template submodule"
+    git -c protocol.file.allow=always submodule add "$SCRIPT_DIR" "$APP_DIR/frappe_app_template"
+fi
+
+# Copy template files and directories
+copy_items=(
+    AGENTS.md .pre-commit-config.yaml requirements.txt requirements-dev.txt
+    vendors.txt apps.json custom_vendors.json scripts doc .github instructions
+)
+for item in "${copy_items[@]}"; do
+    src="$SCRIPT_DIR/$item"
+    dest="$APP_DIR/$item"
+    [ -e "$src" ] || continue
+    if [ -d "$src" ]; then
+        [ "$VERBOSE" -eq 1 ] && echo "Copy directory $item"
+        cp -r "$src" "$dest"
+    else
+        [ "$VERBOSE" -eq 1 ] && echo "Copy file $item"
+        cp "$src" "$dest"
+    fi
+done
+
+# Ensure supporting folders exist
+mkdir -p "$APP_DIR/vendor" "$APP_DIR/instructions" "$APP_DIR/.config" "$APP_DIR/sample_data"
+
+# Create placeholder config file
+if [ ! -f "$APP_DIR/.config/github_api.json" ]; then
+    echo '{}' > "$APP_DIR/.config/github_api.json"
+fi
 
 echo "✅ Setup complete."

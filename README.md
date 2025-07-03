@@ -24,7 +24,9 @@ The script will:
 - use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively) <-- instead orphaned create_repo_folder
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
-- copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
+- copy template helpers into `apps/my_app/` (e.g. `.github/`, `AGENTS.md`, `instructions/`, `scripts/`, and cleaned `vendors.txt`, `apps.json`, `custom_vendors.json`). An empty `sample_data/` folder is also created.
+- create or update `.env` in your bench directory to store a GitHub `API_KEY`
+- create a placeholder `.config/github_api.json` for local secrets
 - create new remote repo <path from .config>/my_app
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app)
 - pushes new generated app repo to remote develop branch
@@ -35,7 +37,7 @@ The script will:
 Important credentials, patterns and GitHub tokens should be stored in:
 
 ```bash
-apps/my_app/.config/github_settings.json
+apps/my_app/.config/github_api.json
 ```
 
 > This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.

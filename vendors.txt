@@ -78,6 +78,7 @@
 # librenms
 
 # Core Frappe framework
-frappe
+# frappe
 # Bench CLI for managing Frappe apps
-bench
+# bench
+
