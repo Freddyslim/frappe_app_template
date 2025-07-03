@@ -7,8 +7,10 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 # Prevent execution inside the frappe_app_template submodule
-toplevel=$(git rev-parse --show-toplevel 2>/dev/null)
-if [[ "$toplevel" == *"/frappe_app_template" ]]; then
+# `git rev-parse` fails when the current directory isn't a git repo. We don't
+# want the script to exit silently because of `set -e`, so ignore the error.
+toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
+if [[ -n "$toplevel" && "$toplevel" == *"/frappe_app_template" ]]; then
   echo "⛔ ERROR: You are inside the frappe_app_template submodule."
   echo "💡 Please run this script from the root of your app repository, not from inside the template."
   exit 1
@@ -129,8 +131,8 @@ JSON
 fi
 
 # Ensure app skeleton exists (matching bench new-app)
-echo "ℹ️  Creating app skeleton (includes app/.gitignore)"
-python3 "$CONFIG_TARGET/scripts/new_frappe_app_folder.py" "$APP_NAME" --root "$CONFIG_TARGET/app"
+echo "ℹ️  Creating app via bench new-app"
+bench new-app "$APP_NAME"
 
 
 echo "✅ Setup complete."
