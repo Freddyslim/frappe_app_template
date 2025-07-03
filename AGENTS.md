@@ -81,7 +81,7 @@ Die folgenden Flags können über den Prompt gesetzt werden.
 - Ergänzt fehlende Dateien, passt bestehende an
 - Aktualisiert die `How to Code`-Sektion in der `README.md`
 
-### `--no-agent`
+### `--less-agent`
 
 - Prompt wird als primäre Quelle interpretiert
 - `README.md` und `AGENTS.md` werden entsprechend dem Prompt angepasst
