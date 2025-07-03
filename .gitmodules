@@ -7,3 +7,9 @@
 [submodule "vendor/nmb_tools-develop"]
 	path = vendor/nmb_tools-develop
 	url = https://github.com/Freddyslim/nmb_tools
+[submodule "vendor/frappe-version-15"]
+	path = vendor/frappe-version-15
+	url = https://github.com/frappe/frappe
+[submodule "vendor/bench-v5.25.7"]
+	path = vendor/bench-v5.25.7
+	url = https://github.com/frappe/bench
