@@ -293,11 +293,29 @@ touch "$CONFIG_TARGET/AGENTS.md"
 touch "$CONFIG_TARGET/instructions/AGENTS.md"
 touch "$CONFIG_TARGET/license.txt"
 touch "$CONFIG_TARGET/pyproject.toml"
+touch "$CONFIG_TARGET/.gitignore"
 
-# Submodul einbinden statt Symlink
+
+# Submodul einbinden
 if [ ! -d "$CONFIG_TARGET/frappe_app_template/.git" ]; then
   git -C "$CONFIG_TARGET" submodule add https://github.com/Freddyslim/frappe_app_template frappe_app_template || true
   log "Submodule hinzugefügt: frappe_app_template"
+fi
+
+# 🔁 vendors.txt aus Template kopieren
+if [ -f "$CONFIG_TARGET/frappe_app_template/vendors.txt" ]; then
+  cp "$CONFIG_TARGET/frappe_app_template/vendors.txt" "$CONFIG_TARGET/vendors.txt"
+  log "vendors.txt aus frappe_app_template kopiert"
+else
+  log "⚠️ Keine vendors.txt in frappe_app_template gefunden"
+fi
+
+# 🔁 .gitignore aus Template kopieren
+if [ -f "$CONFIG_TARGET/frappe_app_template/.gitignore" ]; then
+  cp "$CONFIG_TARGET/frappe_app_template/.gitignore" "$CONFIG_TARGET/.gitignoret"
+  log ".gitignore aus frappe_app_template kopiert"
+else
+  log "⚠️ Keine .gitignore in frappe_app_template gefunden"
 fi
 
 for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
