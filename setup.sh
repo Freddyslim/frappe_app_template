@@ -68,11 +68,14 @@ if [[ -n "$toplevel" && "$toplevel" == */frappe_app_template ]]; then
   exit 1
 fi
 
-if [ -d "$CONFIG_TARGET" ]; then
-  log "App directory already exists at $CONFIG_TARGET. Skipping app creation."
-else
-  log "Creating new Frappe app: $APP_NAME"
-  bench new-app "$APP_NAME" <<EOF
+ALT_NAME="${APP_NAME//-/_}"
+if [ -d "apps/$APP_NAME" ] || [ -d "apps/$ALT_NAME" ]; then
+  log "ERROR: App directory already exists for $APP_NAME. Aborting to avoid overwrite."
+  exit 1
+fi
+
+log "Creating new Frappe app: $APP_NAME"
+bench new-app "$APP_NAME" <<EOF
 $APP_TITLE
 Auto-generated app $APP_NAME
 Seclution
@@ -98,8 +101,6 @@ EOF
     echo "App directory not found at apps/$APP_NAME or apps/$ALT_NAME. Aborting."
     exit 1
   fi
-
-fi
 
 log "App directory detected: $CONFIG_TARGET"
 

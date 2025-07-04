@@ -22,6 +22,7 @@ Then run the setup script directly from within the `frappe-bench` directory:
 The script will:
 
 - use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively) <-- instead orphaned create_repo_folder
+- abort with an error if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)

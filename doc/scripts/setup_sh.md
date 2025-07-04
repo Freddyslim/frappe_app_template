@@ -16,7 +16,7 @@
 ---
 
 ## 🧱 App-Verzeichnis & Basisstruktur
-- Wenn `apps/<APP_NAME>` existiert → App-Erstellung übersprungen
+- Wenn `apps/<APP_NAME>` existiert → Script bricht mit Fehler ab, um bestehende Dateien nicht zu überschreiben
 - Wenn **nicht vorhanden**:
   - `bench new-app` wird mit vorgegebenen Werten ausgeführt
   - App-Struktur wird angelegt

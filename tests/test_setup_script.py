@@ -2,6 +2,7 @@
 import os
 import subprocess
 from pathlib import Path
+import pytest
 
 
 def test_setup_script_uses_bench_new_app(tmp_path):
@@ -139,3 +140,29 @@ fi
     text = (tmp_path / ".env").read_text()
     assert "API_KEY=stored" in text
     assert "REPO_NAME=demo2" in text
+
+
+def test_setup_script_fails_if_app_exists(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    script_path = repo_root / "setup.sh"
+    tmp_script = tmp_path / "setup.sh"
+    tmp_script.write_text(script_path.read_text())
+    tmp_script.chmod(0o755)
+
+    bench_cmd = tmp_path / "bench"
+    bench_cmd.write_text("#!/bin/bash\ntouch bench_called\nexit 1\n")
+    bench_cmd.chmod(0o755)
+
+    existing = tmp_path / "apps" / "demoapp"
+    existing.mkdir(parents=True)
+
+    (tmp_path / "vendors.txt").write_text("")
+    (tmp_path / "apps.json").write_text("{}")
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+    env = {**os.environ, "PATH": f"{tmp_path}:{os.environ['PATH']}"}
+
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run([str(tmp_script), "demoapp"], cwd=tmp_path, check=True, env=env)
+
+    assert not (tmp_path / "bench_called").exists()
