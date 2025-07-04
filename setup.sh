@@ -136,7 +136,10 @@ mkdir -p "$CONFIG_TARGET"
 [ -f "$BENCH_ENV_FILE" ] || touch "$BENCH_ENV_FILE"
 chmod 600 "$BENCH_ENV_FILE"
 APP_ENV_FILE="$CONFIG_TARGET/.env"
-[ -f "$APP_ENV_FILE" ] || touch "$APP_ENV_FILE"
+if [ ! -f "$APP_ENV_FILE" ]; then
+  touch "$APP_ENV_FILE"
+  vlog "Created app env file at $APP_ENV_FILE"
+fi
 chmod 600 "$APP_ENV_FILE"
 
 migrate_repo_env_values
