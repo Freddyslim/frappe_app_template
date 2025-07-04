@@ -24,10 +24,10 @@ The script will:
 - use `bench new-app` to generate a new Frappe app under `apps/my_app/` (interactive)
 - abort if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
-- add `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
-- copy template files such as `README.md`, `.github/`, `AGENTS.md`, `instructions/` and `scripts/`
-- create the GitHub repository for your app or prompt to push to an existing repo
-- configure the deploy key and set `origin` for GitHub push
+- link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
+- copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
+- create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)
+- prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - the GitHub repository is automatically named after your app
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
 - repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`; keys from the bench `.env` are moved here if found

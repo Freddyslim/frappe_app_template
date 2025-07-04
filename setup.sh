@@ -350,7 +350,7 @@ fi
 
 # 🔁 .gitignore aus Template kopieren
 if [ -f "$CONFIG_TARGET/frappe_app_template/.gitignore" ]; then
-  cp "$CONFIG_TARGET/frappe_app_template/.gitignore" "$CONFIG_TARGET/.gitignoret"
+  cp "$CONFIG_TARGET/frappe_app_template/.gitignore" "$CONFIG_TARGET/.gitignore"
   log ".gitignore aus frappe_app_template kopiert"
 else
   log "⚠️ Keine .gitignore in frappe_app_template gefunden"
