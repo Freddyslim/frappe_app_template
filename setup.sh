@@ -42,7 +42,7 @@ if [[ -n "$toplevel" && "$toplevel" == */frappe_app_template ]]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-BENCH_DIR="$(dirname "$SCRIPT_DIR")"
+BENCH_DIR="$(pwd)"
 WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
 APP_NAME="${APP_NAME:-$(basename "$BENCH_DIR")}"
 APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
@@ -71,7 +71,7 @@ fi
 
 log "App directory detected: $CONFIG_TARGET"
 
-ENV_FILE="$CONFIG_TARGET/.env"
+ENV_FILE="$BENCH_DIR/.env"
 [ -f "$ENV_FILE" ] || touch "$ENV_FILE"
 
 get_env_val() {
@@ -87,10 +87,16 @@ set_env_val() {
   vlog "$key set in .env"
 }
 
+env_api_key="${API_KEY:-}"
 API_KEY=$(get_env_val "API_KEY")
 GITHUB_USER=$(get_env_val "GITHUB_USER")
 REPO_NAME=$(get_env_val "REPO_NAME")
 REPO_PATH=$(get_env_val "REPO_PATH")
+
+if [ -z "$API_KEY" ] && [ -n "$env_api_key" ]; then
+  API_KEY="$env_api_key"
+  set_env_val "API_KEY" "$API_KEY"
+fi
 
 if [ $AUTOGEN_CREDS -eq 1 ]; then
   if [ -z "$API_KEY" ] || ! [[ "$API_KEY" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
@@ -282,11 +288,14 @@ chmod +x "$CONFIG_TARGET/scripts/"*.sh 2>/dev/null || true
 
 log "Initializing Git repo..."
 cd "$CONFIG_TARGET"
-rm -rf .git
-git init
-git checkout -b "$DEFAULT_BRANCH"
-git add .
-git commit -m "Initial commit for $APP_NAME"
+if [ ! -d .git ]; then
+  git init
+  git checkout -b "$DEFAULT_BRANCH"
+  git add .
+  git commit -m "Initial commit for $APP_NAME"
+else
+  log "Existing .git directory detected – skipping init."
+fi
 
 if [ -n "${REMOTE_URL:-}" ]; then
   git remote add origin "$REMOTE_URL"
@@ -296,14 +305,33 @@ else
 fi
 
 if [ -n "${REMOTE_URL:-}" ]; then
-  read -p "Do you want to push to $REMOTE_URL now? [Y/n]: " do_push
+  if [ -t 0 ]; then
+    read -p "Do you want to push to $REMOTE_URL now? [Y/n]: " do_push
+  else
+    do_push="n"
+  fi
   if [[ "$do_push" =~ ^[Nn]$ ]]; then
     log "Push skipped by user."
   else
+    git fetch origin "$DEFAULT_BRANCH" 2>/dev/null || true
+    git pull --rebase origin "$DEFAULT_BRANCH" 2>/dev/null || true
     if git push -u origin "$DEFAULT_BRANCH"; then
       log "Initial push to GitHub completed."
     else
-      log "Initial push to GitHub failed."
+      if [ -t 0 ]; then
+        read -p "Push failed. Force push? [y/N]: " do_force
+      else
+        do_force="n"
+      fi
+      if [[ "$do_force" =~ ^[Yy]$ ]]; then
+        if git push --force -u origin "$DEFAULT_BRANCH"; then
+          log "Force push succeeded."
+        else
+          log "Force push failed."
+        fi
+      else
+        log "Initial push to GitHub failed."
+      fi
     fi
   fi
 else

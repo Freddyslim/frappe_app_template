@@ -20,7 +20,7 @@
 - Wenn **nicht vorhanden**:
   - `bench new-app` wird mit vorgegebenen Werten ausgeführt
   - App-Struktur wird angelegt
-- Erstellt `.env` (falls nicht vorhanden)
+- Erstellt `.env` im Bench-Hauptordner (falls nicht vorhanden)
 - Liest / schreibt Werte wie `API_KEY`, `GITHUB_USER`, `REPO_NAME`, `REPO_PATH`
 
 ---
