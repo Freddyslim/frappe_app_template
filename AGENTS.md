@@ -180,6 +180,9 @@ This ensures large or multi-scope prompts remain traceable, manageable, and safe
 - All scripts, workflows, etc. should be documented + comprehensive global documentation, possibly with interlinking
 - Where reasonable, modular Mermaid diagrams should be used to visualize the workflow
 - Mermaids should be generated automatically when useful and follow the `AGENTS.md` rules for Mermaid diagrams
+- Directory trees from `README.md` are stored under `doc/trees/` and referenced from the README
+- Each script in `scripts/` has a matching file in `doc/scripts/`
+- Each workflow in `.github/workflows/` has a matching file in `doc/workflows/`
 
 ---
 
