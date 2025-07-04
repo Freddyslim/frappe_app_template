@@ -34,19 +34,35 @@ APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
 APP_FOLDER="$APP_NAME"
 CONFIG_TARGET="apps/$APP_FOLDER"
 
-ENV_FILE="$BENCH_DIR/.env"
+BENCH_ENV_FILE="$BENCH_DIR/.env"
+APP_ENV_FILE=""
 
 get_env_val() {
-  grep -E "^$1=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- || true
+  local key="$1"
+  local file="$2"
+  grep -E "^$key=" "$file" 2>/dev/null | cut -d'=' -f2- || true
 }
 set_env_val() {
   local key="$1"
   local val="$2"
-  grep -v "^$key=" "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
-  echo "$key=$val" >> "$ENV_FILE.tmp"
-  mv "$ENV_FILE.tmp" "$ENV_FILE"
-  chmod 600 "$ENV_FILE"
-  vlog "$key set in .env"
+  local file="$3"
+  grep -v "^$key=" "$file" > "$file.tmp" 2>/dev/null || true
+  echo "$key=$val" >> "$file.tmp"
+  mv "$file.tmp" "$file"
+  chmod 600 "$file"
+  vlog "$key set in $(basename "$file")"
+}
+set_bench_val() {
+  set_env_val "$1" "$2" "$BENCH_ENV_FILE"
+}
+set_app_val() {
+  set_env_val "$1" "$2" "$APP_ENV_FILE"
+}
+get_bench_val() {
+  get_env_val "$1" "$BENCH_ENV_FILE"
+}
+get_app_val() {
+  get_env_val "$1" "$APP_ENV_FILE"
 }
 
 log() {
@@ -91,11 +107,11 @@ EOF
   elif [ -d "apps/$ALT_NAME" ]; then
     CONFIG_TARGET="apps/$ALT_NAME"
     APP_NAME="$ALT_NAME"
-    set_env_val "REPO_NAME" "$APP_NAME"
+    set_app_val "REPO_NAME" "$APP_NAME"
     if [ -n "${GITHUB_USER:-}" ]; then
-    set_env_val "REPO_PATH" "github.com:$GITHUB_USER/$APP_NAME.git"
+      set_app_val "REPO_PATH" "github.com:$GITHUB_USER/$APP_NAME.git"
     else
-        vlog "Skipping REPO_PATH set – GITHUB_USER not set yet."
+      vlog "Skipping REPO_PATH set – GITHUB_USER not set yet."
     fi
   else
     echo "App directory not found at apps/$APP_NAME or apps/$ALT_NAME. Aborting."
@@ -105,45 +121,48 @@ EOF
 log "App directory detected: $CONFIG_TARGET"
 
 mkdir -p "$CONFIG_TARGET"
-[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
-chmod 600 "$ENV_FILE"
+[ -f "$BENCH_ENV_FILE" ] || touch "$BENCH_ENV_FILE"
+chmod 600 "$BENCH_ENV_FILE"
+APP_ENV_FILE="$CONFIG_TARGET/.env"
+[ -f "$APP_ENV_FILE" ] || touch "$APP_ENV_FILE"
+chmod 600 "$APP_ENV_FILE"
 
 
 env_api_key="${API_KEY:-}"
-API_KEY=$(get_env_val "API_KEY")
-GITHUB_USER=$(get_env_val "GITHUB_USER")
-REPO_NAME=$(get_env_val "REPO_NAME")
-REPO_PATH=$(get_env_val "REPO_PATH")
+API_KEY=$(get_bench_val "API_KEY")
+GITHUB_USER=$(get_bench_val "GITHUB_USER")
+REPO_NAME=$(get_app_val "REPO_NAME")
+REPO_PATH=$(get_app_val "REPO_PATH")
 
 # always align repository name with the app name to avoid leftovers from
 # previous runs
 REPO_NAME="$APP_NAME"
-set_env_val "REPO_NAME" "$REPO_NAME"
+set_app_val "REPO_NAME" "$REPO_NAME"
 if [ -n "$GITHUB_USER" ]; then
   REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
-  set_env_val "REPO_PATH" "$REPO_PATH"
+  set_app_val "REPO_PATH" "$REPO_PATH"
 fi
 
 if [ -z "$API_KEY" ] && [ -n "$env_api_key" ]; then
   API_KEY="$env_api_key"
-  set_env_val "API_KEY" "$API_KEY"
+  set_bench_val "API_KEY" "$API_KEY"
 fi
 
-if [ $AUTOGEN_CREDS -eq 1 ]; then
-  if [ -z "$API_KEY" ] || ! [[ "$API_KEY" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
-    read -p "GitHub API key: " API_KEY
-    set_env_val "API_KEY" "$API_KEY"
-  fi
+  if [ $AUTOGEN_CREDS -eq 1 ]; then
+    if [ -z "$API_KEY" ] || ! [[ "$API_KEY" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
+      read -p "GitHub API key: " API_KEY
+      set_bench_val "API_KEY" "$API_KEY"
+    fi
 
-  if [ -z "$GITHUB_USER" ]; then
-    read -p "GitHub username or org (target owner): " GITHUB_USER
-    set_env_val "GITHUB_USER" "$GITHUB_USER"
-  fi
+    if [ -z "$GITHUB_USER" ]; then
+      read -p "GitHub username or org (target owner): " GITHUB_USER
+      set_bench_val "GITHUB_USER" "$GITHUB_USER"
+    fi
 
-  # ensure repo path matches the chosen owner and repo name
-  REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
-  set_env_val "REPO_PATH" "$REPO_PATH"
-fi
+    # ensure repo path matches the chosen owner and repo name
+    REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
+    set_app_val "REPO_PATH" "$REPO_PATH"
+  fi
 
 SSH_KEY_PATH="$HOME/.ssh/id_deploy_$REPO_NAME"
 SSH_PUBKEY_PATH="$SSH_KEY_PATH.pub"
@@ -156,7 +175,7 @@ if [ ! -f "$SSH_PUBKEY_PATH" ]; then
   ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null || true
 fi
 
-set_env_val "SSH_KEY_PATH" "$SSH_KEY_PATH"
+set_app_val "SSH_KEY_PATH" "$SSH_KEY_PATH"
 
 try_create_repo() {
   local key="$1"
@@ -233,10 +252,10 @@ add_deploy_key() {
 
   if [[ "$status_code" == "201" ]]; then
     log "Deploy key successfully added to $REPO_NAME"
-    set_env_val "DEPLOY_KEY_ADDED" "1"
+    set_app_val "DEPLOY_KEY_ADDED" "1"
   elif [[ "$status_code" == "422" && "$body" == *"key is already in use"* ]]; then
     log "Deploy key already exists."
-    set_env_val "DEPLOY_KEY_ADDED" "1"
+    set_app_val "DEPLOY_KEY_ADDED" "1"
   else
     message=$(echo "$body" | jq -r '.message // empty')
     log "Failed to add Deploy Key (HTTP $status_code)"
@@ -266,8 +285,8 @@ configure_ssh_for_repo() {
   REMOTE_URL="$alias:$GITHUB_USER/$REPO_NAME.git"
 }
 
-if try_create_repo "$API_KEY"; then
-  DEPLOY_KEY_ADDED=$(get_env_val "DEPLOY_KEY_ADDED")
+  if try_create_repo "$API_KEY"; then
+  DEPLOY_KEY_ADDED=$(get_app_val "DEPLOY_KEY_ADDED")
   if [ "$AUTOGEN_CREDS" -eq 1 ] && [ "$DEPLOY_KEY_ADDED" != "1" ]; then
     add_deploy_key
   fi
