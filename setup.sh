@@ -63,14 +63,6 @@ mit
 n
 EOF
 
-  if [ ! -d "$CONFIG_TARGET" ]; then
-    echo "App directory not found at $CONFIG_TARGET after creation. Aborting."
-    exit 1
-  fi
-fi
-
-log "App directory detected: $CONFIG_TARGET"
-
 ENV_FILE="$BENCH_DIR/.env"
 [ -f "$ENV_FILE" ] || touch "$ENV_FILE"
 
@@ -86,6 +78,29 @@ set_env_val() {
   chmod 600 "$ENV_FILE"
   vlog "$key set in .env"
 }
+
+  # Versuche den tatsächlichen App-Ordner zu erkennen
+  ALT_NAME="${APP_NAME//-/_}"
+  if [ -d "apps/$APP_NAME" ]; then
+    CONFIG_TARGET="apps/$APP_NAME"
+  elif [ -d "apps/$ALT_NAME" ]; then
+    CONFIG_TARGET="apps/$ALT_NAME"
+    APP_NAME="$ALT_NAME"
+    set_env_val "REPO_NAME" "$APP_NAME"
+    if [ -n "${GITHUB_USER:-}" ]; then
+    set_env_val "REPO_PATH" "github.com:$GITHUB_USER/$APP_NAME.git"
+    else
+        vlog "Skipping REPO_PATH set – GITHUB_USER not set yet."
+    fi
+  else
+    echo "App directory not found at apps/$APP_NAME or apps/$ALT_NAME. Aborting."
+    exit 1
+  fi
+
+fi
+
+log "App directory detected: $CONFIG_TARGET"
+
 
 env_api_key="${API_KEY:-}"
 API_KEY=$(get_env_val "API_KEY")
