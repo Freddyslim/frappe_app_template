@@ -148,6 +148,45 @@ fi
     assert "REPO_NAME=demo2" in app_text
 
 
+def test_setup_script_migrates_repo_env(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    script_path = repo_root / "setup.sh"
+    tmp_script = tmp_path / "setup.sh"
+    tmp_script.write_text(script_path.read_text())
+    tmp_script.chmod(0o755)
+
+    bench_cmd = tmp_path / "bench"
+    bench_cmd.write_text(
+        """#!/bin/bash
+if [ \"$1\" = \"new-app\" ]; then
+    mkdir -p apps/$2/$2
+else
+    exit 1
+fi
+"""
+    )
+    bench_cmd.chmod(0o755)
+
+    (tmp_path / ".env").write_text(
+        "API_KEY=stored\nGITHUB_USER=user\nREPO_NAME=old\nREPO_PATH=old.git\nSSH_KEY_PATH=/tmp/key\nDEPLOY_KEY_ADDED=1\n"
+    )
+    (tmp_path / "vendors.txt").write_text("")
+    (tmp_path / "apps.json").write_text("{}")
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+    env = {**os.environ, "PATH": f"{tmp_path}:{os.environ['PATH']}"}
+    subprocess.run([str(tmp_script), "demo3"], cwd=tmp_path, check=True, env=env)
+
+    bench_text = (tmp_path / ".env").read_text()
+    assert "API_KEY=stored" in bench_text
+    assert "REPO_NAME" not in bench_text
+
+    app_text = (tmp_path / "apps" / "demo3" / ".env").read_text()
+    assert "REPO_NAME=demo3" in app_text
+    assert "SSH_KEY_PATH" in app_text
+    assert "DEPLOY_KEY_ADDED=1" in app_text
+
+
 def test_setup_script_fails_if_app_exists(tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
     script_path = repo_root / "setup.sh"

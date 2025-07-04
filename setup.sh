@@ -65,6 +65,24 @@ get_app_val() {
   get_env_val "$1" "$APP_ENV_FILE"
 }
 
+unset_bench_val() {
+  local key="$1"
+  grep -v "^$key=" "$BENCH_ENV_FILE" > "$BENCH_ENV_FILE.tmp" 2>/dev/null || true
+  mv "$BENCH_ENV_FILE.tmp" "$BENCH_ENV_FILE"
+  chmod 600 "$BENCH_ENV_FILE"
+}
+
+migrate_repo_env_values() {
+  for key in REPO_NAME REPO_PATH SSH_KEY_PATH DEPLOY_KEY_ADDED; do
+    local val
+    val=$(get_bench_val "$key")
+    if [ -n "$val" ]; then
+      set_app_val "$key" "$val"
+      unset_bench_val "$key"
+    fi
+  done
+}
+
 log() {
   echo "$1"
 }
@@ -107,12 +125,6 @@ EOF
   elif [ -d "apps/$ALT_NAME" ]; then
     CONFIG_TARGET="apps/$ALT_NAME"
     APP_NAME="$ALT_NAME"
-    set_app_val "REPO_NAME" "$APP_NAME"
-    if [ -n "${GITHUB_USER:-}" ]; then
-      set_app_val "REPO_PATH" "github.com:$GITHUB_USER/$APP_NAME.git"
-    else
-      vlog "Skipping REPO_PATH set – GITHUB_USER not set yet."
-    fi
   else
     echo "App directory not found at apps/$APP_NAME or apps/$ALT_NAME. Aborting."
     exit 1
@@ -126,6 +138,8 @@ chmod 600 "$BENCH_ENV_FILE"
 APP_ENV_FILE="$CONFIG_TARGET/.env"
 [ -f "$APP_ENV_FILE" ] || touch "$APP_ENV_FILE"
 chmod 600 "$APP_ENV_FILE"
+
+migrate_repo_env_values
 
 
 env_api_key="${API_KEY:-}"

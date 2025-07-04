@@ -30,7 +30,7 @@ The script will:
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - the GitHub repository is automatically named after your app
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
-- app specific values such as the generated SSH key are saved in `apps/my_app/.env`
+- repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`. The setup script creates this file automatically and moves these keys from the bench `.env` if found.
 - run `./scripts/update_vendors.sh` once to fetch vendor submodules before the initial push
 - pushes new generated app repo to remote develop branch
 
@@ -42,7 +42,7 @@ General GitHub credentials such as the API token and default repo path belong in
 frappe-bench/.env
 ```
 
-Each created app also has its own `.env` which stores repo specific settings like `SSH_KEY_PATH`.
+Each created app has its own `.env` for repo specific values such as `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED`.
 Both files are ignored by git so secrets remain local.
 
 ### Project Structure
