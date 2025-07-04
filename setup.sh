@@ -34,10 +34,7 @@ APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
 APP_FOLDER="$APP_NAME"
 CONFIG_TARGET="apps/$APP_FOLDER"
 
-ENV_FILE="$CONFIG_TARGET/.env"
-mkdir -p "$CONFIG_TARGET"
-[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
-chmod 600 "$ENV_FILE"
+ENV_FILE="$BENCH_DIR/.env"
 
 get_env_val() {
   grep -E "^$1=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- || true
@@ -105,6 +102,10 @@ EOF
 fi
 
 log "App directory detected: $CONFIG_TARGET"
+
+mkdir -p "$CONFIG_TARGET"
+[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
+chmod 600 "$ENV_FILE"
 
 
 env_api_key="${API_KEY:-}"
@@ -339,9 +340,29 @@ fi
 if [ -n "${REMOTE_URL:-}" ]; then
   git remote remove origin 2>/dev/null || true
   git remote add origin "$REMOTE_URL"
-  log "Remote 'origin' set to $REMOTE_URL"
+log "Remote 'origin' set to $REMOTE_URL"
 else
   log "No remote URL set – skipping remote setup."
+fi
+
+# run vendor update before optional initial push
+if [ -x "./scripts/update_vendors.sh" ]; then
+  log "Running update_vendors.sh to fetch vendor apps..."
+  ./scripts/update_vendors.sh
+  git add .gitmodules apps.json vendors.txt 2>/dev/null || true
+  if [ -d vendor ]; then
+    git add vendor
+  fi
+  if [ -d instructions ]; then
+    git add instructions
+  fi
+  if git diff --cached --quiet; then
+    vlog "No vendor changes to commit"
+  else
+    git commit -m "chore: update vendor apps"
+  fi
+else
+  log "No update_vendors.sh script found – skipping vendor sync"
 fi
 
 if [ -n "${REMOTE_URL:-}" ]; then
