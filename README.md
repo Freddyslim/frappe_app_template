@@ -27,6 +27,8 @@ The script will:
 - copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
 - create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
+- the GitHub repository is automatically named after your app
+- the GitHub API token is stored in `~/frappe-bench/.env` for reuse
 - run `./scripts/update_vendors.sh` once to fetch vendor submodules before the initial push
 - pushes new generated app repo to remote develop branch
 
