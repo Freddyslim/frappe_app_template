@@ -21,8 +21,8 @@ Then run the setup script directly from within the `frappe-bench` directory:
 
 The script will:
 
-- use `bench new-app` to generate a new Frappe app under `apps/my_app/` (you will be prompted interactively) <-- instead orphaned create_repo_folder
-- abort with an error if `apps/my_app/` already exists to avoid overwriting
+- use `bench new-app` to generate a new Frappe app under `apps/my_app/` (interactive)
+- abort if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
 - copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
@@ -30,9 +30,9 @@ The script will:
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - the GitHub repository is automatically named after your app
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
-- repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`. The setup script creates this file automatically and moves these keys from the bench `.env` if found.
-- run `./scripts/update_vendors.sh` once to fetch vendor submodules before the initial push
-- pushes new generated app repo to remote develop branch
+- repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`; keys from the bench `.env` are moved here if found
+- run `./scripts/update_vendors.sh` to fetch vendor submodules before the initial push
+- push the new repository to the remote `develop` branch
 
 ### GitHub Configuration
 
