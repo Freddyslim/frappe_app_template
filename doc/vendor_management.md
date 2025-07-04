@@ -14,6 +14,33 @@ The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repo
 
 Submodules removed from the lists are deleted, and the updated state is written back to `apps.json`.
 
+## Other helper scripts
+
+- `clone_submodules.sh` – clones vendor submodules listed in `vendors.txt` without updating existing entries.
+- `remove_submodule.sh` – removes a specific vendor submodule and its instructions directory.
+
+Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
+
 ## GitHub Workflow
 
-`update-vendors.yml` triggers this script automatically whenever `vendors.txt` or `custom_vendors.json` change. The workflow commits updated submodules and documentation back to the repository.
+`update-vendors.yml` triggers `update_vendors.sh` automatically whenever `vendors.txt` or `custom_vendors.json` change. The workflow commits updated submodules and documentation back to the repository.
+
+## Diagram
+
+A high level flow of the vendor update process is captured in `vendor_update_flow.mmd`. Run `./scripts/generate_diagrams.sh` to render the diagram as SVG.
+
+```mermaid
+%%{init: { 'theme': 'default' } }%%
+flowchart TD
+    vendors[vendors.txt]
+    custom[custom_vendors.json]
+    update(update_vendors.sh)
+    apps[apps.json]
+    submods[vendor/ submodules]
+    workflow[update-vendors.yml]
+    vendors --> update
+    custom --> update
+    update --> apps
+    update --> submods
+    apps --> workflow
+```

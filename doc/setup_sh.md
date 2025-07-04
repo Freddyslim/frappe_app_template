@@ -81,3 +81,5 @@
 ## 🔒 Sicherheit & Robustheit
 - `set -euo pipefail`: Bricht bei Fehlern oder nicht gesetzten Variablen ab
 - Zugriff auf `.env` sicher via `chmod 600`
+
+Weitere Hinweise zur Verwaltung von Vendoren findest du in [vendor_management.md](vendor_management.md).
