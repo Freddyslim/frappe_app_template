@@ -56,7 +56,9 @@ fi
     assert (app_path / "patches.txt").exists()
     env_file = tmp_path / ".env"
     assert env_file.exists()
-    assert "API_KEY=dummyapikeydummyapikey" in env_file.read_text()
+    text = env_file.read_text()
+    assert "API_KEY=dummyapikeydummyapikey" in text
+    assert "REPO_NAME=demoapp" in text
 
 
 def test_setup_script_runs_update_vendors(tmp_path):
@@ -105,3 +107,35 @@ fi
 
     marker = tmp_path / "apps" / "demoapp" / "update_called"
     assert marker.exists()
+
+
+def test_setup_script_uses_existing_env(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    script_path = repo_root / "setup.sh"
+    tmp_script = tmp_path / "setup.sh"
+    tmp_script.write_text(script_path.read_text())
+    tmp_script.chmod(0o755)
+
+    bench_cmd = tmp_path / "bench"
+    bench_cmd.write_text(
+        """#!/bin/bash
+if [ \"$1\" = \"new-app\" ]; then
+    mkdir -p apps/$2/$2
+else
+    exit 1
+fi
+"""
+    )
+    bench_cmd.chmod(0o755)
+
+    (tmp_path / ".env").write_text("API_KEY=stored\nGITHUB_USER=user\n")
+    (tmp_path / "vendors.txt").write_text("")
+    (tmp_path / "apps.json").write_text("{}")
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+    env = {**os.environ, "PATH": f"{tmp_path}:{os.environ['PATH']}"}
+    subprocess.run([str(tmp_script), "demo2"], cwd=tmp_path, check=True, env=env)
+
+    text = (tmp_path / ".env").read_text()
+    assert "API_KEY=stored" in text
+    assert "REPO_NAME=demo2" in text

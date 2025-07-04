@@ -114,6 +114,15 @@ GITHUB_USER=$(get_env_val "GITHUB_USER")
 REPO_NAME=$(get_env_val "REPO_NAME")
 REPO_PATH=$(get_env_val "REPO_PATH")
 
+# always align repository name with the app name to avoid leftovers from
+# previous runs
+REPO_NAME="$APP_NAME"
+set_env_val "REPO_NAME" "$REPO_NAME"
+if [ -n "$GITHUB_USER" ]; then
+  REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
+  set_env_val "REPO_PATH" "$REPO_PATH"
+fi
+
 if [ -z "$API_KEY" ] && [ -n "$env_api_key" ]; then
   API_KEY="$env_api_key"
   set_env_val "API_KEY" "$API_KEY"
@@ -130,15 +139,9 @@ if [ $AUTOGEN_CREDS -eq 1 ]; then
     set_env_val "GITHUB_USER" "$GITHUB_USER"
   fi
 
-  if [ -z "$REPO_NAME" ]; then
-    REPO_NAME="$APP_NAME"
-    set_env_val "REPO_NAME" "$REPO_NAME"
-  fi
-
-  if [ -z "$REPO_PATH" ]; then
-    REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
-    set_env_val "REPO_PATH" "$REPO_PATH"
-  fi
+  # ensure repo path matches the chosen owner and repo name
+  REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
+  set_env_val "REPO_PATH" "$REPO_PATH"
 fi
 
 SSH_KEY_PATH="$HOME/.ssh/id_deploy_$REPO_NAME"
