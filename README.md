@@ -86,7 +86,7 @@ branch:develop
         ├── custom_vendors.json              # leere Datei für eigene Vendoren
         ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z.​​B. ERPNext, Nextcloud)
         ├── frappe_app_template              # eingebunden als submodule
-        ├── vendor/                          # eingebundene Vendor-Repositories (als Submodule)
+        ├── vendor/                          # von frappe_app_template kopiert
         │   ├── erpnext/
         │   └── nextcloud/
         ├── instructions/                    # projektspezifische Guidance für Codex
