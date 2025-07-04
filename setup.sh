@@ -22,6 +22,36 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BENCH_DIR="$(pwd)"
+WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
+APP_NAME="${APP_NAME:-}"
+if [ -z "$APP_NAME" ]; then
+  APP_NAME="$(basename "$BENCH_DIR")"
+fi
+APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
+
+APP_FOLDER="$APP_NAME"
+CONFIG_TARGET="apps/$APP_FOLDER"
+
+ENV_FILE="$CONFIG_TARGET/.env"
+mkdir -p "$CONFIG_TARGET"
+[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
+chmod 600 "$ENV_FILE"
+
+get_env_val() {
+  grep -E "^$1=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- || true
+}
+set_env_val() {
+  local key="$1"
+  local val="$2"
+  grep -v "^$key=" "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
+  echo "$key=$val" >> "$ENV_FILE.tmp"
+  mv "$ENV_FILE.tmp" "$ENV_FILE"
+  chmod 600 "$ENV_FILE"
+  vlog "$key set in .env"
+}
+
 log() {
   echo "$1"
 }
@@ -41,15 +71,6 @@ if [[ -n "$toplevel" && "$toplevel" == */frappe_app_template ]]; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-BENCH_DIR="$(pwd)"
-WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
-APP_NAME="${APP_NAME:-$(basename "$BENCH_DIR")}"
-APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
-
-APP_FOLDER="$APP_NAME"
-CONFIG_TARGET="apps/$APP_FOLDER"
-
 if [ -d "$CONFIG_TARGET" ]; then
   log "App directory already exists at $CONFIG_TARGET. Skipping app creation."
 else
@@ -62,22 +83,6 @@ dev@seclution.io
 mit
 n
 EOF
-
-ENV_FILE="$BENCH_DIR/.env"
-[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
-
-get_env_val() {
-  grep -E "^$1=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- || true
-}
-set_env_val() {
-  local key="$1"
-  local val="$2"
-  grep -v "^$key=" "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
-  echo "$key=$val" >> "$ENV_FILE.tmp"
-  mv "$ENV_FILE.tmp" "$ENV_FILE"
-  chmod 600 "$ENV_FILE"
-  vlog "$key set in .env"
-}
 
   # Versuche den tatsächlichen App-Ordner zu erkennen
   ALT_NAME="${APP_NAME//-/_}"
@@ -289,9 +294,10 @@ touch "$CONFIG_TARGET/instructions/AGENTS.md"
 touch "$CONFIG_TARGET/license.txt"
 touch "$CONFIG_TARGET/pyproject.toml"
 
-if [ ! -L "$CONFIG_TARGET/frappe_app_template" ]; then
-  ln -s /opt/git/frappe_app_template "$CONFIG_TARGET/frappe_app_template"
-  log "Symlink gesetzt: frappe_app_template → /opt/git/frappe_app_template"
+# Submodul einbinden statt Symlink
+if [ ! -d "$CONFIG_TARGET/frappe_app_template/.git" ]; then
+  git -C "$CONFIG_TARGET" submodule add https://github.com/Freddyslim/frappe_app_template frappe_app_template || true
+  log "Submodule hinzugefügt: frappe_app_template"
 fi
 
 for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
@@ -313,6 +319,7 @@ else
 fi
 
 if [ -n "${REMOTE_URL:-}" ]; then
+  git remote remove origin 2>/dev/null || true
   git remote add origin "$REMOTE_URL"
   log "Remote 'origin' set to $REMOTE_URL"
 else
