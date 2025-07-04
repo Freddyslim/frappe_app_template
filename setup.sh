@@ -1,12 +1,18 @@
 #!/bin/bash
-# setup.sh: bootstrap a new Frappe app using template resources
 set -euo pipefail
 
 VERBOSE=0
+DEFAULT_BRANCH="develop"
+AUTOGEN_CREDS=0
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -v|--verbose)
       VERBOSE=1
+      shift
+      ;;
+    --autogencreds)
+      AUTOGEN_CREDS=1
       shift
       ;;
     *)
@@ -16,159 +22,292 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [ "$VERBOSE" -eq 1 ]; then
-  echo "🔎 Verbose mode enabled"
-  set -x
-fi
-
-if ! command -v jq >/dev/null 2>&1; then
-  echo "❌ jq is required but not installed. Please install jq and retry." >&2
-  exit 1
-fi
-
-# Prevent execution inside the frappe_app_template submodule
-# `git rev-parse` fails when the current directory isn't a git repo. We don't
-# want the script to exit silently because of `set -e`, so ignore the error.
-toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
-if [[ -n "$toplevel" && "$toplevel" == *"/frappe_app_template" ]]; then
-  echo "⛔ ERROR: You are inside the frappe_app_template submodule."
-  echo "💡 Please run this script from the root of your app repository, not from inside the template."
-  exit 1
-fi
-
-# Determine the script and parent directories
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"
-WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
-
-# When used as a submodule, copy workflow files (and requirements.txt) to the
-# parent repository
-if [ -d "$PARENT_DIR/.git" ] && [ "$PARENT_DIR" != "$SCRIPT_DIR" ]; then
-    for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
-        [ -f "$wf" ] || continue
-        target="$PARENT_DIR/.github/workflows/$(basename "$wf")"
-        mkdir -p "$(dirname "$target")"
-        if [ ! -f "$target" ]; then
-            [ "$VERBOSE" -eq 1 ] && echo "Copy workflow $(basename "$wf")"
-            cp "$wf" "$target"
-        fi
-    done
-    if [ ! -f "$PARENT_DIR/requirements.txt" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy requirements.txt"
-        cp "$SCRIPT_DIR/requirements.txt" "$PARENT_DIR/requirements.txt"
-    fi
-    if [ ! -f "$PARENT_DIR/requirements-dev.txt" ] && [ -f "$SCRIPT_DIR/requirements-dev.txt" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy requirements-dev.txt"
-        cp "$SCRIPT_DIR/requirements-dev.txt" "$PARENT_DIR/requirements-dev.txt"
-    fi
-    if [ -d "$SCRIPT_DIR/scripts" ]; then
-        mkdir -p "$PARENT_DIR/scripts"
-        for sf in "$SCRIPT_DIR"/scripts/*; do
-            [ -f "$sf" ] || continue
-            target="$PARENT_DIR/scripts/$(basename "$sf")"
-            if [ ! -f "$target" ]; then
-                [ "$VERBOSE" -eq 1 ] && echo "Copy script $(basename "$sf")"
-                cp "$sf" "$target"
-            fi
-        done
-        chmod +x "$PARENT_DIR"/scripts/*.sh 2>/dev/null || true
-    fi
-    if [ "$PARENT_DIR" != "$SCRIPT_DIR" ] && [ ! -f "$PARENT_DIR/.gitignore" ] && [ -f "$SCRIPT_DIR/.gitignore" ]; then
-        [ "$VERBOSE" -eq 1 ] && echo "Copy .gitignore"
-        cp "$SCRIPT_DIR/.gitignore" "$PARENT_DIR/.gitignore"
-    fi
-
-    CONFIG_TARGET="$PARENT_DIR"
-else
-    CONFIG_TARGET="$SCRIPT_DIR"
-fi
-
-# Ensure .gitmodules exists so that workflows using submodules don't fail
-if [ ! -f "$CONFIG_TARGET/.gitmodules" ]; then
-    git submodule init 2>/dev/null || touch "$CONFIG_TARGET/.gitmodules"
-fi
-
-# Setup .env file and GitHub API key
-ENV_FILE="$CONFIG_TARGET/.env"
-if [ ! -f "$ENV_FILE" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Create $ENV_FILE"
-    touch "$ENV_FILE"
-fi
-
-existing_key=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2- || true)
-if [[ -z "$existing_key" || ! "$existing_key" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
-    user_key="${API_KEY:-}"
-    if [ -z "$user_key" ] && [ -t 0 ]; then
-        read -p "Enter GitHub API key (leave blank to skip): " user_key
-    fi
-    if [ -n "$user_key" ]; then
-        grep -v '^API_KEY=' "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
-        echo "API_KEY=$user_key" >> "$ENV_FILE.tmp"
-        mv "$ENV_FILE.tmp" "$ENV_FILE"
-        echo "🔐 API key stored in $ENV_FILE"
-    else
-        echo "ℹ️  No API key provided. Add it manually to $ENV_FILE if needed."
-    fi
-fi
-
-# Determine app name if not already set via arguments
-if [ -z "${APP_NAME:-}" ]; then
-    APP_NAME="$(basename "$CONFIG_TARGET")"
-fi
-
-# Ensure sample_data directory exists
-[ "$VERBOSE" -eq 1 ] && echo "Ensure sample_data directory"
-mkdir -p "$CONFIG_TARGET/sample_data"
-
-# Ensure vendor directory exists for workflows
-[ "$VERBOSE" -eq 1 ] && echo "Ensure vendor directory"
-mkdir -p "$CONFIG_TARGET/vendor"
-
-# Ensure core instructions directory and README
-[ "$VERBOSE" -eq 1 ] && echo "Ensure instructions/_core"
-mkdir -p "$CONFIG_TARGET/instructions/_core"
-CORE_README="$CONFIG_TARGET/instructions/_core/README.md"
-if [ ! -f "$CORE_README" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Create $CORE_README"
-    cat > "$CORE_README" <<'EOF'
-# Instructions Overview
-
-This folder stores the default documentation that ships with every app.
-For details on how Agents load and use these files, see “agent.md” in the
-repository root.
-EOF
-fi
-
-# Create example configuration files if missing
-if [ ! -f "$CONFIG_TARGET/vendors.txt" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Copy vendors.txt"
-    cp "$SCRIPT_DIR/vendors.txt" "$CONFIG_TARGET/vendors.txt"
-fi
-
-if [ ! -f "$CONFIG_TARGET/apps.json" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Copy apps.json"
-    cp "$SCRIPT_DIR/apps.json" "$CONFIG_TARGET/apps.json"
-fi
-
-if [ ! -f "$CONFIG_TARGET/custom_vendors.json" ]; then
-    [ "$VERBOSE" -eq 1 ] && echo "Create custom_vendors.json"
-    cat > "$CONFIG_TARGET/custom_vendors.json" <<'JSON'
-{
-  "example_app": {
-    "repo": "https://github.com/example/example_app",
-    "branch": "v1.0.0"
-  }
+log() {
+  echo "$1"
 }
-JSON
+vlog() {
+  if [ "$VERBOSE" -eq 1 ]; then echo "   ⮑ $1"; fi
+}
+
+log "Checking requirements..."
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required but not installed. Please install jq and retry." >&2
+  exit 1
 fi
 
-# Ensure app skeleton exists (matching bench new-app)
-echo "ℹ️  Creating app via bench new-app"
-[ "$VERBOSE" -eq 1 ] && echo "Running: bench new-app $APP_NAME"
+toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
+if [[ -n "$toplevel" && "$toplevel" == */frappe_app_template ]]; then
+  echo "ERROR: Do not run this inside the frappe_app_template submodule."
+  exit 1
+fi
 
-bench new-app "$APP_NAME"
-APP_DIR="$CONFIG_TARGET/apps/$APP_NAME"
-[ "$VERBOSE" -eq 1 ] && echo "App directory: $APP_DIR"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BENCH_DIR="$(dirname "$SCRIPT_DIR")"
+WORKFLOW_TEMPLATE_DIR="$SCRIPT_DIR/workflow_templates"
+APP_NAME="${APP_NAME:-$(basename "$BENCH_DIR")}"
+APP_TITLE="$(tr _- ' ' <<< "$APP_NAME" | sed 's/\b\(\.\)/\u\1/g')"
 
+APP_FOLDER="$APP_NAME"
+CONFIG_TARGET="apps/$APP_FOLDER"
 
-echo "✅ Setup complete."
+if [ -d "$CONFIG_TARGET" ]; then
+  log "App directory already exists at $CONFIG_TARGET. Skipping app creation."
+else
+  log "Creating new Frappe app: $APP_NAME"
+  bench new-app "$APP_NAME" <<EOF
+$APP_TITLE
+Auto-generated app $APP_NAME
+Seclution
+dev@seclution.io
+mit
+n
+EOF
+
+  if [ ! -d "$CONFIG_TARGET" ]; then
+    echo "App directory not found at $CONFIG_TARGET after creation. Aborting."
+    exit 1
+  fi
+fi
+
+log "App directory detected: $CONFIG_TARGET"
+
+ENV_FILE="$CONFIG_TARGET/.env"
+[ -f "$ENV_FILE" ] || touch "$ENV_FILE"
+
+get_env_val() {
+  grep -E "^$1=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2- || true
+}
+set_env_val() {
+  local key="$1"
+  local val="$2"
+  grep -v "^$key=" "$ENV_FILE" > "$ENV_FILE.tmp" 2>/dev/null || true
+  echo "$key=$val" >> "$ENV_FILE.tmp"
+  mv "$ENV_FILE.tmp" "$ENV_FILE"
+  chmod 600 "$ENV_FILE"
+  vlog "$key set in .env"
+}
+
+API_KEY=$(get_env_val "API_KEY")
+GITHUB_USER=$(get_env_val "GITHUB_USER")
+REPO_NAME=$(get_env_val "REPO_NAME")
+REPO_PATH=$(get_env_val "REPO_PATH")
+
+if [ $AUTOGEN_CREDS -eq 1 ]; then
+  if [ -z "$API_KEY" ] || ! [[ "$API_KEY" =~ ^[A-Za-z0-9._-]{20,}$ ]]; then
+    read -p "GitHub API key: " API_KEY
+    set_env_val "API_KEY" "$API_KEY"
+  fi
+
+  if [ -z "$GITHUB_USER" ]; then
+    read -p "GitHub username or org (target owner): " GITHUB_USER
+    set_env_val "GITHUB_USER" "$GITHUB_USER"
+  fi
+
+  if [ -z "$REPO_NAME" ]; then
+    REPO_NAME="$APP_NAME"
+    set_env_val "REPO_NAME" "$REPO_NAME"
+  fi
+
+  if [ -z "$REPO_PATH" ]; then
+    REPO_PATH="github.com:$GITHUB_USER/$REPO_NAME.git"
+    set_env_val "REPO_PATH" "$REPO_PATH"
+  fi
+fi
+
+SSH_KEY_PATH="$HOME/.ssh/id_deploy_$REPO_NAME"
+SSH_PUBKEY_PATH="$SSH_KEY_PATH.pub"
+REMOTE_ALIAS="github.com-$REPO_NAME"
+REMOTE_URL="$REMOTE_ALIAS:$GITHUB_USER/$REPO_NAME.git"
+
+if [ ! -f "$SSH_PUBKEY_PATH" ]; then
+  log "Generating SSH key for $REPO_NAME..."
+  ssh-keygen -t ed25519 -f "$SSH_KEY_PATH" -N "" -C "$REPO_NAME@frappe-auto" >/dev/null
+  ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+fi
+
+set_env_val "SSH_KEY_PATH" "$SSH_KEY_PATH"
+
+try_create_repo() {
+  local key="$1"
+  local api_url="https://api.github.com/user/repos"
+  local fallback_url="https://api.github.com/orgs/$GITHUB_USER/repos"
+
+  log "Attempting to create GitHub repo '$REPO_NAME' under user '$GITHUB_USER'..."
+  response=$(curl -s -w "%{http_code}" -o response.json \
+    -H "Authorization: token $key" \
+    -d "{\"name\":\"$REPO_NAME\", \"private\": true}" \
+    "$api_url")
+
+  status_code="${response: -3}"
+  body=$(<response.json)
+
+  if [[ "$status_code" == "201" ]]; then
+    log "Repo successfully created: $REMOTE_URL"
+    rm -f response.json
+    return 0
+  elif [[ "$status_code" == "404" ]]; then
+    log "User endpoint returned 404. Trying org endpoint..."
+    response=$(curl -s -w "%{http_code}" -o response.json \
+      -H "Authorization: token $key" \
+      -d "{\"name\":\"$REPO_NAME\", \"private\": true}" \
+      "$fallback_url")
+    status_code="${response: -3}"
+    body=$(<response.json)
+  fi
+
+  rm -f response.json
+
+  if [[ "$status_code" == "201" ]]; then
+    log "Repo successfully created in org: $REMOTE_URL"
+    return 0
+  elif [[ "$status_code" == "422" && "$body" == *"name already exists"* ]]; then
+    log "Repository already exists: $REMOTE_URL"
+    read -p "Do you want to push your local app to this existing repo? [y/N]: " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+      return 0
+    else
+      log "Skipping push to existing repository."
+      REMOTE_URL=""
+      return 1
+    fi
+  else
+    message=$(echo "$body" | jq -r '.message // empty')
+    log "GitHub repo creation failed (HTTP $status_code)"
+    [ -n "$message" ] && echo "   ⮑ $message"
+    REMOTE_URL=""
+    return 1
+  fi
+}
+
+add_deploy_key() {
+  local pubkey=$(<"$SSH_PUBKEY_PATH")
+
+  if [[ -z "$pubkey" ]]; then
+    log "Error reading public SSH key"
+    return 1
+  fi
+
+  log "Uploading public key as GitHub Deploy Key..."
+  local data
+  data=$(jq -nc --arg title "auto-deploy-key-$(date +%s)" --arg key "$pubkey" '{"title":$title,"key":$key,"read_only":false}')
+  response=$(curl -s -w "%{http_code}" -o response.json \
+    -H "Authorization: token $API_KEY" \
+    -H "Accept: application/vnd.github.v3+json" \
+    -d "$data" \
+    "https://api.github.com/repos/$GITHUB_USER/$REPO_NAME/keys")
+
+  status_code="${response: -3}"
+  body=$(<response.json)
+  rm -f response.json
+
+  if [[ "$status_code" == "201" ]]; then
+    log "Deploy key successfully added to $REPO_NAME"
+    set_env_val "DEPLOY_KEY_ADDED" "1"
+  elif [[ "$status_code" == "422" && "$body" == *"key is already in use"* ]]; then
+    log "Deploy key already exists."
+    set_env_val "DEPLOY_KEY_ADDED" "1"
+  else
+    message=$(echo "$body" | jq -r '.message // empty')
+    log "Failed to add Deploy Key (HTTP $status_code)"
+    [ -n "$message" ] && echo "   ⮑ $message"
+  fi
+}
+
+configure_ssh_for_repo() {
+  local ssh_config="$HOME/.ssh/config"
+  local alias="github.com-$REPO_NAME"
+
+  mkdir -p "$HOME/.ssh"
+  touch "$ssh_config"
+  chmod 600 "$ssh_config"
+
+  if ! grep -q "Host $alias" "$ssh_config"; then
+    {
+      echo "Host $alias"
+      echo "  HostName github.com"
+      echo "  User git"
+      echo "  IdentityFile $SSH_KEY_PATH"
+      echo "  IdentitiesOnly yes"
+    } >> "$ssh_config"
+    log "SSH config entry added for Host $alias"
+  fi
+
+  REMOTE_URL="$alias:$GITHUB_USER/$REPO_NAME.git"
+}
+
+if try_create_repo "$API_KEY"; then
+  DEPLOY_KEY_ADDED=$(get_env_val "DEPLOY_KEY_ADDED")
+  if [ "$AUTOGEN_CREDS" -eq 1 ] && [ "$DEPLOY_KEY_ADDED" != "1" ]; then
+    add_deploy_key
+  fi
+else
+  log "GitHub repo not available – continuing without push or Deploy Key."
+  REMOTE_URL=""
+fi
+
+configure_ssh_for_repo
+
+log "Creating standard files & folders..."
+
+mkdir -p "$CONFIG_TARGET/.github/workflows"
+mkdir -p "$CONFIG_TARGET/scripts"
+mkdir -p "$CONFIG_TARGET/sample_data"
+mkdir -p "$CONFIG_TARGET/vendor"
+mkdir -p "$CONFIG_TARGET/instructions"
+mkdir -p "$CONFIG_TARGET/doc"
+mkdir -p "$CONFIG_TARGET/.config"
+
+touch "$CONFIG_TARGET/.config/github_api.json"
+touch "$CONFIG_TARGET/apps.json"
+touch "$CONFIG_TARGET/custom_vendors.json"
+touch "$CONFIG_TARGET/vendors.txt"
+touch "$CONFIG_TARGET/.pre-commit-config.yaml"
+touch "$CONFIG_TARGET/README.md"
+touch "$CONFIG_TARGET/AGENTS.md"
+touch "$CONFIG_TARGET/instructions/AGENTS.md"
+touch "$CONFIG_TARGET/license.txt"
+touch "$CONFIG_TARGET/pyproject.toml"
+
+if [ ! -L "$CONFIG_TARGET/frappe_app_template" ]; then
+  ln -s /opt/git/frappe_app_template "$CONFIG_TARGET/frappe_app_template"
+  log "Symlink gesetzt: frappe_app_template → /opt/git/frappe_app_template"
+fi
+
+for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
+  [ -f "$wf" ] && cp "$wf" "$CONFIG_TARGET/.github/workflows/"
+done
+
+cp -n "$SCRIPT_DIR/scripts/"*.sh "$CONFIG_TARGET/scripts/" 2>/dev/null || true
+chmod +x "$CONFIG_TARGET/scripts/"*.sh 2>/dev/null || true
+
+log "Initializing Git repo..."
+cd "$CONFIG_TARGET"
+rm -rf .git
+git init
+git checkout -b "$DEFAULT_BRANCH"
+git add .
+git commit -m "Initial commit for $APP_NAME"
+
+if [ -n "${REMOTE_URL:-}" ]; then
+  git remote add origin "$REMOTE_URL"
+  log "Remote 'origin' set to $REMOTE_URL"
+else
+  log "No remote URL set – skipping remote setup."
+fi
+
+if [ -n "${REMOTE_URL:-}" ]; then
+  read -p "Do you want to push to $REMOTE_URL now? [Y/n]: " do_push
+  if [[ "$do_push" =~ ^[Nn]$ ]]; then
+    log "Push skipped by user."
+  else
+    if git push -u origin "$DEFAULT_BRANCH"; then
+      log "Initial push to GitHub completed."
+    else
+      log "Initial push to GitHub failed."
+    fi
+  fi
+else
+  log "No remote to push to – push skipped."
+fi
+
+log "Setup complete for $APP_NAME"
