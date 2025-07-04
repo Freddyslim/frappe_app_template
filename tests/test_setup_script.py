@@ -57,3 +57,51 @@ fi
     env_file = tmp_path / ".env"
     assert env_file.exists()
     assert "API_KEY=dummyapikeydummyapikey" in env_file.read_text()
+
+
+def test_setup_script_runs_update_vendors(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    script_path = repo_root / "setup.sh"
+    tmp_script = tmp_path / "setup.sh"
+    tmp_script.write_text(script_path.read_text())
+    tmp_script.chmod(0o755)
+
+    bench_cmd = tmp_path / "bench"
+    bench_cmd.write_text(
+        """#!/bin/bash
+if [ \"$1\" = \"new-app\" ]; then
+    app_name=\"$2\"
+    root=\"apps/$app_name\"
+    mkdir -p \"$root/config\" \"$root/templates\" \"$root/$app_name\"
+    touch \"$root/patches.txt\"
+    base=$(dirname \"$root\")
+    echo '[tool.poetry]' > \"$base/pyproject.toml\"
+    echo '# App' > \"$base/README.md\"
+    echo 'MIT' > \"$base/license.txt\"
+    echo '*.pyc' > \"$base/.gitignore\"
+else
+    exit 1
+fi
+"""
+    )
+    bench_cmd.chmod(0o755)
+
+    scripts_src = tmp_path / "scripts"
+    scripts_src.mkdir()
+    update_script = scripts_src / "update_vendors.sh"
+    update_script.write_text("#!/bin/bash\n touch update_called\n")
+    update_script.chmod(0o755)
+
+    (tmp_path / "vendors.txt").write_text("")
+    (tmp_path / "apps.json").write_text("{}")
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+    env = {
+        **os.environ,
+        "PATH": f"{tmp_path}:{os.environ['PATH']}",
+        "API_KEY": "dummyapikeydummyapikey",
+    }
+    subprocess.run([str(tmp_script), "demoapp"], cwd=tmp_path, check=True, env=env)
+
+    marker = tmp_path / "apps" / "demoapp" / "update_called"
+    assert marker.exists()
