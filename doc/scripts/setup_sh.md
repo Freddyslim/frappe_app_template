@@ -20,15 +20,16 @@
 - Wenn **nicht vorhanden**:
   - `bench new-app` wird mit vorgegebenen Werten ausgeführt
   - App-Struktur wird angelegt
-- Erstellt `.env` im Bench-Hauptordner (falls nicht vorhanden)
-- Liest / schreibt Werte wie `API_KEY`, `GITHUB_USER`, `REPO_NAME`, `REPO_PATH`
+  - Erstellt `.env` im Bench-Hauptordner (falls nicht vorhanden) für globale Git-Einstellungen
+  - Legt eine `.env` im App-Ordner an und speichert dort `REPO_NAME`, `REPO_PATH` und `SSH_KEY_PATH`
+  - Liest bzw. schreibt `API_KEY` und `GITHUB_USER` ausschließlich im Bench-`.env`
 
 ---
 
 ## 🔐 SSH-Zugang
 - Generiert SSH-Key `~/.ssh/id_deploy_<repo>` (falls nicht vorhanden)
 - Fügt Eintrag zu `~/.ssh/config` hinzu mit Host-Alias `github.com-<repo>`
-- Schreibt `SSH_KEY_PATH` in `.env`
+ - Schreibt `SSH_KEY_PATH` in die `.env` der App
 
 ---
 
@@ -36,7 +37,7 @@
 - Erstellt GitHub-Repo per API (entweder user- oder org-basiert)
 - Erkennt, ob Repo schon existiert und fragt ggf. nach Push
 - Optional: Hängt Deploy-Key ans GitHub-Repo (wenn nicht bereits vorhanden)
-- Speichert `DEPLOY_KEY_ADDED` in `.env`
+ - Speichert `DEPLOY_KEY_ADDED` in der app-spezifischen `.env`
 
 ---
 

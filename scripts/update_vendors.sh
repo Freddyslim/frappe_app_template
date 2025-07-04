@@ -14,12 +14,19 @@ VENDOR_DIR="$ROOT_DIR/vendor"
 VENDORS_FILE="${VENDORS_FILE:-$ROOT_DIR/vendors.txt}"
 PROFILES_DIR="${PROFILES_DIR:-$ROOT_DIR/instructions/vendor_profiles}"
 
-# load API key from .env if present
+# load API key from .env files if present
 ENV_FILE="$ROOT_DIR/.env"
+BENCH_ENV_FILE="$(dirname "$ROOT_DIR")/.env"
+if [ ! -f "$BENCH_ENV_FILE" ] && [ -f "$(dirname "$ROOT_DIR")/../.env" ]; then
+  BENCH_ENV_FILE="$(dirname "$ROOT_DIR")/../.env"
+fi
 CONFIG_FILE="$ROOT_DIR/.config/github_api.json"
 API_KEY="${API_KEY:-}"
 if [ -z "$API_KEY" ] && [ -f "$ENV_FILE" ]; then
   API_KEY=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2-)
+fi
+if [ -z "$API_KEY" ] && [ -f "$BENCH_ENV_FILE" ]; then
+  API_KEY=$(grep -E '^API_KEY=' "$BENCH_ENV_FILE" | cut -d'=' -f2-)
 fi
 if [ -z "$API_KEY" ] && [ -f "$CONFIG_FILE" ]; then
   API_KEY=$(jq -r '.API_KEY // .GITHUB_TOKEN // empty' "$CONFIG_FILE" 2>/dev/null)

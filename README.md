@@ -30,18 +30,20 @@ The script will:
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - the GitHub repository is automatically named after your app
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
+- app specific values such as the generated SSH key are saved in `apps/my_app/.env`
 - run `./scripts/update_vendors.sh` once to fetch vendor submodules before the initial push
 - pushes new generated app repo to remote develop branch
 
 ### GitHub Configuration
 
-Important credentials, patterns and GitHub tokens should be stored in:
+General GitHub credentials such as the API token and default repo path belong in:
 
 ```bash
 frappe-bench/.env
 ```
 
-> This file is ignored by git and allows central control of all secrets and GitHub-specific parameters.
+Each created app also has its own `.env` which stores repo specific settings like `SSH_KEY_PATH`.
+Both files are ignored by git so secrets remain local.
 
 ### Project Structure
 
@@ -53,7 +55,7 @@ See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an ex
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
 The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
 
-Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` in `.env` or `.config/github_api.json` so the script can clone it. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata.
+Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env`, the repo `.env` or `.config/github_api.json` so the script can clone it. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata.
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 

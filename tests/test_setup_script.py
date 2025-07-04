@@ -55,11 +55,15 @@ fi
     assert (root / "license.txt").exists()
     assert (root / ".gitignore").exists()
     assert (app_path / "patches.txt").exists()
-    env_file = tmp_path / ".env"
-    assert env_file.exists()
-    text = env_file.read_text()
-    assert "API_KEY=dummyapikeydummyapikey" in text
-    assert "REPO_NAME=demoapp" in text
+    bench_env = tmp_path / ".env"
+    assert bench_env.exists()
+    bench_text = bench_env.read_text()
+    assert "API_KEY=dummyapikeydummyapikey" in bench_text
+    assert "REPO_NAME" not in bench_text
+    app_env = app_path / ".env"
+    assert app_env.exists()
+    app_text = app_env.read_text()
+    assert "REPO_NAME=demoapp" in app_text
 
 
 def test_setup_script_runs_update_vendors(tmp_path):
@@ -137,9 +141,11 @@ fi
     env = {**os.environ, "PATH": f"{tmp_path}:{os.environ['PATH']}"}
     subprocess.run([str(tmp_script), "demo2"], cwd=tmp_path, check=True, env=env)
 
-    text = (tmp_path / ".env").read_text()
-    assert "API_KEY=stored" in text
-    assert "REPO_NAME=demo2" in text
+    bench_text = (tmp_path / ".env").read_text()
+    assert "API_KEY=stored" in bench_text
+    assert "REPO_NAME" not in bench_text
+    app_text = (tmp_path / "apps" / "demo2" / ".env").read_text()
+    assert "REPO_NAME=demo2" in app_text
 
 
 def test_setup_script_fails_if_app_exists(tmp_path):
