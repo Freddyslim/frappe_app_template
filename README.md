@@ -243,6 +243,7 @@ Codex processes this repository based on the rules in `AGENTS.md`. The following
 - Update existing files if they do not match the documentation in `README.md` or the instructions in `AGENTS.md`.
 - Keep `README.md` and `AGENTS.md` synchronized.
 - Ensure scripts under `scripts/` reflect what the README describes.
+- Store Mermaid diagrams as `.mmd` files in `doc/` and use `flowchart TD` with files as rectangles and scripts as rounded nodes.
 - Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
 - Use `--create-tasks` when prompts risk exceeding context limits.
 - Check vendor-specific instructions under `instructions/vendor_profiles/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.

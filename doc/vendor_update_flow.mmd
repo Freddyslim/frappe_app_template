@@ -1,0 +1,12 @@
+flowchart TD
+    vendors[vendors.txt]
+    custom[custom_vendors.json]
+    update(update_vendors.sh)
+    apps[apps.json]
+    submods[vendor/ submodules]
+    workflow[update-vendors.yml]
+    vendors --> update
+    custom --> update
+    update --> apps
+    update --> submods
+    apps --> workflow

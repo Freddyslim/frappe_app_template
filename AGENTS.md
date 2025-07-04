@@ -205,9 +205,7 @@ This makes `PROJECT.md` a central place for:
 
 ## Mermaid
 
-Mermaid diagrams should be created consistently. The following guidelines support standardization.  
-If Codex deems a diagram useful and generates one, this section will be updated with new rules.
-
-- if this happens for the first time, replace this section with new instructions to standardize the following mermaids
-- structure mermaids logically and use different shapes for distinct purposes
-- e.g., functions as rounded shapes, instructions as rectangles – depending on what the diagram illustrates and what groupings make sense
+All diagrams are stored as `.mmd` files under `doc/` and rendered to `.svg` using `scripts/generate_diagrams.sh`.
+Use `flowchart TD` unless a different chart type better suits the information.
+Represent files or resources with rectangular nodes and scripts or commands with rounded nodes.
+Keep each diagram focused on a single workflow to stay concise.

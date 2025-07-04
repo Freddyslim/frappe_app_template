@@ -6,4 +6,5 @@ Der Ordner `doc/` bündelt projektbezogene Dokumentationen. Hier findest du Vorl
 - `guide_doctype_listing.md` – Leitfaden zum Auflisten von Doctypes, Berechtigungen und Skripten.
 - `mermaid_diagrams.md` – Tipps zum Erstellen und Aktualisieren von Mermaid-Diagrammen.
 - `workflow_templates.md` – kurze Erklärungen zu den mitgelieferten GitHub-Workflows.
-- `vendor_management.md` – beschreibt, wie `vendors.txt`, `custom_vendors.json` und das Skript `update_vendors.sh` zusammenarbeiten.
+- `vendor_management.md` – beschreibt, wie `vendors.txt`, `custom_vendors.json` und die Skripte zur Pflege der Vendor-Submodule zusammenarbeiten. Ein Diagramm in `vendor_update_flow.mmd` visualisiert den Ablauf.
+- `release_process.md` – erklärt den Ablauf für neue Releases mittels `publish_app.sh`.
