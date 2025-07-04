@@ -21,7 +21,8 @@
   - `bench new-app` wird mit vorgegebenen Werten ausgeführt
   - App-Struktur wird angelegt
   - Erstellt `.env` im Bench-Hauptordner (falls nicht vorhanden) für globale Git-Einstellungen
-  - Legt eine `.env` im App-Ordner an und speichert dort `REPO_NAME`, `REPO_PATH` und `SSH_KEY_PATH`
+- Legt eine `.env` im App-Ordner an und speichert dort `REPO_NAME`, `REPO_PATH` und `SSH_KEY_PATH`
+  - Gibt bei neu angelegter Datei im `--verbose`-Modus den Pfad mit `vlog` aus
   - Liest bzw. schreibt `API_KEY` und `GITHUB_USER` ausschließlich im Bench-`.env`
 
 ---
