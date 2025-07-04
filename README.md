@@ -16,7 +16,7 @@ Then run the setup script directly from within the `frappe-bench` directory:
 ```bash
 ./frappe_app_template/setup.sh my_app
 # for detailed output use --verbose
-./frappe_app_template/setup.sh --verbose my_app
+./frappe_app_template/setup.sh --autogencreds --verbose my_app
 ```
 
 The script will:
