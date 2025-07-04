@@ -215,9 +215,9 @@ Workflow examples are stored in `workflow_templates/`. Copy them into
 The [workflow_templates.md](doc/workflow_templates.md) document explains what
 each template does. Details about vendor handling are described in
 [vendor_management.md](doc/vendor_management.md).
-
+### Command Restrictions
+Codex does not execute real shell commands or network operations while processing this repository. Only file creation and modification is performed. Commands like `bench`, `git`, `curl`, `wget`, `npm` and `ssh` must not run. You may place such commands in scripts or CI files, but they remain inactive during updates.
 ### License
-
 MIT
 
 ---
@@ -233,6 +233,8 @@ code with prompts and/or flags and/or --go (starts with reading PROJECT.md).
 --- autocreated ---
 
 Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
+- Flags have highest priority!
+- Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage.
 
 - Create any missing essential files described in the documentation.
 - Remove one-off helper files after they are used.
@@ -251,6 +253,10 @@ Codex can be guided with these flags:
 - `--create-tasks` &ndash; Instead of changing code directly, produce a list of discrete, non-conflicting tasks for manual implementation.
 - `--start` &ndash; Initialize the project using the current documentation without running code. Missing files are created and structures put in place.
 - `--go` &ndash; Execute tasks found in `PROJECT.md` before the separator line.
+- `--focus-on-<file/folder>` &ndash; Prioritize a specific file or folder recursively.
+- `--update-scripts` &ndash; Review scripts under `scripts/` and `setup.sh`.
+- `--update-workflows` &ndash; Review GitHub Actions in `.github/workflows/`.
+- `--update-comments` &ndash; Add useful code comments only, no other changes.
 - `--update-agent` &ndash; Rewrite `AGENTS.md` according to the prompt and update the project afterwards.
 - `--update-readme` &ndash; Rewrite `README.md` according to the prompt and adjust the repository.
 - `--update-docs` &ndash; Work exclusively on documentation under `doc/`.
