@@ -85,7 +85,7 @@ branch:develop
         ├── apps.json                        # leere Datei für Vendor-Metadaten
         ├── custom_vendors.json              # leere Datei für eigene Vendoren
         ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z.​​B. ERPNext, Nextcloud)
-        ├── frappe_app_template -> /opt/git/frappe_app_template  # statischer Symlink auf zentrales Template
+        ├── frappe_app_template              # eingebunden als submodule
         ├── vendor/                          # eingebundene Vendor-Repositories (als Submodule)
         │   ├── erpnext/
         │   └── nextcloud/
@@ -103,11 +103,11 @@ branch:develop
         ├── .github/
         │   └── workflows/                   # GitHub Actions CI/CD
         │       ├── ci.yml                   # CI-Tests (z. B. Bench Build)
-        │       ├── update-vendors.yml      # prüft und aktualisiert Vendor-Submodule automatisch
-        │       └── validate_commits.yml    # prüft Conventional Commit Messages
+        │       ├── update-vendors.yml       # prüft und aktualisiert Vendor-Submodule automatisch
+        │       └── validate_commits.yml     # prüft Conventional Commit Messages
         ├── .config/
         │   └── github_api.json              # Lokale API Keys / Tokens (nicht versioniert)
-        └── test_application/               # eigentlicher App-Code
+        └── test_application/                # eigentlicher App-Code
             ├── config/
             │   └── __init__.py
             ├── hooks.py
