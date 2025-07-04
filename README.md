@@ -25,7 +25,7 @@ The script will:
 - abort with an error if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
-- copy required template files into the root of your new app (e.g. `README.md`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
+- copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `instructions/`, `scripts/` etc.)
 - create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
 - the GitHub repository is automatically named after your app
