@@ -330,7 +330,6 @@ touch "$CONFIG_TARGET/custom_vendors.json"
 touch "$CONFIG_TARGET/vendors.txt"
 touch "$CONFIG_TARGET/.pre-commit-config.yaml"
 touch "$CONFIG_TARGET/README.md"
-touch "$CONFIG_TARGET/AGENTS.md"
 touch "$CONFIG_TARGET/license.txt"
 touch "$CONFIG_TARGET/pyproject.toml"
 touch "$CONFIG_TARGET/.gitignore"
@@ -356,6 +355,23 @@ if [ -f "$CONFIG_TARGET/frappe_app_template/.gitignore" ]; then
   log ".gitignore aus frappe_app_template kopiert"
 else
   log "⚠️ Keine .gitignore in frappe_app_template gefunden"
+fi
+
+# copy vendor profiles from template so basic instructions exist
+if [ -d "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" ]; then
+  rsync -a "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles/" "$CONFIG_TARGET/instructions/vendor_profiles/"
+  find "$CONFIG_TARGET/instructions/vendor_profiles" -mindepth 2 -maxdepth 2 -type d | while read -r dir; do
+    slug=$(basename "$dir")
+    mkdir -p "$CONFIG_TARGET/instructions/$slug"
+    rsync -a "$dir/" "$CONFIG_TARGET/instructions/$slug/"
+  done
+fi
+
+# copy AGENTS.md now that submodule exists
+if [ -f "$CONFIG_TARGET/frappe_app_template/AGENTS.md" ]; then
+  cp "$CONFIG_TARGET/frappe_app_template/AGENTS.md" "$CONFIG_TARGET/AGENTS.md"
+else
+  touch "$CONFIG_TARGET/AGENTS.md"
 fi
 
 for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do

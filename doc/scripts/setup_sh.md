@@ -52,9 +52,10 @@
   - `doc/`
   - `.config/`
 - Erstellt/leert zentrale Dateien:
- - `apps.json`, `vendors.txt`, `custom_vendors.json`, `README.md`, `AGENTS.md`, `.pre-commit-config.yaml`, etc.
+- `apps.json`, `vendors.txt`, `custom_vendors.json`, `README.md`, `AGENTS.md`, `.pre-commit-config.yaml`, etc.
 - Kopiert Workflows aus Template-Verzeichnis `workflow_templates/*.yml`
 - Kopiert Skripte aus `scripts/`-Ordner im Template
+- Kopiert `AGENTS.md` und vorhandene `instructions/vendor_profiles/` aus dem Template (Profile landen zusätzlich unter `instructions/<slug>/`)
 - Symlink auf `/opt/git/frappe_app_template`
 
 ---
