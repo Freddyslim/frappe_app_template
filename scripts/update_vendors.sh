@@ -60,7 +60,14 @@ mkdir -p "$VENDOR_DIR"
 cd "$ROOT_DIR"
 
 # read vendors list
-readarray -t RAW_LINES < <(grep -v '^#' "$VENDORS_FILE" 2>/dev/null | sed '/^\s*$/d')
+if [ ! -f "$VENDORS_FILE" ]; then
+  echo "⚠️  $VENDORS_FILE not found. Skipping vendor update." >&2
+  exit 0
+fi
+readarray -t RAW_LINES < <(grep -v '^#' "$VENDORS_FILE" | sed '/^\s*$/d')
+if [ ${#RAW_LINES[@]} -eq 0 ]; then
+  echo "ℹ️  No active vendors listed in $VENDORS_FILE"
+fi
 
 # integration data
 declare -A REPOS
