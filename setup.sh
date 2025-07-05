@@ -359,7 +359,7 @@ else
   log "⚠️ Keine .gitignore in frappe_app_template gefunden"
 fi
 
-# copy vendor profiles from template so basic instructions exist
+# copy vendor instructions for active vendors
 if [ -d "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" ]; then
   while IFS= read -r line; do
     line="${line%%#*}"
@@ -368,10 +368,6 @@ if [ -d "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" ]; the
     slug="${line%%|*}"
     profile_dir=$(find "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" -mindepth 2 -maxdepth 2 -type d -name "$slug" -print -quit)
     [ -z "$profile_dir" ] && continue
-    rel="${profile_dir#$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles/}"
-    dest="$CONFIG_TARGET/instructions/vendor_profiles/$rel"
-    mkdir -p "$dest"
-    rsync -a "$profile_dir/" "$dest/"
     mkdir -p "$CONFIG_TARGET/instructions/$slug"
     rsync -a "$profile_dir/" "$CONFIG_TARGET/instructions/$slug/"
   done < "$CONFIG_TARGET/vendors.txt"

@@ -52,9 +52,6 @@ jobs:
             git add vendor
           fi
           git add .gitmodules apps.json vendors.txt
-          if [ -d instructions/vendor_profiles ]; then
-            git add instructions/vendor_profiles
-          fi
           if [ -d instructions ]; then
             git add instructions
           fi

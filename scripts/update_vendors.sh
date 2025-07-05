@@ -13,6 +13,7 @@ for arg in "$@"; do
   esac
 done
 
+
 if $VERBOSE; then
   set -x
 fi
@@ -212,7 +213,6 @@ recognized=("${!KEEP[@]}")
 
 changes=false
 
-mkdir -p "$ROOT_DIR/instructions/vendor_profiles"
 
   for slug in "${recognized[@]}"; do
     repo="${REPOS[$slug]}"
@@ -356,12 +356,6 @@ mkdir -p "$ROOT_DIR/instructions/vendor_profiles"
   profile_rel="${PROFILE_RELPATHS[$slug]-}"
   if [[ -n "$profile_base" && -n "$profile_rel" ]]; then
     src="$profile_base/$profile_rel"
-    dest="$ROOT_DIR/instructions/vendor_profiles/$profile_rel"
-    if ! [ -d "$dest" ] || ! diff -qr "$src" "$dest" >/dev/null 2>&1; then
-      mkdir -p "$dest"
-      rsync -a --delete "$src/" "$dest/"
-    fi
-    # also copy vendor instructions to top-level instructions/<slug>
     if [ -d "$src" ]; then
       top_dest="$ROOT_DIR/instructions/$slug"
       mkdir -p "$top_dest"
@@ -413,6 +407,31 @@ for dir in "$VENDOR_DIR"/*; do
     log "Deleting directory $dir"
     rm -rf "$dir"
     removed+=("$(basename "$dir")")
+    changes=true
+  fi
+done
+
+# remove instructions directories for vendors that are no longer active
+for dir in "$ROOT_DIR/instructions"/*; do
+  [ -d "$dir" ] || continue
+  name="$(basename "$dir")"
+  [[ "$name" == _* ]] && continue
+  if [[ "$name" == "vendor_profiles" ]]; then
+    echo "🗑 Removing obsolete directory $dir"
+    rm -rf "$dir"
+    changes=true
+    continue
+  fi
+  keep=false
+  for slug in "${recognized[@]}"; do
+    if [[ "$name" == "$slug" ]]; then
+      keep=true
+      break
+    fi
+  done
+  if ! $keep; then
+    echo "🗑 Removing obsolete instructions $dir"
+    rm -rf "$dir"
     changes=true
   fi
 done
