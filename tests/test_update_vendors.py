@@ -246,3 +246,35 @@ def test_update_vendors_preserves_existing_apps_json(tmp_path):
     assert data["demo"]["branch"] == "main"
 
 
+def test_update_vendors_copies_profile(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    scripts_dir = repo_root / "scripts"
+    tmp_scripts = tmp_path / "scripts"
+    tmp_scripts.mkdir()
+    script = tmp_scripts / "update_vendors.sh"
+    script.write_text((scripts_dir / "update_vendors.sh").read_text())
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+
+    vendor_repo = tmp_path / "vendor_repo"
+    vendor_repo.mkdir()
+    subprocess.run(["git", "init"], cwd=vendor_repo, check=True)
+    (vendor_repo / "README.md").write_text("demo")
+    subprocess.run(["git", "add", "README.md"], cwd=vendor_repo, check=True)
+    subprocess.run(["git", "commit", "-m", "init"], cwd=vendor_repo, check=True)
+
+    (tmp_path / "apps.json").write_text("{}")
+    (tmp_path / "vendors.txt").write_text("dummy")
+
+    profiles_root = tmp_path / "profiles"
+    profile_dir = profiles_root / "dummy"
+    profile_dir.mkdir(parents=True)
+    (profile_dir / "apps.json").write_text(json.dumps({"url": str(vendor_repo), "branch": "main"}))
+    (profile_dir / "AGENTS.md").write_text("# profile")
+
+    env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file", "PROFILES_DIR": str(profiles_root)}
+    subprocess.run(["bash", str(script)], cwd=tmp_path, check=True, env=env)
+
+    assert (tmp_path / "instructions" / "vendor_profiles" / "dummy" / "AGENTS.md").exists()
+
+

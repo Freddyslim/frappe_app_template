@@ -150,6 +150,7 @@ for line in "${RAW_LINES[@]}"; do
       relpath="${profile_dir#$profile_base/}"
       PROFILE_BASES[$slug]="$profile_base"
       PROFILE_RELPATHS[$slug]="$relpath"
+
     fi
   fi
 
@@ -210,6 +211,17 @@ fi
 recognized=("${!KEEP[@]}")
 
 changes=false
+
+mkdir -p "$ROOT_DIR/instructions/vendor_profiles"
+for slug in "${recognized[@]}"; do
+  profile_dir="${PROFILE_DIRS[$slug]:-}"
+  if [[ -n "$profile_dir" && -d "$profile_dir" ]]; then
+    rel_dir="${profile_dir#"$PROFILES_DIR"/}"
+    dest_dir="$ROOT_DIR/instructions/vendor_profiles/$rel_dir"
+    mkdir -p "$dest_dir"
+    rsync -a "$profile_dir/" "$dest_dir/"
+  fi
+done
 
   for slug in "${recognized[@]}"; do
     repo="${REPOS[$slug]}"
