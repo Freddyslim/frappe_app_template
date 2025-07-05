@@ -10,7 +10,7 @@ This document explains how vendor repositories are integrated into your app via 
 
 ## Script: `update_vendors.sh`
 
-The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and clones every entry as a submodule under the `vendor/` directory. When a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env` or the repo's `.env`, or `.config/github_api.json` so the script can authenticate.
+The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and clones every entry as a submodule under the `vendor/` directory. When a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env` or the repo's `.env`, or `.config/github_api.json` so the script can authenticate. `update_vendors.sh` depends on `jq` for parsing JSON, so ensure it is installed before running the script.
 
 Submodules removed from the lists are deleted, and the updated state is written back to `apps.json`.
 
