@@ -71,7 +71,11 @@
 - Fügt Remote `origin` → `github.com-<repo>:<user>/<repo>.git`
 - Optionaler Push nach Nachfrage:
   - Führt `fetch` + `pull --rebase` aus
-  - Falls Push scheitert: Nachfrage für `--force`
+  - Falls das Repository bereits existiert, wird `pull --rebase` ausgelassen
+    und nach Bestätigung ein `git push --force` ausgeführt
+  - Bei Fehlern fragt das Script ebenfalls nach `--force`
+  - Vor jedem Push wird ein möglicher abgebrochener Rebase mit
+    `git rebase --abort` zurückgesetzt
   - Erfolgreicher Push → Bestätigung
 
 ---

@@ -214,11 +214,7 @@ def test_setup_script_fails_if_app_exists(tmp_path):
 
 
 def test_setup_script_copies_template_instructions(tmp_path):
-    repo_root = Path(__file__).resolve().parents[1]
-    script_path = repo_root / "setup.sh"
-    tmp_script = tmp_path / "setup.sh"
-    tmp_script.write_text(script_path.read_text())
-    tmp_script.chmod(0o755)
+
 
     # replace submodule URL with local path to include template files
     data = tmp_script.read_text().replace(
@@ -238,9 +234,9 @@ fi
 """
     )
     bench_cmd.chmod(0o755)
-
     (tmp_path / "vendors.txt").write_text((repo_root / "vendors.txt").read_text())
     (tmp_path / "apps.json").write_text((repo_root / "apps.json").read_text())
+
 
     subprocess.run(["git", "init"], cwd=tmp_path, check=True)
     env = {
@@ -255,3 +251,4 @@ fi
     assert (app_root / "AGENTS.md").read_text() == (repo_root / "AGENTS.md").read_text()
     assert (app_root / "instructions" / "bench" / "AGENTS.md").exists()
     assert (app_root / "instructions" / "frappe" / "AGENTS.md").exists()
+
