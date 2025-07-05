@@ -4,6 +4,7 @@ set -euo pipefail
 VERBOSE=0
 DEFAULT_BRANCH="develop"
 AUTOGEN_CREDS=0
+REPO_ALREADY_EXISTS=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -231,6 +232,7 @@ try_create_repo() {
     log "Repository already exists: $REMOTE_URL"
     read -p "Do you want to push your local app to this existing repo? [y/N]: " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
+      REPO_ALREADY_EXISTS=1
       return 0
     else
       log "Skipping push to existing repository."
@@ -419,13 +421,10 @@ if [ -n "${REMOTE_URL:-}" ]; then
   if [[ "$do_push" =~ ^[Nn]$ ]]; then
     log "Push skipped by user."
   else
-    git fetch origin "$DEFAULT_BRANCH" 2>/dev/null || true
-    git pull --rebase origin "$DEFAULT_BRANCH" 2>/dev/null || true
-    if git push -u origin "$DEFAULT_BRANCH"; then
-      log "Initial push to GitHub completed."
-    else
+    git rebase --abort 2>/dev/null || true
+    if [ "$REPO_ALREADY_EXISTS" -eq 1 ]; then
       if [ -t 0 ]; then
-        read -p "Push failed. Force push? [y/N]: " do_force
+        read -p "Repository already exists. Force push? [y/N]: " do_force
       else
         do_force="n"
       fi
@@ -436,7 +435,28 @@ if [ -n "${REMOTE_URL:-}" ]; then
           log "Force push failed."
         fi
       else
-        log "Initial push to GitHub failed."
+        log "Initial push to GitHub skipped."
+      fi
+    else
+      git fetch origin "$DEFAULT_BRANCH" 2>/dev/null || true
+      git pull --rebase origin "$DEFAULT_BRANCH" 2>/dev/null || true
+      if git push -u origin "$DEFAULT_BRANCH"; then
+        log "Initial push to GitHub completed."
+      else
+        if [ -t 0 ]; then
+          read -p "Push failed. Force push? [y/N]: " do_force
+        else
+          do_force="n"
+        fi
+        if [[ "$do_force" =~ ^[Yy]$ ]]; then
+          if git push --force -u origin "$DEFAULT_BRANCH"; then
+            log "Force push succeeded."
+          else
+            log "Force push failed."
+          fi
+        else
+          log "Initial push to GitHub failed."
+        fi
       fi
     fi
   fi
