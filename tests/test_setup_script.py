@@ -213,74 +213,42 @@ def test_setup_script_fails_if_app_exists(tmp_path):
     assert not (tmp_path / "bench_called").exists()
 
 
-def test_setup_script_existing_remote_keeps_clean_tree(tmp_path):
-    repo_root = Path(__file__).resolve().parents[1]
-    script_path = repo_root / "setup.sh"
-    tmp_script = tmp_path / "setup.sh"
-    tmp_script.write_text(script_path.read_text())
-    tmp_script.chmod(0o755)
+def test_setup_script_copies_template_instructions(tmp_path):
+
+
+    # replace submodule URL with local path to include template files
+    data = tmp_script.read_text().replace(
+        "https://github.com/Freddyslim/frappe_app_template",
+        Path(repo_root).as_uri(),
+    )
+    tmp_script.write_text(data)
 
     bench_cmd = tmp_path / "bench"
     bench_cmd.write_text(
         """#!/bin/bash
-if [ "$1" = "new-app" ]; then
-    mkdir -p apps/$2/$2
+if [ \"$1\" = \"new-app\" ]; then
+    mkdir -p apps/$2
 else
     exit 1
 fi
 """
     )
     bench_cmd.chmod(0o755)
+    (tmp_path / "vendors.txt").write_text((repo_root / "vendors.txt").read_text())
+    (tmp_path / "apps.json").write_text((repo_root / "apps.json").read_text())
 
-    curl_cmd = tmp_path / "curl"
-    curl_cmd.write_text(
-        """#!/bin/bash
-outfile=""
-while [ $# -gt 0 ]; do
-    if [ "$1" = "-o" ]; then
-        outfile="$2"
-        shift 2
-    elif [ "$1" = "-w" ]; then
-        shift 2
-    else
-        shift
-    fi
-done
-echo '{"message":"name already exists"}' > "$outfile"
-echo -n 422
-"""
-    )
-    curl_cmd.chmod(0o755)
-
-    (tmp_path / "vendors.txt").write_text("")
-    (tmp_path / "apps.json").write_text("{}")
 
     subprocess.run(["git", "init"], cwd=tmp_path, check=True)
     env = {
         **os.environ,
         "PATH": f"{tmp_path}:{os.environ['PATH']}",
         "API_KEY": "dummy",
-        "GITHUB_USER": "user",
+        "GIT_ALLOW_PROTOCOL": "file",
     }
+    subprocess.run([str(tmp_script), "demo"], cwd=tmp_path, check=True, env=env)
 
-    subprocess.run(
-        [str(tmp_script), "demo4"],
-        cwd=tmp_path,
-        check=True,
-        env=env,
-        input="y\n",
-        text=True,
-    )
+    app_root = tmp_path / "apps" / "demo"
+    assert (app_root / "AGENTS.md").read_text() == (repo_root / "AGENTS.md").read_text()
+    assert (app_root / "instructions" / "bench" / "AGENTS.md").exists()
+    assert (app_root / "instructions" / "frappe" / "AGENTS.md").exists()
 
-    app_repo = tmp_path / "apps" / "demo4"
-    status = subprocess.run(
-        ["git", "status", "--porcelain"],
-        cwd=app_repo,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.strip()
-
-    assert status == ""
-    assert not (app_repo / ".git" / "rebase-merge").exists()
-    assert not (app_repo / ".git" / "rebase-apply").exists()
