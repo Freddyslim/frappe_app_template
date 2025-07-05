@@ -388,7 +388,11 @@ fi
 # run vendor update before optional initial push
 if [ -x "./scripts/update_vendors.sh" ]; then
   log "Running update_vendors.sh to fetch vendor apps..."
-  ./scripts/update_vendors.sh
+  if ./scripts/update_vendors.sh; then
+    log "Vendor update finished."
+  else
+    log "update_vendors.sh failed – continuing without vendor changes"
+  fi
   git add .gitmodules apps.json vendors.txt 2>/dev/null || true
   if [ -d vendor ]; then
     git add vendor
