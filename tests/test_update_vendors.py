@@ -86,8 +86,8 @@ def test_update_vendors_rebuilds_configs(tmp_path):
 
     data = json.loads((tmp_path / "apps.json").read_text())
     assert "oldapp" not in data
-    assert (tmp_path / "instructions" / "vendor_profiles" / "test" / "app1" / "apps.json").exists()
-    assert (tmp_path / "instructions" / "vendor_profiles" / "test" / "app2" / "apps.json").exists()
+    assert (tmp_path / "instructions" / "app1" / "apps.json").exists()
+    assert (tmp_path / "instructions" / "app2" / "apps.json").exists()
 
 
 
@@ -275,6 +275,6 @@ def test_update_vendors_copies_profile(tmp_path):
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file", "PROFILES_DIR": str(profiles_root)}
     subprocess.run(["bash", str(script)], cwd=tmp_path, check=True, env=env)
 
-    assert (tmp_path / "instructions" / "vendor_profiles" / "dummy" / "AGENTS.md").exists()
+    assert (tmp_path / "instructions" / "dummy" / "AGENTS.md").exists()
 
 

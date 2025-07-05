@@ -55,8 +55,8 @@ The full directory layout is documented in [doc/trees/template_structure.md](doc
 
 See [doc/trees/app_structure_develop.md](doc/trees/app_structure_develop.md) for the directory created by setup.sh.
 See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an example layout after release.
-Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
-The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
+Vendor profile templates live under `frappe_app_template/instructions/vendor_profiles/<category>/<slug>/`.
+Each profile contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor-specific notes. When `update_vendors.sh` runs, the instructions for active vendors are copied to `instructions/<slug>` in your app.
 
 Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. When a vendor repository is private, the script first tries your global GitHub token from the bench `.env` or `.config/github_api.json`. If cloning fails, it will ask you to enter a token interactively. The script relies on `jq` for JSON parsing. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
 
@@ -123,7 +123,7 @@ Codex processes this repository based on the rules in `AGENTS.md`. The following
 - Store Mermaid diagrams as `.mmd` files in `doc/` and use `flowchart TD` with files as rectangles and scripts as rounded nodes.
 - Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
 - Use `--create-tasks` when prompts risk exceeding context limits.
-- Check vendor-specific instructions under `instructions/vendor_profiles/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.
+- Check vendor-specific instructions under `instructions/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.
 
 Codex can be guided with these flags:
 
