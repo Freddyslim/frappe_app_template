@@ -374,6 +374,8 @@ if [ ! -d .git ]; then
   git commit -m "Initial commit for $APP_NAME"
 else
   log "Existing .git directory detected – skipping init."
+  git add .
+  git commit -m "Initial commit for $APP_NAME" 2>/dev/null || true
 fi
 
 if [ -n "${REMOTE_URL:-}" ]; then
