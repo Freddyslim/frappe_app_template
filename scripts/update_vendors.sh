@@ -2,6 +2,29 @@
 # update_vendors.sh: sync vendor directories using vendor_profiles and vendors.txt
 set -euo pipefail
 
+# optional verbose logging
+VERBOSE=false
+for arg in "$@"; do
+  case "$arg" in
+    -v|--verbose)
+      VERBOSE=true
+      shift
+      ;;
+  esac
+done
+
+if $VERBOSE; then
+  set -x
+fi
+
+trap 'echo "❌ Error on line $LINENO" >&2' ERR
+
+log() {
+  if $VERBOSE; then
+    echo "[debug] $*"
+  fi
+}
+
 if ! command -v jq >/dev/null 2>&1; then
   echo "❌ jq is required but not installed. Please install jq and retry." >&2
   exit 1
@@ -67,6 +90,8 @@ fi
 readarray -t RAW_LINES < <(grep -v '^#' "$VENDORS_FILE" | sed '/^\s*$/d')
 if [ ${#RAW_LINES[@]} -eq 0 ]; then
   echo "ℹ️  No active vendors listed in $VENDORS_FILE"
+else
+  log "Found ${#RAW_LINES[@]} vendor entries"
 fi
 
 # integration data
@@ -88,6 +113,7 @@ for line in "${RAW_LINES[@]}"; do
   repo=""
   branch=""
   tag=""
+  log "Parsing line: $line"
   if [[ -n "$part4" ]]; then
     slug="$part1"
     repo="$part2"
@@ -128,6 +154,7 @@ for line in "${RAW_LINES[@]}"; do
     path="vendor/${slug}${ref:+-$sanitized}"
     PATHS[$slug]="$path"
     KEEP[$slug]=1
+    log "Vendor $slug -> repo=$repo branch=$branch tag=$tag path=$path"
   else
     echo "⚠️  Unknown vendor: $slug" >&2
   fi
@@ -182,14 +209,16 @@ changes=false
     tag="${TAGS[$slug]}"
     path="${PATHS[$slug]}"
     target="$ROOT_DIR/$path"
-    ref="${branch:-$tag}"
-    echo "➡️  Processing $slug ($ref)"
+  ref="${branch:-$tag}"
+  echo "➡️  Processing $slug ($ref)"
   auth_repo=$(with_auth_repo "$repo")
+  log "Using repository URL: $auth_repo"
   if grep -q "path = $path" "$ROOT_DIR/.gitmodules" 2>/dev/null; then
     if git ls-files "$path" --error-unmatch >/dev/null 2>&1; then
       if [ -n "$GITHUB_TOKEN" ]; then
         git -C "$path" remote set-url origin "$auth_repo" || true
       fi
+      log "Updating existing submodule $path"
       if ! git submodule update --init "$path"; then
         echo "❌ Failed to update $slug" >&2
         if [ -n "$GITHUB_TOKEN" ]; then
@@ -199,13 +228,16 @@ changes=false
       fi
       pushd "$target" >/dev/null
       if [[ -n "$branch" ]]; then
+        log "Checkout branch $branch"
         git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
         git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
       elif [[ -n "$tag" ]]; then
+        log "Checkout tag $tag"
         git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
         git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
       fi
       commit=$(git rev-parse HEAD)
+      log "Checked out commit $commit"
       popd >/dev/null
       if [ -n "$GITHUB_TOKEN" ]; then
         git -C "$path" remote set-url origin "$repo" || true
@@ -217,6 +249,7 @@ changes=false
       updated+=("$slug")
     else
       echo "📁 Submodule $path not registered in index – re-adding $slug"
+      log "Re-adding submodule $path"
       git submodule add -f "$auth_repo" "$path"
       git config -f .gitmodules "submodule.$path.url" "$repo"
       git config "submodule.$path.url" "$repo"
@@ -224,18 +257,22 @@ changes=false
       changes=true
     fi
   else
+    log "Adding new submodule $path"
     if git submodule add -f "$auth_repo" "$path"; then
       git config -f .gitmodules "submodule.$path.url" "$repo"
       git config "submodule.$path.url" "$repo"
       pushd "$target" >/dev/null
       if [[ -n "$branch" ]]; then
+        log "Checkout branch $branch"
         git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
         git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
       elif [[ -n "$tag" ]]; then
+        log "Checkout tag $tag"
         git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
         git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
       fi
       commit=$(git rev-parse HEAD)
+      log "Checked out commit $commit"
       popd >/dev/null
       if [ -n "$GITHUB_TOKEN" ]; then
         git -C "$path" remote set-url origin "$repo" || true
@@ -277,6 +314,7 @@ if [ -f "$ROOT_DIR/.gitmodules" ]; then
     done
     if ! $keep; then
       echo "🗑 Removing obsolete submodule $path"
+      log "Deinit and remove submodule $path"
       git submodule deinit -f "$path" 2>/dev/null || true
       if [[ -e "$path" ]]; then
         git rm -f "$path" 2>/dev/null || true
@@ -299,6 +337,7 @@ for dir in "$VENDOR_DIR"/*; do
   done
   if ! $keep; then
     echo "🗑 Removing obsolete directory $dir"
+    log "Deleting directory $dir"
     rm -rf "$dir"
     removed+=("$(basename "$dir")")
     changes=true
@@ -325,5 +364,10 @@ if [ ${#recognized[@]} -gt 0 ]; then
   summary_parts+=("Recognized: ${recognized[*]}")
 fi
 summary="$(IFS=' | '; echo "${summary_parts[*]}")"
-echo "$summary"
+if [ -n "$summary" ]; then
+  echo "$summary"
+else
+  echo "No vendors processed"
+fi
+log "Changes flag: $changes"
 

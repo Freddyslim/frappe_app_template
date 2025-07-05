@@ -32,6 +32,7 @@ The script will:
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
 - repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`; keys from the bench `.env` are moved here if found
 - run `./scripts/update_vendors.sh` to fetch vendor submodules before the initial push
+  (use `--verbose` to see detailed logs)
 - push the new repository to the remote `develop` branch
 
 ### GitHub Configuration
@@ -55,7 +56,7 @@ See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an ex
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
 The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
 
-Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env`, the repo `.env` or `.config/github_api.json` so the script can clone it. The script relies on `jq` for JSON parsing, so make sure `jq` is installed. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata.
+Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env`, the repo `.env` or `.config/github_api.json` so the script can clone it. The script relies on `jq` for JSON parsing, so make sure `jq` is installed. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
