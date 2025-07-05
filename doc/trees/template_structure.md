@@ -4,7 +4,6 @@
 /home/frappe/frappe-bench/
 └── frappe_app_tamplate/
         ├── instructions/                  # app instructions
-        │   └── AGENTS.md                  # project-specific guidance
         ├── vendor/                        # vendor submodules
         │   ├── erpnext/
         │   └── nextcloud/

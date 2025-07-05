@@ -16,7 +16,6 @@
         │   ├── erpnext/
         │   └── nextcloud/
         ├── instructions/                    # projektspezifische Guidance für Codex
-        │   └── AGENTS.md                    # Ergänzende Anweisungen, z. B. Feature-Konventionen
         ├── doc/                             # technische Dokumentation (Markdown, Mermaid)
         ├── sample_data/                     # leerer Ordner für optionale Testdaten
         ├── scripts/                         # Hilfsskripte
