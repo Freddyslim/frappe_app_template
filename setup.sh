@@ -361,12 +361,20 @@ fi
 
 # copy vendor profiles from template so basic instructions exist
 if [ -d "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" ]; then
-  rsync -a "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles/" "$CONFIG_TARGET/instructions/vendor_profiles/"
-  find "$CONFIG_TARGET/instructions/vendor_profiles" -mindepth 2 -maxdepth 2 -type d | while read -r dir; do
-    slug=$(basename "$dir")
+  while IFS= read -r line; do
+    line="${line%%#*}"
+    line="$(echo "$line" | xargs)"
+    [ -z "$line" ] && continue
+    slug="${line%%|*}"
+    profile_dir=$(find "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" -mindepth 2 -maxdepth 2 -type d -name "$slug" -print -quit)
+    [ -z "$profile_dir" ] && continue
+    rel="${profile_dir#$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles/}"
+    dest="$CONFIG_TARGET/instructions/vendor_profiles/$rel"
+    mkdir -p "$dest"
+    rsync -a "$profile_dir/" "$dest/"
     mkdir -p "$CONFIG_TARGET/instructions/$slug"
-    rsync -a "$dir/" "$CONFIG_TARGET/instructions/$slug/"
-  done
+    rsync -a "$profile_dir/" "$CONFIG_TARGET/instructions/$slug/"
+  done < "$CONFIG_TARGET/vendors.txt"
 fi
 
 # copy AGENTS.md now that submodule exists
