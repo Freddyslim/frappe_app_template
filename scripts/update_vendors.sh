@@ -101,7 +101,8 @@ declare -A TAGS
 declare -A APP_INFO
 declare -A PATHS
 declare -A KEEP
-declare -A PROFILE_DIRS
+declare -A PROFILE_BASES
+declare -A PROFILE_RELPATHS
 
 recognized=()
 installed=()
@@ -136,14 +137,20 @@ for line in "${RAW_LINES[@]}"; do
   else
     slug="$part1"
     profile_file=$(find "$PROFILES_DIR" -path "*/$slug/apps.json" -print -quit 2>/dev/null || true)
+    profile_base="$PROFILES_DIR"
     if [[ -z "$profile_file" && -d "$SCRIPT_DIR/../vendor_profiles" ]]; then
-      profile_file=$(find "$SCRIPT_DIR/../vendor_profiles" -path "*/$slug/apps.json" -print -quit 2>/dev/null || true)
+      profile_base="$SCRIPT_DIR/../vendor_profiles"
+      profile_file=$(find "$profile_base" -path "*/$slug/apps.json" -print -quit 2>/dev/null || true)
     fi
     if [[ -n "$profile_file" ]]; then
       repo=$(jq -r '.url // empty' "$profile_file" 2>/dev/null)
       branch=$(jq -r '.branch // empty' "$profile_file" 2>/dev/null)
       tag=$(jq -r '.tag // empty' "$profile_file" 2>/dev/null)
-      PROFILE_DIRS[$slug]="$(dirname "$profile_file")"
+      profile_dir="$(dirname "$profile_file")"
+      relpath="${profile_dir#$profile_base/}"
+      PROFILE_BASES[$slug]="$profile_base"
+      PROFILE_RELPATHS[$slug]="$relpath"
+
     fi
   fi
 
@@ -353,6 +360,16 @@ done
   if [ -d "$target/instructions" ]; then
     mkdir -p "$ROOT_DIR/instructions/_$slug"
     rsync -a --delete "$target/instructions/" "$ROOT_DIR/instructions/_$slug/"
+  fi
+  profile_base="${PROFILE_BASES[$slug]-}"
+  profile_rel="${PROFILE_RELPATHS[$slug]-}"
+  if [[ -n "$profile_base" && -n "$profile_rel" ]]; then
+    src="$profile_base/$profile_rel"
+    dest="$ROOT_DIR/instructions/vendor_profiles/$profile_rel"
+    if ! [ -d "$dest" ] || ! diff -qr "$src" "$dest" >/dev/null 2>&1; then
+      mkdir -p "$dest"
+      rsync -a --delete "$src/" "$dest/"
+    fi
   fi
 done
 

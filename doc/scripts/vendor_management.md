@@ -14,6 +14,11 @@ The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repo
 
 Submodules removed from the lists are deleted, and the updated state is written back to `apps.json`.
 
+Whenever a vendor profile is used, its directory is copied into
+`instructions/vendor_profiles/<relpath>` so the repository keeps the exact profile
+that resolved the vendor entry. The copy is skipped if the destination already
+matches the source.
+
 ## Other helper scripts
 
 - `clone_submodules.sh` – clones vendor submodules listed in `vendors.txt` without updating existing entries.
