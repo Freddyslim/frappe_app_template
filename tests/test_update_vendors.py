@@ -86,8 +86,8 @@ def test_update_vendors_rebuilds_configs(tmp_path):
 
     data = json.loads((tmp_path / "apps.json").read_text())
     assert "oldapp" not in data
-    assert (tmp_path / "vendor_profiles" / "test" / "app1" / "apps.json").exists()
-    assert (tmp_path / "vendor_profiles" / "test" / "app2" / "apps.json").exists()
+    assert (tmp_path / "instructions" / "vendor_profiles" / "test" / "app1" / "apps.json").exists()
+    assert (tmp_path / "instructions" / "vendor_profiles" / "test" / "app2" / "apps.json").exists()
 
 
 
