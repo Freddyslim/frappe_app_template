@@ -213,15 +213,6 @@ recognized=("${!KEEP[@]}")
 changes=false
 
 mkdir -p "$ROOT_DIR/instructions/vendor_profiles"
-for slug in "${recognized[@]}"; do
-  profile_dir="${PROFILE_DIRS[$slug]:-}"
-  if [[ -n "$profile_dir" && -d "$profile_dir" ]]; then
-    rel_dir="${profile_dir#"$PROFILES_DIR"/}"
-    dest_dir="$ROOT_DIR/instructions/vendor_profiles/$rel_dir"
-    mkdir -p "$dest_dir"
-    rsync -a "$profile_dir/" "$dest_dir/"
-  fi
-done
 
   for slug in "${recognized[@]}"; do
     repo="${REPOS[$slug]}"
@@ -369,6 +360,12 @@ done
     if ! [ -d "$dest" ] || ! diff -qr "$src" "$dest" >/dev/null 2>&1; then
       mkdir -p "$dest"
       rsync -a --delete "$src/" "$dest/"
+    fi
+    # also copy vendor instructions to top-level instructions/<slug>
+    if [ -d "$src" ]; then
+      top_dest="$ROOT_DIR/instructions/$slug"
+      mkdir -p "$top_dest"
+      rsync -a --delete "$src/" "$top_dest/"
     fi
   fi
 done
