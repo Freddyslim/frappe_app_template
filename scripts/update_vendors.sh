@@ -101,6 +101,7 @@ declare -A TAGS
 declare -A APP_INFO
 declare -A PATHS
 declare -A KEEP
+declare -A PROFILE_DIRS
 
 recognized=()
 installed=()
@@ -142,6 +143,7 @@ for line in "${RAW_LINES[@]}"; do
       repo=$(jq -r '.url // empty' "$profile_file" 2>/dev/null)
       branch=$(jq -r '.branch // empty' "$profile_file" 2>/dev/null)
       tag=$(jq -r '.tag // empty' "$profile_file" 2>/dev/null)
+      PROFILE_DIRS[$slug]="$(dirname "$profile_file")"
     fi
   fi
 
@@ -202,6 +204,17 @@ fi
 recognized=("${!KEEP[@]}")
 
 changes=false
+
+mkdir -p "$ROOT_DIR/instructions/vendor_profiles"
+for slug in "${recognized[@]}"; do
+  profile_dir="${PROFILE_DIRS[$slug]:-}"
+  if [[ -n "$profile_dir" && -d "$profile_dir" ]]; then
+    rel_dir="${profile_dir#"$PROFILES_DIR"/}"
+    dest_dir="$ROOT_DIR/instructions/vendor_profiles/$rel_dir"
+    mkdir -p "$dest_dir"
+    rsync -a "$profile_dir/" "$dest_dir/"
+  fi
+done
 
   for slug in "${recognized[@]}"; do
     repo="${REPOS[$slug]}"
