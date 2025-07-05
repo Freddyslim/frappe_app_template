@@ -18,6 +18,8 @@ Whenever a vendor profile is used, its directory is copied into
 `instructions/vendor_profiles/<relpath>` so the repository keeps the exact profile
 that resolved the vendor entry. The copy is skipped if the destination already
 matches the source.
+The same information is also synced to `instructions/<slug>` so vendor specific
+instructions are easily accessible without the profile hierarchy.
 
 ## Other helper scripts
 
