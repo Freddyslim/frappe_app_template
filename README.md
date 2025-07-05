@@ -56,7 +56,7 @@ See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an ex
 Each vendor used by your app has a dedicated folder under `instructions/vendor_profiles/<category>/<slug>/`.
 The folder contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor‑specific notes.
 
-Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. If a vendor repository is private, provide a `GITHUB_TOKEN` or `API_KEY` via the bench `.env`, the repo `.env` or `.config/github_api.json` so the script can clone it. The script relies on `jq` for JSON parsing, so make sure `jq` is installed. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
+Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. When a vendor repository is private, the script first tries your global GitHub token from the bench `.env` or `.config/github_api.json`. If cloning fails, it will ask you to enter a token interactively. The script relies on `jq` for JSON parsing. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 

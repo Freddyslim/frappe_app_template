@@ -46,10 +46,10 @@ fi
 CONFIG_FILE="$ROOT_DIR/.config/github_api.json"
 API_KEY="${API_KEY:-}"
 if [ -z "$API_KEY" ] && [ -f "$ENV_FILE" ]; then
-  API_KEY=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2-)
+  API_KEY=$(grep -E '^API_KEY=' "$ENV_FILE" | cut -d'=' -f2- || true)
 fi
 if [ -z "$API_KEY" ] && [ -f "$BENCH_ENV_FILE" ]; then
-  API_KEY=$(grep -E '^API_KEY=' "$BENCH_ENV_FILE" | cut -d'=' -f2-)
+  API_KEY=$(grep -E '^API_KEY=' "$BENCH_ENV_FILE" | cut -d'=' -f2- || true)
 fi
 if [ -z "$API_KEY" ] && [ -f "$CONFIG_FILE" ]; then
   API_KEY=$(jq -r '.API_KEY // .GITHUB_TOKEN // empty' "$CONFIG_FILE" 2>/dev/null)
@@ -221,10 +221,19 @@ changes=false
       log "Updating existing submodule $path"
       if ! git submodule update --init "$path"; then
         echo "❌ Failed to update $slug" >&2
+        if [ -z "$GITHUB_TOKEN" ]; then
+          read -p "GitHub API token: " GITHUB_TOKEN
+          auth_repo=$(with_auth_repo "$repo")
+          git -C "$path" remote set-url origin "$auth_repo" || true
+          if ! git submodule update --init "$path"; then
+            echo "❌ Still failed to update $slug" >&2
+            git -C "$path" remote set-url origin "$repo" || true
+            continue
+          fi
+        fi
         if [ -n "$GITHUB_TOKEN" ]; then
           git -C "$path" remote set-url origin "$repo" || true
         fi
-        continue
       fi
       pushd "$target" >/dev/null
       if [[ -n "$branch" ]]; then
@@ -284,10 +293,47 @@ changes=false
       changes=true
       installed+=("$slug")
     else
-      echo "❌ Failed to clone $slug from $repo" >&2
-      git config --remove-section "submodule.$path" 2>/dev/null || true
-      rm -rf "$target"
-      continue
+      if [ -z "$GITHUB_TOKEN" ]; then
+        echo "Repository $slug may be private." >&2
+        read -p "GitHub API token: " GITHUB_TOKEN
+        auth_repo=$(with_auth_repo "$repo")
+        if git submodule add -f "$auth_repo" "$path"; then
+          git config -f .gitmodules "submodule.$path.url" "$repo"
+          git config "submodule.$path.url" "$repo"
+          pushd "$target" >/dev/null
+          if [[ -n "$branch" ]]; then
+            log "Checkout branch $branch"
+            git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+            git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
+          elif [[ -n "$tag" ]]; then
+            log "Checkout tag $tag"
+            git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
+            git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
+          fi
+          commit=$(git rev-parse HEAD)
+          log "Checked out commit $commit"
+          popd >/dev/null
+          if [ -n "$GITHUB_TOKEN" ]; then
+            git -C "$path" remote set-url origin "$repo" || true
+          fi
+          if [ ! -d "$target" ]; then
+            echo "⚠️  Missing directory for $slug" >&2
+            continue
+          fi
+          changes=true
+          installed+=("$slug")
+        else
+          echo "❌ Failed to clone $slug from $repo" >&2
+          git config --remove-section "submodule.$path" 2>/dev/null || true
+          rm -rf "$target"
+          continue
+        fi
+      else
+        echo "❌ Failed to clone $slug from $repo" >&2
+        git config --remove-section "submodule.$path" 2>/dev/null || true
+        rm -rf "$target"
+        continue
+      fi
     fi
   fi
   APP_INFO[$slug]="$(jq -n --arg repo "$repo" --arg branch "$branch" --arg tag "$tag" --arg commit "$commit" '{repo:$repo,branch:$branch,tag:$tag,commit:$commit}')"
