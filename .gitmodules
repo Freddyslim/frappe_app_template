@@ -1,12 +1,3 @@
-[submodule "vendor/frappe"]
-	path = vendor/frappe
-	url = https://github.com/frappe/frappe
-[submodule "vendor/bench"]
-	path = vendor/bench
-	url = https://github.com/frappe/bench
-[submodule "vendor/nmb_tools-develop"]
-	path = vendor/nmb_tools-develop
-	url = https://github.com/Freddyslim/nmb_tools
 [submodule "vendor/frappe-version-15"]
 	path = vendor/frappe-version-15
 	url = https://github.com/frappe/frappe
