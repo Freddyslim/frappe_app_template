@@ -19,24 +19,17 @@ Codex should develop the structure, files, and logic of this repo to match these
 
 These instructions are permanent and must be processed on every run, **unless they have been deactivated**.
 
-Individual instructions can be deactivated by placing them **within an HTML comment `<!-- ... -->`**.  
-Codex will completely ignore such instructions.  
-The `How to Code` section in `README.md` will be automatically updated and list deactivated instructions visibly as “not active”.
-
 ### Active Default Instructions
 - Flags have highest priority!
 - Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage
 - Create missing essential files
-- Remove one-time initialization or helper files after use
 - Build workflows, scripts, and configs logically and consistently – especially when structure changes (e.g., paths, imports, CI triggers)
 - Always keep tests up to date when the project changes or when tests are insufficient. Tests must always follow the project, not the other way around
 - Update existing files when they don't align with `README.md` or `AGENTS.md`
-- Keep `README.md` ↔ `AGENTS.md` in sync: changes in one must be reflected in the other
 - Always review and adjust the `How to Code` section at the end of `README.md` to clearly explain:
   - Which flags are available
   - How Codex is influenced
   - Which instructions are active or deactivated
-- Always check all `/scripts` to ensure they match the `README.md`
 - If a prompt input is too long or might exceed the available context size, also process it with `--create-tasks`
 
 ### Vendor-Specific Agent Profiles
@@ -44,30 +37,6 @@ The `How to Code` section in `README.md` will be automatically updated and list 
 If submodules or vendor folders exist under `/vendor` in the repository, then:
 
 - Look for a vendor-specific agent profile in `instructions/<vendorname>/AGENTS.md` – **but only if `<vendorname>` is actually included as a folder or submodule under `/vendor/`**
-
----
-
-## Command & Execution Restrictions
-
-Codex must **not execute any real shell commands or processes**. These instructions apply solely to structural implementation and preparation.
-
-Allowed:
-
-- Analyzing and modifying all files in the repository
-- Creating new files and content
-- Generating scripts, configs, CI workflows, and supporting files
-
-Not allowed:
-
-- Running `bench`, `git`, `curl`, `wget`, `npm`, `ssh`, etc.
-- Accessing networks or remote repositories
-- Initializing external systems or services
-
-**Exception:**  
-Codex may generate local commands in CI files or `setup.sh` **as code**, **but must not execute them**.  
-These must remain fully within the repository context (e.g., `chmod`, `yarn install`, `git status`, `rm`, `mkdir`, etc.).
-
-The goal is to keep everything **locally preparable and testable** – without side effects on external systems.
 
 ---
 
@@ -198,12 +167,6 @@ The `How to Code` section in `README.md` always documents the current state.
 `PROJECT.md` 
 
 - **New prompts** are added and executed via `codex --go`.
-- Codex reads **only the section above a separator** (`---`) to ignore old logs.
-
-This makes `PROJECT.md` a central place for:
-- pre-prepared tasks,
-- automated execution,
-- gapless logging.
 
 ## Mermaid
 
