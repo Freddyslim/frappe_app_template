@@ -123,7 +123,7 @@ Codex processes this repository based on the rules in `AGENTS.md`. The following
 - Store Mermaid diagrams as `.mmd` files in `doc/` and use `flowchart TD` with files as rectangles and scripts as rounded nodes.
 - Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
 - Use `--create-tasks` when prompts risk exceeding context limits.
-- Check vendor-specific instructions under `instructions/<vendorname>/AGENTS.md`; those override the main `AGENTS.md` when present.
+- Check vendor-specific instructions under `instructions/<vendorname>/AGENTS.md`; these apply only when `<vendorname>` exists under `vendor/` and override the main `AGENTS.md`.
 
 Codex can be guided with these flags:
 
