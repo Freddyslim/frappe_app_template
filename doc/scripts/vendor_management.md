@@ -1,6 +1,6 @@
 # Vendor Management
 
-This document explains how vendor repositories are integrated into your app via submodules.
+This document explains how vendor repositories are integrated into your app without using git submodules.
 
 ## Files
 
@@ -10,9 +10,9 @@ This document explains how vendor repositories are integrated into your app via 
 
 ## Script: `update_vendors.sh`
 
-The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and clones every entry as a submodule under the `vendor/` directory. If a vendor repository is private, `update_vendors.sh` tries the GitHub token from the bench `.env` or `.config/github_api.json`. Should cloning fail, the script prompts you for a token on the command line. `update_vendors.sh` depends on `jq` for parsing JSON, so ensure it is installed before running the script.
+The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and clones every entry directly under the `vendor/` directory. If a vendor repository is private, `update_vendors.sh` tries the GitHub token from the bench `.env` or `.config/github_api.json`. Should cloning fail, the script prompts you for a token on the command line. `update_vendors.sh` depends on `jq` for parsing JSON, so ensure it is installed before running the script.
 
-Submodules removed from the lists are deleted, and the updated state is written back to `apps.json`.
+Vendor directories removed from the lists are deleted, and the updated state is written back to `apps.json`.
 
 Whenever a vendor is processed, its instruction directory from the profile is
 mirrored to `instructions/<slug>` in your app. The `vendor_profiles` directory
@@ -20,14 +20,14 @@ is not copied into the project.
 
 ## Other helper scripts
 
-- `clone_submodules.sh` – clones vendor submodules listed in `vendors.txt` without updating existing entries.
-- `remove_submodule.sh` – removes a specific vendor submodule and its instructions directory.
+- `clone_submodules.sh` – clones vendor repositories listed in `vendors.txt` without updating existing entries.
+- `remove_submodule.sh` – removes a specific vendor repository directory and its instructions.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
 
 ## GitHub Workflow
 
-`update-vendors.yml` triggers `update_vendors.sh` automatically whenever `vendors.txt` or `custom_vendors.json` change. The workflow commits updated submodules and documentation back to the repository.
+`update-vendors.yml` triggers `update_vendors.sh` automatically whenever `vendors.txt` or `custom_vendors.json` change. The workflow commits updated vendor directories and documentation back to the repository.
 
 ## Diagram
 
@@ -40,7 +40,7 @@ flowchart TD
     custom[custom_vendors.json]
     update(update_vendors.sh)
     apps[apps.json]
-    submods[vendor/ submodules]
+    submods[vendor/ repositories]
     workflow[update-vendors.yml]
     vendors --> update
     custom --> update
