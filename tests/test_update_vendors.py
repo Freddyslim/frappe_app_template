@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 
-def test_update_vendors_prunes_obsolete_submodule(tmp_path):
+def test_update_vendors_prunes_obsolete_repo(tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
     scripts_dir = repo_root / "scripts"
     tmp_scripts = tmp_path / "scripts"
@@ -22,14 +22,9 @@ def test_update_vendors_prunes_obsolete_submodule(tmp_path):
     subprocess.run(["git", "commit", "-m", "init"], cwd=dummy_repo, check=True)
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
-    subprocess.run([
-        "git",
-        "submodule",
-        "add",
-        str(dummy_repo),
-        "vendor/dummy",
-    ], cwd=tmp_path, check=True, env=env)
-    subprocess.run(["git", "commit", "-am", "add submodule"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "clone", str(dummy_repo), "vendor/dummy"], cwd=tmp_path, check=True, env=env)
+    subprocess.run(["git", "add", "vendor/dummy"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "add vendor"], cwd=tmp_path, check=True)
 
     assert (tmp_path / "vendor" / "dummy").exists()
 
@@ -40,9 +35,6 @@ def test_update_vendors_prunes_obsolete_submodule(tmp_path):
     subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True)
 
     assert not (tmp_path / "vendor" / "dummy").exists()
-    gitmodules = tmp_path / ".gitmodules"
-    if gitmodules.exists():
-        assert "vendor/dummy" not in gitmodules.read_text()
 
     assert (tmp_path / "apps.json").read_text().strip() == "{}"
 

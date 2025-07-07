@@ -15,8 +15,8 @@
         ├── vendors.txt                    # common vendors
         ├── sample_data/                   # empty folder reserved for sample datasets
         ├── scripts/
-        │   ├── clone_submodules.sh        # pull vendor profiles
-        │   ├── remove_submodule.sh        # remove unwanted vendor directory
+        │   ├── clone_repo.sh              # pull vendor profiles
+        │   ├── remove_repo.sh             # remove unwanted vendor directory
         │   ├── generate_diagrams.sh       # render Mermaid diagrams from doc/
         │   ├── update_vendors.sh          # sync vendor repositories
         │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx+1.0>, major <vx+1.0.0>

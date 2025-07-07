@@ -220,133 +220,31 @@ changes=false
     tag="${TAGS[$slug]}"
     path="${PATHS[$slug]}"
     target="$ROOT_DIR/$path"
-  ref="${branch:-$tag}"
-  echo "➡️  Processing $slug ($ref)"
-  auth_repo=$(with_auth_repo "$repo")
-  log "Using repository URL: $auth_repo"
-  if grep -q "path = $path" "$ROOT_DIR/.gitmodules" 2>/dev/null; then
-    if git ls-files "$path" --error-unmatch >/dev/null 2>&1; then
-      if [ -n "$GITHUB_TOKEN" ]; then
-        git -C "$path" remote set-url origin "$auth_repo" || true
-      fi
-      log "Updating existing submodule $path"
-      if ! git submodule update --init "$path"; then
-        echo "❌ Failed to update $slug" >&2
-        if [ -z "$GITHUB_TOKEN" ]; then
-          read -p "GitHub API token: " GITHUB_TOKEN
-          auth_repo=$(with_auth_repo "$repo")
-          git -C "$path" remote set-url origin "$auth_repo" || true
-          if ! git submodule update --init "$path"; then
-            echo "❌ Still failed to update $slug" >&2
-            git -C "$path" remote set-url origin "$repo" || true
-            continue
-          fi
-        fi
-        if [ -n "$GITHUB_TOKEN" ]; then
-          git -C "$path" remote set-url origin "$repo" || true
-        fi
-      fi
-      pushd "$target" >/dev/null
-      if [[ -n "$branch" ]]; then
-        log "Checkout branch $branch"
-        git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-        git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
-      elif [[ -n "$tag" ]]; then
-        log "Checkout tag $tag"
-        git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-        git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
-      fi
-      commit=$(git rev-parse HEAD)
-      log "Checked out commit $commit"
-      popd >/dev/null
-      if [ -n "$GITHUB_TOKEN" ]; then
-        git -C "$path" remote set-url origin "$repo" || true
-      fi
-      if [ ! -d "$target" ]; then
-        echo "⚠️  Missing directory for $slug" >&2
-        continue
-      fi
-      updated+=("$slug")
+    ref="${branch:-$tag}"
+    echo "➡️  Processing $slug ($ref)"
+    auth_repo=$(with_auth_repo "$repo")
+    log "Using repository URL: $auth_repo"
+    if [ -d "$target/.git" ]; then
+      git -C "$target" fetch origin --tags >/dev/null 2>&1 || true
     else
-      echo "📁 Submodule $path not registered in index – re-adding $slug"
-      log "Re-adding submodule $path"
-      git submodule add -f "$auth_repo" "$path"
-      git config -f .gitmodules "submodule.$path.url" "$repo"
-      git config "submodule.$path.url" "$repo"
-      installed+=("$slug")
-      changes=true
-    fi
-  else
-    log "Adding new submodule $path"
-    if git submodule add -f "$auth_repo" "$path"; then
-      git config -f .gitmodules "submodule.$path.url" "$repo"
-      git config "submodule.$path.url" "$repo"
-      pushd "$target" >/dev/null
-      if [[ -n "$branch" ]]; then
-        log "Checkout branch $branch"
-        git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-        git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
-      elif [[ -n "$tag" ]]; then
-        log "Checkout tag $tag"
-        git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-        git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
-      fi
-      commit=$(git rev-parse HEAD)
-      log "Checked out commit $commit"
-      popd >/dev/null
-      if [ -n "$GITHUB_TOKEN" ]; then
-        git -C "$path" remote set-url origin "$repo" || true
-      fi
-      if [ ! -d "$target" ]; then
-        echo "⚠️  Missing directory for $slug" >&2
-        continue
-      fi
-      changes=true
-      installed+=("$slug")
-    else
-      if [ -z "$GITHUB_TOKEN" ]; then
-        echo "Repository $slug may be private." >&2
-        read -p "GitHub API token: " GITHUB_TOKEN
-        auth_repo=$(with_auth_repo "$repo")
-        if git submodule add -f "$auth_repo" "$path"; then
-          git config -f .gitmodules "submodule.$path.url" "$repo"
-          git config "submodule.$path.url" "$repo"
-          pushd "$target" >/dev/null
-          if [[ -n "$branch" ]]; then
-            log "Checkout branch $branch"
-            git fetch origin "$branch" --tags >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-            git checkout "$branch" >/dev/null 2>&1 || git checkout "origin/$branch" >/dev/null 2>&1 || true
-          elif [[ -n "$tag" ]]; then
-            log "Checkout tag $tag"
-            git fetch origin "tag" "$tag" >/dev/null 2>&1 || git fetch --tags >/dev/null 2>&1 || true
-            git checkout "tags/$tag" >/dev/null 2>&1 || git checkout "$tag" >/dev/null 2>&1 || true
-          fi
-          commit=$(git rev-parse HEAD)
-          log "Checked out commit $commit"
-          popd >/dev/null
-          if [ -n "$GITHUB_TOKEN" ]; then
-            git -C "$path" remote set-url origin "$repo" || true
-          fi
-          if [ ! -d "$target" ]; then
-            echo "⚠️  Missing directory for $slug" >&2
-            continue
-          fi
-          changes=true
-          installed+=("$slug")
-        else
-          echo "❌ Failed to clone $slug from $repo" >&2
-          git config --remove-section "submodule.$path" 2>/dev/null || true
-          rm -rf "$target"
-          continue
-        fi
+      if git clone "$auth_repo" "$target" >/dev/null 2>&1; then
+        installed+=("$slug")
+        changes=true
       else
         echo "❌ Failed to clone $slug from $repo" >&2
-        git config --remove-section "submodule.$path" 2>/dev/null || true
-        rm -rf "$target"
         continue
       fi
     fi
-  fi
+    if [[ -n "$branch" ]]; then
+      git -C "$target" checkout "$branch" >/dev/null 2>&1 || \
+        git -C "$target" checkout "origin/$branch" >/dev/null 2>&1 || true
+    elif [[ -n "$tag" ]]; then
+      git -C "$target" checkout "tags/$tag" >/dev/null 2>&1 || \
+        git -C "$target" checkout "$tag" >/dev/null 2>&1 || true
+    fi
+    commit=$(git -C "$target" rev-parse HEAD)
+    updated+=("$slug")
+
   APP_INFO[$slug]="$(jq -n --arg repo "$repo" --arg branch "$branch" --arg tag "$tag" --arg commit "$commit" '{repo:$repo,branch:$branch,tag:$tag,commit:$commit}')"
   if [ -d "$target/instructions" ]; then
     mkdir -p "$ROOT_DIR/instructions/_$slug"
@@ -369,29 +267,6 @@ for slug in "${recognized[@]}"; do
   recognized_paths+=("${PATHS[$slug]}")
 done
 
-if [ -f "$ROOT_DIR/.gitmodules" ]; then
-  while IFS= read -r path; do
-    [[ "$path" == vendor/* ]] || continue
-    keep=false
-    for rp in "${recognized_paths[@]}"; do
-      if [[ "$path" == "$rp" ]]; then
-        keep=true
-        break
-      fi
-    done
-    if ! $keep; then
-      echo "🗑 Removing obsolete submodule $path"
-      log "Deinit and remove submodule $path"
-      git submodule deinit -f "$path" 2>/dev/null || true
-      if [[ -e "$path" ]]; then
-        git rm -f "$path" 2>/dev/null || true
-      fi
-      rm -rf "$ROOT_DIR/.git/modules/$path" "$ROOT_DIR/$path"
-      removed+=("$(basename "$path")")
-      changes=true
-    fi
-  done < <(git config --file "$ROOT_DIR/.gitmodules" --get-regexp path | awk '{print $2}')
-fi
 
 for dir in "$VENDOR_DIR"/*; do
   [ -d "$dir" ] || continue

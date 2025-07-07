@@ -11,7 +11,7 @@
         ├── apps.json                        # leere Datei für Vendor-Metadaten
         ├── custom_vendors.json              # leere Datei für eigene Vendoren
         ├── vendors.txt                      # Liste gebräuchlicher Vendoren (z.B. ERPNext, Nextcloud)
-        ├── frappe_app_template              # eingebunden als submodule
+        ├── frappe_app_template              # geklontes Template-Repository
         ├── vendor/                          # von frappe_app_template kopiert
         │   ├── erpnext/
         │   └── nextcloud/
@@ -19,8 +19,8 @@
         ├── doc/                             # technische Dokumentation (Markdown, Mermaid)
         ├── sample_data/                     # leerer Ordner für optionale Testdaten
         ├── scripts/                         # Hilfsskripte
-        │   ├── clone_submodules.sh          # lädt Vendor-Repositories aus vendors.txt/custom_vendors.json
-        │   ├── remove_submodule.sh          # entfernt sauber ein Vendor-Verzeichnis und aktualisiert apps.json
+        │   ├── clone_repo.sh                # lädt Vendor-Repositories aus vendors.txt/custom_vendors.json
+        │   ├── remove_repo.sh               # entfernt sauber ein Vendor-Verzeichnis und aktualisiert apps.json
         │   ├── generate_diagrams.sh         # rendert Mermaid-Diagramme aus /doc/
         │   ├── update_vendors.sh            # synchronisiert Vendor-Repositories (zentraler Einstieg)
         │   └── publish_app.sh               # erstellt Release, Tag, PR (manuell oder CI-unterstützt)

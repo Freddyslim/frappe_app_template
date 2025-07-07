@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-# Prevent execution inside the frappe_app_template submodule
+# Prevent execution inside the frappe_app_template directory itself
 toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
 if [[ "$toplevel" == *"/frappe_app_template" ]]; then
-  echo "⛔ ERROR: You are inside the frappe_app_template submodule."
-  echo "💡 Please run this script from the root of your app repository, not from inside the template."
+  echo "⛔ ERROR: You are inside the frappe_app_template directory."
+  echo "💡 Please run this script from the root of your app repository."
   exit 1
 fi
 
@@ -38,15 +38,13 @@ while IFS= read -r raw_line || [ -n "$raw_line" ]; do
     target="vendor/$name"
     echo "--> processing $name@$ref"
 
-    if ! grep -q "path = $target" "$ROOT_DIR/.gitmodules" 2>/dev/null; then
-        git submodule add -b "$ref" "$url" "$target" || true
-    fi
-
-    # ensure correct ref is checked out
     if [ -d "$target/.git" ]; then
-        git -C "$target" fetch --tags origin || true
-        git -C "$target" checkout "$ref" || git -C "$target" checkout "origin/$ref" || true
+        git -C "$target" fetch origin --tags >/dev/null 2>&1 || true
+    else
+        git clone "$url" "$target" >/dev/null 2>&1 || true
     fi
+    git -C "$target" checkout "$ref" >/dev/null 2>&1 || \
+        git -C "$target" checkout "origin/$ref" >/dev/null 2>&1 || true
 
     if [ -d "$target/instructions" ]; then
         mkdir -p "$INSTRUCTIONS_DIR/_$name"

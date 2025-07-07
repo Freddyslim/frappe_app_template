@@ -220,7 +220,7 @@ def test_setup_script_copies_template_instructions(tmp_path):
     tmp_script.write_text(script_path.read_text())
     tmp_script.chmod(0o755)
 
-    # replace submodule URL with local path to include template files
+    # replace template repository URL with local path
     data = tmp_script.read_text().replace(
         "https://github.com/Freddyslim/frappe_app_template",
         Path(repo_root).as_uri(),
