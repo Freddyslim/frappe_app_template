@@ -25,8 +25,8 @@ The script will:
 - abort if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
 - clone the `frappe_app_template` into `apps/my_app/frappe_app_template`
- - copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `PROJEKT.md`, `instructions/` with vendor profiles, `scripts/` etc.)
- - vendor profiles are mirrored under `instructions/<slug>/` so `frappe` and `bench` instructions are ready
+- copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `PROJEKT.md`, `instructions/` with vendor profiles, `scripts/` etc.)
+- vendor profiles are mirrored under `instructions/<slug>/` so `frappe` and `bench` instructions are ready
 - commit all copied files so `git status` is clean even when `bench` created the repo
 - create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)
 - prepare for GitHub push to your private repository (e.g. `github.com/mygithubacc/frappe-apps/`my_app (you will be prompted interactively)<-- from git hook definitions)
@@ -52,13 +52,14 @@ Both files are ignored by git so secrets remain local.
 
 The full directory layout is documented in [doc/trees/template_structure.md](doc/trees/template_structure.md).
 
-
 See [doc/trees/app_structure_develop.md](doc/trees/app_structure_develop.md) for the directory created by setup.sh.
 See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an example layout after release.
 Vendor profile templates live under `frappe_app_template/instructions/vendor_profiles/<category>/<slug>/`.
 Each profile contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor-specific notes. When `update_vendors.sh` runs, the instructions for active vendors are copied to `instructions/<slug>` in your app.
 
 Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and clones each repository directly under `vendor/`. When a vendor repository is private, the script first tries your global GitHub token from the bench `.env` or `.config/github_api.json`. If cloning fails, it will ask you to enter a token interactively. The script relies on `jq` for JSON parsing. Vendor directories that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
+
+For automation (e.g. CI or Codex) use `./scripts/update_vendors_ci.sh` which aborts if `GITHUB_TOKEN` is missing and disables git prompts.
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
@@ -92,9 +93,18 @@ Workflow examples are stored in `workflow_templates/`. Copy them into
 The [workflow_templates.md](doc/workflow_templates.md) document explains what
 each template does. Details about vendor handling are described in
 [vendor_management.md](doc/scripts/vendor_management.md).
+
+### Codex Environment Setup
+
+1. Add a secret named `GITHUB_TOKEN` in your Codex environment so vendor scripts can access private repositories.
+2. Copy `scripts/setup_codex_env.sh` into the environment and run it once to install dependencies and fetch vendor repositories.
+
 ### Command Restrictions
+
 Codex does not execute real shell commands or network operations while processing this repository. Only file creation and modification is performed. Commands like `bench`, `git`, `curl`, `wget`, `npm` and `ssh` must not run. You may place such commands in scripts or CI files, but they remain inactive during updates.
+
 ### License
+
 MIT
 
 ---
@@ -110,6 +120,7 @@ code with prompts and/or flags and/or --go (starts with reading PROJECT.md).
 --- autocreated ---
 
 Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
+
 - Flags have highest priority!
 - Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage.
 
