@@ -25,7 +25,7 @@ The script will:
 - abort if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
 - link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
- - copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `instructions/` with vendor profiles, `scripts/` etc.)
+ - copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `PROJEKT.md`, `instructions/` with vendor profiles, `scripts/` etc.)
  - vendor profiles are mirrored under `instructions/<slug>/` so `frappe` and `bench` instructions are ready
 - commit all copied files so `git status` is clean even when `bench` created the repo
 - create new remote repo <path from .pre-commit-config.yaml>/my_app (is prompted interactively)

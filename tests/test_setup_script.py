@@ -256,3 +256,47 @@ fi
     assert (app_root / "instructions" / "bench" / "AGENTS.md").exists()
     assert (app_root / "instructions" / "frappe" / "AGENTS.md").exists()
 
+
+def test_setup_script_preserves_agents_and_creates_projekt(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    script_path = repo_root / "setup.sh"
+    tmp_script = tmp_path / "setup.sh"
+    tmp_script.write_text(script_path.read_text())
+    tmp_script.chmod(0o755)
+
+    bench_cmd = tmp_path / "bench"
+    bench_cmd.write_text(
+        """#!/bin/bash
+if [ "$1" = "new-app" ]; then
+    app_name="$2"
+    root="apps/$app_name"
+    mkdir -p "$root/config" "$root/templates" "$root/$app_name"
+    touch "$root/patches.txt"
+    base=$(dirname "$root")
+    echo '[tool.poetry]' > "$base/pyproject.toml"
+    echo '# App' > "$base/README.md"
+    echo 'MIT' > "$base/license.txt"
+    echo '*.pyc' > "$base/.gitignore"
+    echo 'keep' > "$root/AGENTS.md"
+else
+    exit 1
+fi
+"""
+    )
+    bench_cmd.chmod(0o755)
+
+    (tmp_path / "vendors.txt").write_text((repo_root / "vendors.txt").read_text())
+    (tmp_path / "apps.json").write_text((repo_root / "apps.json").read_text())
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True)
+    env = {
+        **os.environ,
+        "PATH": f"{tmp_path}:{os.environ['PATH']}",
+        "API_KEY": "dummy",
+    }
+    subprocess.run([str(tmp_script), "demo2"], cwd=tmp_path, check=True, env=env)
+
+    app_root = tmp_path / "apps" / "demo2"
+    assert (app_root / "AGENTS.md").read_text().strip() == "keep"
+    assert (app_root / "PROJEKT.md").exists()
+
