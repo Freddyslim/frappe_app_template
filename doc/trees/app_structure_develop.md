@@ -19,16 +19,16 @@
         ├── doc/                             # technische Dokumentation (Markdown, Mermaid)
         ├── sample_data/                     # leerer Ordner für optionale Testdaten
         ├── scripts/                         # Hilfsskripte
-        │   ├── clone_submodules.sh          # lädt vendor-Submodule aus vendors.txt/custom_vendors.json
-        │   ├── remove_submodule.sh          # entfernt sauber ein Vendor-Submodul und aktualisiert apps.json
+        │   ├── clone_submodules.sh          # lädt Vendor-Repositories aus vendors.txt/custom_vendors.json
+        │   ├── remove_submodule.sh          # entfernt sauber ein Vendor-Verzeichnis und aktualisiert apps.json
         │   ├── generate_diagrams.sh         # rendert Mermaid-Diagramme aus /doc/
-        │   ├── update_vendors.sh            # synchronisiert Vendor-Submodule (zentraler Einstieg)
+        │   ├── update_vendors.sh            # synchronisiert Vendor-Repositories (zentraler Einstieg)
         │   └── publish_app.sh               # erstellt Release, Tag, PR (manuell oder CI-unterstützt)
         ├── .pre-commit-config.yaml          # Hook-Setup für git (Black, isort, etc.)
         ├── .github/
         │   └── workflows/                   # GitHub Actions CI/CD
         │       ├── ci.yml                   # CI-Tests (z. B. Bench Build)
-        │       ├── update-vendors.yml       # prüft und aktualisiert Vendor-Submodule automatisch
+        │       ├── update-vendors.yml       # prüft und aktualisiert Vendor-Repositories automatisch
         │       └── validate_commits.yml     # prüft Conventional Commit Messages
         ├── .config/
         │   └── github_api.json              # Lokale API Keys / Tokens (nicht versioniert)

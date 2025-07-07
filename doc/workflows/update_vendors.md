@@ -1,6 +1,6 @@
 # update-vendors.yml
 
-Watches `vendors.txt` and `custom_vendors.json` to keep vendor submodules in sync.
+Watches `vendors.txt` and `custom_vendors.json` to keep vendor repositories in sync.
 
 ```mermaid
 flowchart TD

@@ -1,6 +1,6 @@
 # remove_submodule.sh
 
-Safely remove a vendor submodule and its instructions directory.
+Safely remove a vendor repository directory and its instructions.
 
 ```mermaid
 flowchart TD

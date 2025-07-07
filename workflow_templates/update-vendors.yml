@@ -1,4 +1,4 @@
-# Triggers vendor submodule updates when vendors.txt or custom profiles change
+# Triggers vendor repository updates when vendors.txt or custom profiles change
 name: update-vendors
 
 on:
