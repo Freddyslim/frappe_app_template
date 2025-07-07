@@ -375,10 +375,19 @@ fi
 
 # copy AGENTS.md now that submodule exists
 if [ -f "$CONFIG_TARGET/frappe_app_template/AGENTS.md" ]; then
-  cp "$CONFIG_TARGET/frappe_app_template/AGENTS.md" "$CONFIG_TARGET/AGENTS.md"
+  cp -n "$CONFIG_TARGET/frappe_app_template/AGENTS.md" "$CONFIG_TARGET/AGENTS.md"
 else
   touch "$CONFIG_TARGET/AGENTS.md"
 fi
+
+# ensure PROJECT.md and PROJEKT.md without overwriting existing files
+if [ -f "$CONFIG_TARGET/frappe_app_template/PROJECT.md" ]; then
+  cp -n "$CONFIG_TARGET/frappe_app_template/PROJECT.md" "$CONFIG_TARGET/PROJECT.md"
+else
+  touch "$CONFIG_TARGET/PROJECT.md"
+fi
+
+cp -n "$CONFIG_TARGET/PROJECT.md" "$CONFIG_TARGET/PROJEKT.md" 2>/dev/null || true
 
 for wf in "$WORKFLOW_TEMPLATE_DIR"/*.yml; do
   [ -f "$wf" ] && cp "$wf" "$CONFIG_TARGET/.github/workflows/"
