@@ -41,9 +41,9 @@ The `How to Code` section in `README.md` will be automatically updated and list 
 
 ### Vendor-Specific Agent Profiles
 
-If submodules or vendor folders exist under `/vendors` in the repository, then:
+If submodules or vendor folders exist under `/vendor` in the repository, then:
 
-- Look for a vendor-specific agent profile in `instructions/<vendorname>/AGENTS.md` – **but only if `<vendorname>` is actually included as a folder or submodule under `/vendors/`**
+- Look for a vendor-specific agent profile in `instructions/<vendorname>/AGENTS.md` – **but only if `<vendorname>` is actually included as a folder or submodule under `/vendor/`**
 - **If such an `AGENTS.md` exists**, it takes precedence over conflicting instructions in the main `AGENTS.md`
 
 ---
