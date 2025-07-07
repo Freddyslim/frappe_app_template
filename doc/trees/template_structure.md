@@ -2,7 +2,7 @@
 
 ```bash
 /home/frappe/frappe-bench/
-└── frappe_app_tamplate/
+└── frappe_app_template/
         ├── instructions/                  # app instructions
         ├── vendor/                        # vendor repositories
         │   ├── erpnext/
