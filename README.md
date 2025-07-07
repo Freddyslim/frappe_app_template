@@ -24,7 +24,7 @@ The script will:
 - use `bench new-app` to generate a new Frappe app under `apps/my_app/` (interactive)
 - abort if `apps/my_app/` already exists to avoid overwriting
 - initialize a Git repository in `apps/my_app/`
-- link the `frappe_app_template` as a submodule in `apps/my_app/frappe_app_template`
+- clone the `frappe_app_template` into `apps/my_app/frappe_app_template`
  - copy required template files into the root of your new app (e.g. `README.md`, `.gitignore`, `.github/`, `AGENTS.md`, `PROJEKT.md`, `instructions/` with vendor profiles, `scripts/` etc.)
  - vendor profiles are mirrored under `instructions/<slug>/` so `frappe` and `bench` instructions are ready
 - commit all copied files so `git status` is clean even when `bench` created the repo
@@ -33,7 +33,7 @@ The script will:
 - the GitHub repository is automatically named after your app
 - the GitHub API token is stored in `~/frappe-bench/.env` for reuse
 - repo specific values like `REPO_NAME`, `REPO_PATH`, `SSH_KEY_PATH` and `DEPLOY_KEY_ADDED` are stored in `apps/my_app/.env`; keys from the bench `.env` are moved here if found
-- run `./scripts/update_vendors.sh` to fetch vendor submodules before the initial push
+- run `./scripts/update_vendors.sh` to fetch vendor repositories before the initial push
   (use `--verbose` to see detailed logs)
 - push the new repository to the remote `develop` branch
 
@@ -58,7 +58,7 @@ See [doc/trees/app_structure_main.md](doc/trees/app_structure_main.md) for an ex
 Vendor profile templates live under `frappe_app_template/instructions/vendor_profiles/<category>/<slug>/`.
 Each profile contains an `apps.json` file with repository information and an optional `AGENTS.md` for vendor-specific notes. When `update_vendors.sh` runs, the instructions for active vendors are copied to `instructions/<slug>` in your app.
 
-Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and adds each repository as a submodule under `vendor/`. When a vendor repository is private, the script first tries your global GitHub token from the bench `.env` or `.config/github_api.json`. If cloning fails, it will ask you to enter a token interactively. The script relies on `jq` for JSON parsing. Submodules that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
+Run `./scripts/update_vendors.sh` to sync vendors. The script reads `vendors.txt` and `custom_vendors.json`, looks up the matching profiles and clones each repository directly under `vendor/`. When a vendor repository is private, the script first tries your global GitHub token from the bench `.env` or `.config/github_api.json`. If cloning fails, it will ask you to enter a token interactively. The script relies on `jq` for JSON parsing. Vendor directories that no longer appear in the lists are removed and `apps.json` is rewritten with the current metadata. Use `--verbose` to print detailed progress.
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
@@ -84,7 +84,7 @@ All hook definitions live in `.pre-commit-config.yaml` at the repository root.
 This template comes with GitHub Actions workflows for:
 
 - CI testing
-- automated vendor submodule updates via `update-vendors.yml`
+- automated vendor repository updates via `update-vendors.yml`
 - commit linting and validation
 
 Workflow examples are stored in `workflow_templates/`. Copy them into
