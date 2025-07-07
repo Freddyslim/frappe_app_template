@@ -99,7 +99,7 @@ fi
 
 toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
 if [[ -n "$toplevel" && "$toplevel" == */frappe_app_template ]]; then
-  echo "ERROR: Do not run this inside the frappe_app_template submodule."
+  echo "ERROR: Do not run this inside the frappe_app_template directory."
   exit 1
 fi
 
@@ -337,10 +337,10 @@ touch "$CONFIG_TARGET/pyproject.toml"
 touch "$CONFIG_TARGET/.gitignore"
 
 
-# Submodul einbinden
-if [ ! -d "$CONFIG_TARGET/frappe_app_template/.git" ]; then
-  git -C "$CONFIG_TARGET" submodule add https://github.com/Freddyslim/frappe_app_template frappe_app_template || true
-  log "Submodule hinzugefügt: frappe_app_template"
+# Template klonen
+if [ ! -d "$CONFIG_TARGET/frappe_app_template" ]; then
+  git clone https://github.com/Freddyslim/frappe_app_template "$CONFIG_TARGET/frappe_app_template" >/dev/null 2>&1 || true
+  log "Template geklont: frappe_app_template"
 fi
 
 # 🔁 vendors.txt aus Template kopieren
@@ -373,7 +373,7 @@ if [ -d "$CONFIG_TARGET/frappe_app_template/instructions/vendor_profiles" ]; the
   done < "$CONFIG_TARGET/vendors.txt"
 fi
 
-# copy AGENTS.md now that submodule exists
+# copy AGENTS.md from cloned template
 if [ -f "$CONFIG_TARGET/frappe_app_template/AGENTS.md" ]; then
   cp -n "$CONFIG_TARGET/frappe_app_template/AGENTS.md" "$CONFIG_TARGET/AGENTS.md"
 else

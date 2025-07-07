@@ -20,8 +20,8 @@ is not copied into the project.
 
 ## Other helper scripts
 
-- `clone_submodules.sh` – clones vendor repositories listed in `vendors.txt` without updating existing entries.
-- `remove_submodule.sh` – removes a specific vendor repository directory and its instructions.
+- `clone_repo.sh` – clones vendor repositories listed in `vendors.txt` without updating existing entries.
+- `remove_repo.sh` – removes a specific vendor repository directory and its instructions.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
 
