@@ -25,6 +25,10 @@ is not copied into the project.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
 
+For non‑interactive use in CI pipelines or the Codex environment, use
+`update_vendors_ci.sh`. It wraps `update_vendors.sh`, aborts when
+`GITHUB_TOKEN` is missing and disables git credential prompts.
+
 ## GitHub Workflow
 
 `update-vendors.yml` triggers `update_vendors.sh` automatically whenever `vendors.txt` or `custom_vendors.json` change. The workflow commits updated vendor directories and documentation back to the repository.
