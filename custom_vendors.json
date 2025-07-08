@@ -4,5 +4,11 @@
     "branch": "develop",
     "tag": "",
     "commit": ""
+  },
+    "caterer": {
+    "repo": "https://github.com/Freddyslim/caterer",
+    "branch": "main",
+    "tag": "",
+    "commit": ""
   }
 }

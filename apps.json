@@ -3,7 +3,7 @@
     "repo": "https://github.com/frappe/frappe",
     "branch": "version-15",
     "tag": "",
-    "commit": "6a848786c8d2070d284a67d9560ff5477e86c108"
+    "commit": "cb4955a0b959126b32e53293816cf5846e8553b3"
   },
   "bench": {
     "repo": "https://github.com/frappe/bench",
@@ -16,5 +16,11 @@
     "branch": "develop",
     "tag": "",
     "commit": "63c9109a872bdff4219e6ef494764771c73872a3"
+  },
+  "caterer": {
+    "repo": "https://github.com/Freddyslim/caterer",
+    "branch": "main",
+    "tag": "",
+    "commit": "f121d207b605f8d64989ace25942baafe0139f49"
   }
 }
