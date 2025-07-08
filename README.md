@@ -63,37 +63,6 @@ For automation (e.g. CI or Codex) use `./scripts/update_vendors_ci.sh` which abo
 
 The `update-vendors.yml` workflow launches this script automatically whenever `vendors.txt` or `custom_vendors.json` change.
 
-### Contributing
-
-Install [pre-commit](https://pre-commit.com/) and enable it in your app directory:
-
-```bash
-pre-commit install
-```
-
-Our pre-configured hooks format code automatically using:
-
-- ruff (Python)
-- eslint (JavaScript)
-- prettier (Markdown, HTML, etc.)
-- pyupgrade (Python modernizer)
-
-All hook definitions live in `.pre-commit-config.yaml` at the repository root.
-
-### CI & Automation
-
-This template comes with GitHub Actions workflows for:
-
-- CI testing
-- automated vendor repository updates via `update-vendors.yml`
-- commit linting and validation
-
-Workflow examples are stored in `workflow_templates/`. Copy them into
-`.github/workflows/` in your app repository and adjust them as needed.
-The [workflow_templates.md](doc/workflow_templates.md) document explains what
-each template does. Details about vendor handling are described in
-[vendor_management.md](doc/scripts/vendor_management.md).
-
 ### Codex Environment Setup
 
 1. Add a secret named `GITHUB_TOKEN` in your Codex environment so vendor scripts can access private repositories.
@@ -111,46 +80,3 @@ MIT
 
 For full Codex compatibility and developer productivity, follow the structural conventions and use the agent files provided.
 
-### How to Code
-
-Update PROJECT.md with new development prompts
-Connect repo as environment in codex ui environments
-code with prompts and/or flags and/or --go (starts with reading PROJECT.md).
-
---- autocreated ---
-
-Codex processes this repository based on the rules in `AGENTS.md`. The following instructions are currently active:
-
-- Flags have highest priority!
-- Always update `README.md` when `AGENTS.md` includes new instructions relevant to later usage.
-
-- Create any missing essential files described in the documentation.
-- Remove one-off helper files after they are used.
-- Build workflows, scripts and configs logically and keep them consistent when paths or structures change.
-- Keep tests up to date as the project evolves.
-- Update existing files if they do not match the documentation in `README.md` or the instructions in `AGENTS.md`.
-- Keep `README.md` and `AGENTS.md` synchronized.
-- Ensure scripts under `scripts/` reflect what the README describes.
-- Store Mermaid diagrams as `.mmd` files in `doc/` and use `flowchart TD` with files as rectangles and scripts as rounded nodes.
-- Maintain this "How to Code" section so it lists available flags, how Codex is influenced and which instructions are active or disabled.
-- Use `--create-tasks` when prompts risk exceeding context limits.
-- Check vendor-specific instructions under `instructions/<vendorname>/AGENTS.md`; these apply only when `<vendorname>` exists under `vendor/` and override the main `AGENTS.md`.
-
-Codex can be guided with these flags:
-
-- `--no-agent` &ndash; Treat the prompt as the main instruction, rewrite `README.md` and `AGENTS.md`, then adjust the code to match.
-- `--create-tasks` &ndash; Instead of changing code directly, produce a list of discrete, non-conflicting tasks for manual implementation.
-- `--start` &ndash; Initialize the project using the current documentation without running code. Missing files are created and structures put in place.
-- `--go` &ndash; Execute tasks found in `PROJECT.md` before the separator line.
-- `--focus-on-<file/folder>` &ndash; Prioritize a specific file or folder recursively.
-- `--update-scripts` &ndash; Review scripts under `scripts/` and `setup.sh`.
-- `--update-workflows` &ndash; Review GitHub Actions in `.github/workflows/`.
-- `--update-comments` &ndash; Add useful code comments only, no other changes.
-- `--update-agent` &ndash; Rewrite `AGENTS.md` according to the prompt and update the project afterwards.
-- `--update-readme` &ndash; Rewrite `README.md` according to the prompt and adjust the repository.
-- `--update-docs` &ndash; Work exclusively on documentation under `doc/`.
-- `--update-scripts` &ndash; Review and adapt files in `scripts/` and `setup.sh`.
-- `--update-workflows` &ndash; Update files in `.github/workflows/` to match the docs.
-- `--update-comments` &ndash; Add concise comments that clarify why code exists.
-
-Inactive instructions, if any, appear here as "not active" when they are commented out in `AGENTS.md`.

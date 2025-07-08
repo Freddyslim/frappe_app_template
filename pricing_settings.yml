@@ -1,6 +1,0 @@
-# Default workload estimates used for external price calculations.
-# Adjust these values to match your agency's typical effort.
-
-doctype_estimated_hours: 8
-website_estimated_hours: 6
-email_template_estimated_hours: 2
