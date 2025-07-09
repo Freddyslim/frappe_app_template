@@ -23,7 +23,7 @@ is not copied into the project.
 
 - `clone_repo.sh` – adds vendor repositories listed in `vendors.txt` as submodules without updating existing entries.
 - `remove_repo.sh` – removes a specific vendor repository directory and its instructions.
-- `update_vendors_copy.sh` – clones vendors as regular directories without keeping the `.git` metadata.
+- `update_vendors_copy.sh` – clones vendors as regular directories without keeping the `.git` metadata. The script uses the same `GITHUB_TOKEN`/`API_KEY` lookup as `update_vendors.sh` so private repositories work out of the box.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
 
