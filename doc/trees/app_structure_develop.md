@@ -23,6 +23,7 @@
         │   ├── remove_repo.sh               # entfernt sauber ein Vendor-Verzeichnis und aktualisiert apps.json
         │   ├── generate_diagrams.sh         # rendert Mermaid-Diagramme aus /doc/
         │   ├── update_vendors.sh            # synchronisiert Vendor-Repositories (zentraler Einstieg)
+        │   ├── update_vendors_copy.sh       # kopiert Vendor-Repositories ohne Git-Metadaten
         │   └── publish_app.sh               # erstellt Release, Tag, PR (manuell oder CI-unterstützt)
         ├── .pre-commit-config.yaml          # Hook-Setup für git (Black, isort, etc.)
         ├── .github/

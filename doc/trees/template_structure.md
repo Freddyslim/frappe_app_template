@@ -19,6 +19,7 @@
         │   ├── remove_repo.sh             # remove unwanted vendor directory
         │   ├── generate_diagrams.sh       # render Mermaid diagrams from doc/
         │   ├── update_vendors.sh          # sync vendor repositories
+        │   ├── update_vendors_copy.sh     # clone vendors as plain directories
         │   └── publish_app.sh             # manual publish app without dev files --> create pull request with new tag <vx.x.x> auto upscaling with choice of dev-stable <vx.x.x+1>, test-stable <vx+1.0>, major <vx+1.0.0>
         │                                  # run with -h to see options
 

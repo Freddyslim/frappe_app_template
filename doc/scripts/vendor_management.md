@@ -1,6 +1,7 @@
 # Vendor Management
 
 This document explains how vendor repositories are integrated into your app using git submodules.
+If you prefer plain copies instead of submodules, use `update_vendors_copy.sh`.
 
 ## Files
 
@@ -22,6 +23,7 @@ is not copied into the project.
 
 - `clone_repo.sh` – adds vendor repositories listed in `vendors.txt` as submodules without updating existing entries.
 - `remove_repo.sh` – removes a specific vendor repository directory and its instructions.
+- `update_vendors_copy.sh` – clones vendors as regular directories without keeping the `.git` metadata.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
 
