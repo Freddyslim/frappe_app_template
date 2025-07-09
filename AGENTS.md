@@ -35,3 +35,17 @@ vendor/
 ├── frappe/
 ├── bench/
 └── erpnext/
+```
+
+### 3. Coding Guidelines
+
+- Use consistent syntax and proper indentation throughout the codebase.  
+- Keep comments concise but meaningful — especially for Codex-relevant logic.  
+- Name functions, classes, and variables clearly and descriptively.  
+- Prefer official Frappe APIs and patterns to maximize compatibility.  
+- Avoid global side effects where possible; favor pure functions.  
+- **All backend elements — including Doctype names, fieldnames, method names, script comments, and other technical identifiers — must always be written in English.**  
+  Likewise, all **frontend labels and content** that appear in ERPNext/Frappe must also use English as the default language.  
+  → **Translations should later be handled exclusively via ERPNext’s built-in translation mechanisms.**  
+- **At the end of every code generation or modification step, all created files must be automatically checked for correct syntax according to their respective language.**  
+  This ensures that Codex and other LLMs always work with valid, parseable input without syntax errors or formatting issues.
