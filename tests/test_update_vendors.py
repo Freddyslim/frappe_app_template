@@ -22,8 +22,7 @@ def test_update_vendors_prunes_obsolete_repo(tmp_path):
     subprocess.run(["git", "commit", "-m", "init"], cwd=dummy_repo, check=True)
 
     env = {**os.environ, "GIT_ALLOW_PROTOCOL": "file"}
-    subprocess.run(["git", "clone", str(dummy_repo), "vendor/dummy"], cwd=tmp_path, check=True, env=env)
-    subprocess.run(["git", "add", "vendor/dummy"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "submodule", "add", str(dummy_repo), "vendor/dummy"], cwd=tmp_path, check=True, env=env)
     subprocess.run(["git", "commit", "-m", "add vendor"], cwd=tmp_path, check=True)
 
     assert (tmp_path / "vendor" / "dummy").exists()
@@ -32,9 +31,11 @@ def test_update_vendors_prunes_obsolete_repo(tmp_path):
     (tmp_path / "vendors.txt").write_text("")
     (tmp_path / "vendor_profiles").mkdir()
 
-    subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True)
+    subprocess.run(["bash", str(tmp_scripts / "update_vendors.sh")], cwd=tmp_path, check=True, env=env)
 
     assert not (tmp_path / "vendor" / "dummy").exists()
+    if (tmp_path / ".gitmodules").exists():
+        assert "vendor/dummy" not in (tmp_path / ".gitmodules").read_text()
 
     assert (tmp_path / "apps.json").read_text().strip() == "{}"
 

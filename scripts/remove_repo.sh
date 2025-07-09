@@ -22,8 +22,14 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 VENDOR_DIR="$ROOT_DIR/vendor/$NAME"
 INSTR_DIR="$ROOT_DIR/instructions/_$NAME"
 
-# remove repository directory
-rm -rf "$VENDOR_DIR"
+# remove repository directory (handles git submodule)
+if git -C "$ROOT_DIR" ls-files --stage "vendor/$NAME" 2>/dev/null | grep -q '^160000'; then
+    git -C "$ROOT_DIR" submodule deinit -f -- "vendor/$NAME" >/dev/null 2>&1 || true
+    git -C "$ROOT_DIR" rm -f "vendor/$NAME" >/dev/null 2>&1 || true
+    rm -rf "$ROOT_DIR/.git/modules/vendor/$NAME"
+else
+    rm -rf "$VENDOR_DIR"
+fi
 
 # remove instructions directory
 rm -rf "$INSTR_DIR"
