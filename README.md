@@ -66,7 +66,8 @@ The `update-vendors.yml` workflow launches this script automatically whenever `v
 ### Codex Environment Setup
 
 1. Add a secret named `GITHUB_TOKEN` in your Codex environment so vendor scripts can access private repositories.
-2. Copy `scripts/setup_codex_env.sh` into the environment and run it once to initialize submodules and fetch vendor repositories. Set `SKIP_PIP_INSTALL=1` to skip installing Python requirements.
+2. Copy `scripts/setup_codex_env.sh` into the environment and run it once to initialize submodules and fetch vendor repositories.
+
 
 ### Command Restrictions
 
