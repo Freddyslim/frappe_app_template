@@ -1,6 +1,7 @@
 #!/bin/bash
 # setup_codex_env.sh: prepare Codex environment for this template
 set -euo pipefail
+echo "SETUP STARTED"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -17,5 +18,3 @@ git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https:/
 if [ -f "$ROOT_DIR/.gitmodules" ]; then
   git -C "$ROOT_DIR" submodule update --init --recursive
 fi
-
-"$SCRIPT_DIR/update_vendors_ci.sh"
