@@ -23,8 +23,20 @@ if [ -z "${GITHUB_TOKEN:-}" ]; then
   exit 1
 fi
 
-python3 -m pip install --upgrade pip >/dev/null
-pip install -r "$REQ_FILE" >/dev/null
-pre-commit install >/dev/null
+# use token to authenticate any submodule URLs pointing to GitHub
+git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+
+# initialize submodules if present in the repository
+if [ -f "$ROOT_DIR/.gitmodules" ]; then
+  git -C "$ROOT_DIR" submodule update --init --recursive
+fi
+
+if [ -z "${SKIP_PIP_INSTALL:-}" ]; then
+  python3 -m pip install --upgrade pip >/dev/null
+  pip install -r "$REQ_FILE" >/dev/null
+  pre-commit install >/dev/null
+else
+  echo "Skipping Python requirements installation" >&2
+fi
 
 "$SCRIPT_DIR/update_vendors_ci.sh"

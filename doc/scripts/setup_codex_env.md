@@ -1,6 +1,7 @@
 # setup_codex_env.sh
 
 Prepare a Codex execution environment. It installs dependencies, installs pre‑commit hooks and runs `update_vendors_ci.sh`.
+Set the environment variable `SKIP_PIP_INSTALL=1` to skip the dependency and hook installation steps.
 
 ```mermaid
 flowchart TD
