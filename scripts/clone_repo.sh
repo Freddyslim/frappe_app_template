@@ -38,13 +38,15 @@ while IFS= read -r raw_line || [ -n "$raw_line" ]; do
     target="vendor/$name"
     echo "--> processing $name@$ref"
 
-    if [ -d "$target/.git" ]; then
+    if git -C "$ROOT_DIR" ls-files --stage "$target" 2>/dev/null | grep -q '^160000'; then
         git -C "$target" fetch origin --tags >/dev/null 2>&1 || true
     else
-        git clone "$url" "$target" >/dev/null 2>&1 || true
+        rm -rf "$target"
+        git -C "$ROOT_DIR" submodule add -f "$url" "$target" >/dev/null 2>&1 || true
     fi
     git -C "$target" checkout "$ref" >/dev/null 2>&1 || \
         git -C "$target" checkout "origin/$ref" >/dev/null 2>&1 || true
+    git -C "$ROOT_DIR" add "$target" >/dev/null 2>&1 || true
 
     if [ -d "$target/instructions" ]; then
         mkdir -p "$INSTRUCTIONS_DIR/_$name"

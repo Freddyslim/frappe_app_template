@@ -224,10 +224,11 @@ changes=false
     echo "➡️  Processing $slug ($ref)"
     auth_repo=$(with_auth_repo "$repo")
     log "Using repository URL: $auth_repo"
-    if [ -d "$target/.git" ]; then
+    if git -C "$ROOT_DIR" ls-files --stage "$path" 2>/dev/null | grep -q '^160000'; then
       git -C "$target" fetch origin --tags >/dev/null 2>&1 || true
     else
-      if git clone "$auth_repo" "$target" >/dev/null 2>&1; then
+      rm -rf "$target"
+      if git -C "$ROOT_DIR" submodule add -f "$auth_repo" "$path" >/dev/null 2>&1; then
         installed+=("$slug")
         changes=true
       else
@@ -235,13 +236,15 @@ changes=false
         continue
       fi
     fi
-    if [[ -n "$branch" ]]; then
-      git -C "$target" checkout "$branch" >/dev/null 2>&1 || \
-        git -C "$target" checkout "origin/$branch" >/dev/null 2>&1 || true
-    elif [[ -n "$tag" ]]; then
+    if [[ -n "$tag" ]]; then
+      git -C "$target" fetch origin --tags >/dev/null 2>&1 || true
       git -C "$target" checkout "tags/$tag" >/dev/null 2>&1 || \
         git -C "$target" checkout "$tag" >/dev/null 2>&1 || true
+    elif [[ -n "$branch" ]]; then
+      git -C "$target" checkout "$branch" >/dev/null 2>&1 || \
+        git -C "$target" checkout "origin/$branch" >/dev/null 2>&1 || true
     fi
+    git -C "$ROOT_DIR" add "$path" >/dev/null 2>&1 || true
     commit=$(git -C "$target" rev-parse HEAD)
     updated+=("$slug")
 
@@ -279,8 +282,14 @@ for dir in "$VENDOR_DIR"/*; do
   done
   if ! $keep; then
     echo "🗑 Removing obsolete directory $dir"
-    log "Deleting directory $dir"
-    rm -rf "$dir"
+    rel="${dir#$ROOT_DIR/}"
+    if git -C "$ROOT_DIR" ls-files --stage "$rel" 2>/dev/null | grep -q '^160000'; then
+      git -C "$ROOT_DIR" submodule deinit -f -- "$rel" >/dev/null 2>&1 || true
+      git -C "$ROOT_DIR" rm -f "$rel" >/dev/null 2>&1 || true
+      rm -rf "$ROOT_DIR/.git/modules/$rel"
+    else
+      rm -rf "$dir"
+    fi
     removed+=("$(basename "$dir")")
     changes=true
   fi

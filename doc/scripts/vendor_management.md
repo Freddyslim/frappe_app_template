@@ -1,6 +1,6 @@
 # Vendor Management
 
-This document explains how vendor repositories are integrated into your app without using git submodules.
+This document explains how vendor repositories are integrated into your app using git submodules.
 
 ## Files
 
@@ -10,9 +10,9 @@ This document explains how vendor repositories are integrated into your app with
 
 ## Script: `update_vendors.sh`
 
-The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and clones every entry directly under the `vendor/` directory. If a vendor repository is private, `update_vendors.sh` tries the GitHub token from the bench `.env` or `.config/github_api.json`. Should cloning fail, the script prompts you for a token on the command line. `update_vendors.sh` depends on `jq` for parsing JSON, so ensure it is installed before running the script.
+The script reads both `vendors.txt` and `custom_vendors.json`, resolves the repository URL and ref from the vendor profiles and adds every entry as a git submodule in the `vendor/` directory. If a vendor repository is private, `update_vendors.sh` tries the GitHub token from the bench `.env` or `.config/github_api.json`. Should cloning fail, the script prompts you for a token on the command line. `update_vendors.sh` depends on `jq` for parsing JSON, so ensure it is installed before running the script.
 
-Vendor directories removed from the lists are deleted, and the updated state is written back to `apps.json`.
+Submodules removed from the lists are deleted, and the updated state is written back to `apps.json`.
 
 Whenever a vendor is processed, its instruction directory from the profile is
 mirrored to `instructions/<slug>` in your app. The `vendor_profiles` directory
@@ -20,7 +20,7 @@ is not copied into the project.
 
 ## Other helper scripts
 
-- `clone_repo.sh` – clones vendor repositories listed in `vendors.txt` without updating existing entries.
+- `clone_repo.sh` – adds vendor repositories listed in `vendors.txt` as submodules without updating existing entries.
 - `remove_repo.sh` – removes a specific vendor repository directory and its instructions.
 
 Both scripts live in the `scripts/` folder and are useful for manual vendor maintenance.
