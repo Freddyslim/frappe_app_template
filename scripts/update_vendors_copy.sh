@@ -52,6 +52,16 @@ fi
 if [ -z "$API_KEY" ] && [ -f "$CONFIG_FILE" ]; then
   API_KEY=$(jq -r '.API_KEY // .GITHUB_TOKEN // empty' "$CONFIG_FILE" 2>/dev/null)
 fi
+
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -f "$ENV_FILE" ]; then
+  GITHUB_TOKEN=$(grep -E '^GITHUB_TOKEN=' "$ENV_FILE" | cut -d'=' -f2- || true)
+fi
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -f "$BENCH_ENV_FILE" ]; then
+  GITHUB_TOKEN=$(grep -E '^GITHUB_TOKEN=' "$BENCH_ENV_FILE" | cut -d'=' -f2- || true)
+fi
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -f "$CONFIG_FILE" ]; then
+  GITHUB_TOKEN=$(jq -r '.GITHUB_TOKEN // .API_KEY // empty' "$CONFIG_FILE" 2>/dev/null)
+fi
 GITHUB_TOKEN="${GITHUB_TOKEN:-$API_KEY}"
 
 with_auth_repo() {
