@@ -68,6 +68,7 @@ The `update-vendors.yml` workflow launches this script automatically whenever `v
 1. Add a secret named `GITHUB_TOKEN` in your Codex environment so vendor scripts can access private repositories.
 2. Copy `scripts/setup_codex_env.sh` into the environment and run it once to initialize submodules and fetch vendor repositories.
 
+
 ### Command Restrictions
 
 Codex does not execute real shell commands or network operations while processing this repository. Only file creation and modification is performed. Commands like `bench`, `git`, `curl`, `wget`, `npm` and `ssh` must not run. You may place such commands in scripts or CI files, but they remain inactive during updates.
