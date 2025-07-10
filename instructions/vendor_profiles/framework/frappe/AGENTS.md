@@ -1,30 +1,31 @@
 # Guidelines for Developers
 
 This repository hosts the **Frappe Framework**. 
+All reference files are found in vendor/frappe...
 
 # Repository Navigation
 
 Use these navigation files to explore specific areas of the framework:
 
-- [Doctypes](nav_doctypes.md) – DocType definitions and base classes.
-- [APIs](nav_apis.md) – REST routes and RPC handlers.
-- [Emails](nav_emails.md) – email queue, accounts and helpers.
-- [Websites](nav_websites.md) – website pages, templates and routing.
-- [Permissions](nav_permissions.md) – role based access control.
-- [Fixtures](nav_fixtures.md) – demo and fixture data utilities.
-- [Hooks](nav_hooks.md) – framework hooks and configuration keys.
-- [Integrations](nav_integrations.md) – third party integration modules.
-- [Patches](nav_patches.md) – database migrations and patch handler.
-- [Translations](nav_translations.md) – CSV language files and helpers.
-- [Reports](nav_reports.md) – built-in reports.
-- [Printing](nav_printing.md) – print formats and printing tools.
-- [Themes](nav_themes.md) – website and desk theme files.
-- [Webforms](nav_webforms.md) – web form definitions and assets.
-- [Database](nav_database.md) – database layer and query builder.
-- [Scheduled Tasks](nav_scheduled.md) – scheduler events and logs.
-- [Search](nav_search.md) – full text and website search.
-- [CLI Commands](nav_commands.md) – bench command implementations.
-- [Workflows](nav_workflows.md) – document workflow configuration.
+- Doctypes – DocType definitions and base classes.
+- APIs – REST routes and RPC handlers.
+- Emails – email queue, accounts and helpers.
+- Websites – website pages, templates and routing.
+- Permissions – role based access control.
+- Fixtures – demo and fixture data utilities.
+- Hooks – framework hooks and configuration keys.
+- Integrations – third party integration modules.
+- Patches – database migrations and patch handler.
+- Translations – CSV language files and helpers.
+- Reports – built-in reports.
+- Printing – print formats and printing tools.
+- Themes – website and desk theme files.
+- Webforms – web form definitions and assets.
+- Database – database layer and query builder.
+- Scheduled Tasks – scheduler events and logs.
+- Search – full text and website search.
+- CLI Commands – bench command implementations.
+- Workflows – document workflow configuration.
 
 # Doctypes
 
